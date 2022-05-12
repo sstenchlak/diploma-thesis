@@ -3,13 +3,12 @@ on: [push]
 jobs:
   build_latex:
     runs-on: ubuntu-latest
+    container: thomasweise/docker-texlive-full
     steps:
       - name: Set up Git repository
         uses: actions/checkout@v2
-      - name: Make
-        uses: dante-ev/latex-action@latest
-        with:
-          entrypoint: ./build.sh
+      - name: make
+        run: make build
       - uses: actions/upload-artifact@v3
         with:
           name: thesis.pdf
