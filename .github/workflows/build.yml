@@ -8,7 +8,7 @@ jobs:
       - name: Set up Git repository
         uses: actions/checkout@v2
       - name: Make
-        run: make
+        run: make VERSION=`TZ=Europe/Prague git show -s --format=%ad --date=format-local:'%A, %B %e, %H:%M'`
       - uses: actions/upload-artifact@v3
         with:
           name: thesis.pdf

@@ -55,6 +55,19 @@
 \usepackage{paralist}       % improved enumerate and itemize
 \usepackage{xcolor}         % typesetting in color
 
+\ifdefined\version\ifx\version\empty\else
+	\usepackage{background}
+	\SetBgContents{\version}
+	\SetBgScale{1}
+	\SetBgAngle{0}
+	\SetBgOpacity{1}
+	\SetBgColor{gray}
+	\SetBgPosition{current page.south west}
+	\SetBgAnchor{right}
+	\SetBgHshift{.5cm}
+	\SetBgVshift{.5cm}
+\fi\fi
+
 %%% Basic information on the thesis
 
 % Thesis title in English (exactly as in the formal assignment)
