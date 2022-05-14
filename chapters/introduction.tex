@@ -1,0 +1,30 @@
+\chapter*{Introduction}
+\addcontentsline{toc}{chapter}{Introduction}
+
+During the software development process, we may come to a point where splitting a large codebase into smaller, well-defined chunks is necessary to maintain the growth of our software. Using existing systems and connecting them is also a viable approach to building software. In both cases, we end up with many applications and services working together.
+
+This approach reduces complexity and demands on software developers as each part can be maintained, deployed, and tested separately. Each developer team must know only the portion they maintain and the immediate surrounding. The surrounding is then defined by a protocol - the interface specifying the data which flows between the systems.
+
+Those protocols must be created, documented, and maintained, which can be a long, error-prone task. The result of the process is usually a set of data schemas and documentation for developers. Especially the schemas need to be designed carefully to be, if possible, consistent in format and naming.
+
+\bigskip
+
+example
+
+\bigskip
+
+In this thesis, we will analyze and extend a newly created tool Dataspecer \cite{dataspecer} and formally define and analyze its internal model. Dataspecer is a tool for effortless creation and management of data specifications, such as XSD, JSON Schema, CSV Schema, their documentation and data transformations.
+
+\bigskip
+
+\noindent The rest of the work is organized as follows.
+
+
+\begin{itemize}\setlength{\itemsep}{1pt}
+    \item The following chapter \ref{chapters:related-work} analyzes related work and introduces the previous works as the common ground this work will follow - specifically the model-driven approach for data modeling and evolution of XML documents.
+    \item Chapter \ref{chapters:analysis} briefly analyzes new requirements for the software as many requirements were already studied in the related work. The chapter focuses on support for schemas other than XML and the data on the web \cite{data-on-the-web} approach to ontology and the modeled schemas.
+    \item Formal background (chapter \ref{chapters:formal-background}) then defines the internal model to represent schemas and its changes from the related work where it was first introduced. Changes are also analyzed with respect to new requirements.
+    \item The next chapter \ref{chapters:implementation} then briefly describes how this model is integrated into the Dataspecer tool.
+    \item The last chapter \ref{chapters:future-work} introduces and briefly analyzes topics for future work, such as the change propagation in schemas.
+\end{itemize}
+
