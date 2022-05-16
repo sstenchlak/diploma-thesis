@@ -1,5 +1,6 @@
 \chapter*{Introduction}
 \addcontentsline{toc}{chapter}{Introduction}
+% Chci to mít na 4 strany
 
 During the software development process, we may come to a point where splitting a large codebase into smaller, well-defined chunks is necessary to maintain the growth of our software. Using existing systems and connecting them is also a viable approach to building software. In both cases, we end up with many applications and services working together.
 
@@ -9,22 +10,96 @@ Those protocols must be created, documented, and maintained, which can be a long
 
 \bigskip
 
-example
+As an example, consider a company selling and distributing its own goods. The goods are stored in warehouses and then shipped to customers. For the shipping process, the warehouse workers need to know the properties of items they need to send. Similarly, customers need to know the properties of items they are buying. This scenario is denoted in the following image. The nodes are individual systems in the company that communite with each other.
+
+\begin{figure}[h]\centering
+\begin{tikzpicture}[
+    squarednode/.style={rectangle, draw=purple!60, fill=purple!5, very thick, minimum size=5mm},
+]
+    %Nodes
+    \node[squarednode] (db) {Company's goods database};
+    \node[squarednode] (warehouse) [below=2cm of db, xshift=.5cm,anchor=north west] {Warehouse application};
+    \node[squarednode] (shop) [below=2cm of db, xshift=-.5cm,anchor=north east] {Online shop};
+
+    %Lines
+    \draw[-latex] (db) -- node[text width=3cm,align=center,auto,anchor=west,midway]{order info with items to send} (warehouse);
+    \draw[-latex] (db) -- node[text width=3.5cm,align=center,auto,anchor=east,midway]{list of available items} (shop);
+\end{tikzpicture}
+\end{figure}
+
+Our goal is to describe the protocols formally. Which data are sent and where. By doing this without any tool, we may find several obstacles during the process:
+
+\begin{enumerate}
+    \item We may need to describe an entity for every schema that uses it. Hence doing the \textbf{same work multiple times}.
+    \item There is a high chance of \textbf{incostinency}. We may name the semantically same attribues differently which may cause confusion among software enginners who came in touch with multiple parts of the system.
+    \item We \textbf{lack of context} in the whole system where the entities are used.
+\end{enumerate}
+
+In addition to these obstacles, it is hard to provide supporting documentation, diagrams and examples. Future modifications to the system may require changing the schemas, which again may require changing same thing multiple times and may cause inconsistency. Formally, we will denote changing of schemas as an \textbf{evolution}.
+
+\section*{Ontology}
+\addcontentsline{toc}{section}{Ontology}
+
+The example above tends us to create a formal description and naming of all entities, their properties and relations in the given domain. Entities represents objects from a real world, such as \textit{order}, \textit{customer} or \textit{goods}. Relations then specify for example that \textit{order belongs to a customer} and \textit{consists of goods}. Formally, such description is called an \textbf{ontology}.
+
+With the data on the web \cite{data-on-the-web} trend in the last few years, even ontologies are becoming accessible publicly. Popular formats include RDFS (or RDF Schema), OWL, UFO, or schema.org and Wikidata. For example, schema.org is a proprietary format describing usefull data for search engines, such as events, organizations or places.
+
+Using pre-defined ontologies in semi-automatic way of defining schemas is beneficiary, because a schema designer may focus fully on the schema structure and not on the domain semantics.
+
+\section*{OFNs and open data}
+\addcontentsline{toc}{section}{OFNs and open data}
+
+\textbf{Open data} is defined as data published on the web without any restrictions on use. This means, than anyone can use, modify and distrubute the data under any reason, including commercial use.
+
+Definition of open data is very loose, but can be further specified by a 5-star scheme designed by Sir Tim Berners-Lee. Each star adds a restriction up until the fifth star describing the Linked Open Data.
+\begin{itemize}[noitemsep,leftmargin=2cm]
+    \item [1 $\bigstar$] Data are published on the web and can be used freely.
+    \item [2 $\bigstar$] Data are structured and in machine-readable format.
+    \item [3 $\bigstar$] The format is not proprietary, hence anyone can open them.
+    \item [4 $\bigstar$] Data uses RDF and SPARQL standards from W3C.
+    \item [5 $\bigstar$] Data are linked to other data creating a network of data.
+\end{itemize}
+
+\smallskip
+
+According to Act 106/1999 Coll. of the Czech Republic, data of public institutions shall be published as open data on the Internet in all formats it was created, and if possible, in a machine-readable format. This description corresponds to two stars in the schema above.
+
+The act then specifies \textbf{OFNs}\footnote{\url{https://data.gov.cz/ofn/}} \textit{(open formal norms)} as recommendations for publishing selected types of data, such as information about \textit{Tourist destinations} and \textit{Sports centers}. The purpose of these documents is to standardize how these data are published, usually by defining JSON and XML schemas along with textual documentation.
+
+Until recently, all those recommendations (OFNs) were created by hand without any tool.
+
+\smallskip
+
+The process of designing those recommendations is comparable to designing schemas for a software system mentioned above - the designer needs to create schemas and documentation for them with examples and images.
+
+\newpage
+\section*{Focus of the work}
+\addcontentsline{toc}{section}{Focus of the work}
+
+This thesis will analyze and extend\footnote{The author implemented the basis of the tool as his research project. This thesis, therefore, introduces advanced constructs and only formalizes those already implemented.} a newly created tool, Dataspecer \cite{dataspecer}, and formally define and analyze its internal model, which follows previous research in the XML data modeling area and extends it to support new requirements.
+
+Dataspecer is a web tool for effortless creation and management of data specifications, such as XSD, JSON Schema, and CSV Schema, and the creation of supplementary documents. The tool helps the user model schemas by providing relations from the chosen ontology. Schemas are modeled in a graphical interface in the form of the tree, which is then converted to various schemas.
+
+Supplementary documents are automatically generated files from the modelled schemas, such as:
+
+\begin{itemize}
+    \item \textbf{documentation} - Human-readable description of entities from the ontology, that are used in the schema as well as description of the schema.
+    \item \textbf{data transformations} - Scripts that can convert data from one schema to another, even between different technologies, such as JSON and XML.
+    \item \textbf{examples} - Small datasets that can be used instead of the documentation to understand the schema.
+    \item \textbf{example application} - Depending of context of modelled schema, if the schema describes a web accessible data, it is possible to generate a web application that uses those data as an proof that the workflow works.
+\end{itemize}
+
+The tool is already in use for creating new schemas for the public sector of the Czech Republic including the OFNs.
 
 \bigskip
 
-In this thesis, we will analyze and extend a newly created tool Dataspecer \cite{dataspecer} and formally define and analyze its internal model. Dataspecer is a tool for effortless creation and management of data specifications, such as XSD, JSON Schema, CSV Schema, their documentation and data transformations.
+\noindent The rest of the thesis is organized as follows.
 
-\bigskip
-
-\noindent The rest of the work is organized as follows.
-
-
-\begin{itemize}\setlength{\itemsep}{1pt}
+\begin{itemize}
     \item The following chapter \ref{chapters:related-work} analyzes related work and introduces the previous works as the common ground this work will follow - specifically the model-driven approach for data modeling and evolution of XML documents.
     \item Chapter \ref{chapters:analysis} briefly analyzes new requirements for the software as many requirements were already studied in the related work. The chapter focuses on support for schemas other than XML and the data on the web \cite{data-on-the-web} approach to ontology and the modeled schemas.
-    \item Formal background (chapter \ref{chapters:formal-background}) then defines the internal model to represent schemas and its changes from the related work where it was first introduced. Changes are also analyzed with respect to new requirements.
+    \item Formal background (chapter \ref{chapters:formal-background}) then defines the internal model to represent schemas and its changes from the related work where it was first introduced. Changes are also analyzed with respect to the new requirements.
     \item The next chapter \ref{chapters:implementation} then briefly describes how this model is integrated into the Dataspecer tool.
-    \item The last chapter \ref{chapters:future-work} introduces and briefly analyzes topics for future work, such as the change propagation in schemas.
+    \item The last chapter \ref{chapters:future-work} introduces and briefly analyzes topics for future work, such as the change propagation (evolution) in schemas.
 \end{itemize}
 
