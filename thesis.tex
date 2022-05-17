@@ -70,6 +70,21 @@
 
 \usepackage{tikz}
 \usetikzlibrary{positioning}
+\usetikzlibrary{shadows}
+\tikzset{%
+  cascaded/.style = {%
+    general shadow = {%
+      shadow scale = 1,
+      shadow xshift = 1ex,
+      shadow yshift = -1ex,
+      draw,
+      fill = white},
+    general shadow = {%
+      shadow scale = 1,
+      shadow xshift = .5ex,
+      shadow yshift = -.5ex,
+      draw,
+      fill = white}}}
 \usepackage{ amssymb }
 \usepackage{enumitem}
 
