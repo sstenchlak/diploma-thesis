@@ -35,7 +35,11 @@ Our goal is to describe the protocols formally. Which data are sent and where. B
     \item We \textbf{lack of context} in the whole system where the entities are used.
 \end{enumerate}
 
-In addition to these obstacles, it is hard to provide supporting documentation, diagrams and examples. Future modifications to the system may require changing the schemas, which again may require changing same thing multiple times and may cause inconsistency. Formally, we will denote changing of schemas as an \textbf{evolution}.
+Regarding to point 1, defining a subschema for shared parts of the domain may not be sufficient, as we may need different detail of information. From the example above, the warehouse application may require only the \textit{name} and \textit{weight} of the items, contrary to the online shop where the \textit{price} is also important.
+
+In addition to these obstacles, it is hard to provide supporting documentation, diagrams and examples.
+
+Future modifications to the system, or change in user requirements may require changing the schemas, which again may require changing same thing multiple times and may cause inconsistency. Formally, we will denote changing of schemas as an \textbf{evolution}. Process of evolution is complex, as there can already be existing data that conform the changed schemas. In that scenario, to properly implement a change in user requirement require modifying affected schemas, documentation and all the data (in case the data are stored in the given format).
 
 \section*{Ontology}
 \addcontentsline{toc}{section}{Ontology}
@@ -72,7 +76,6 @@ Until recently, all those recommendations (OFNs) were created by hand without an
 
 The process of designing those recommendations is comparable to designing schemas for a software system mentioned above - the designer needs to create schemas and documentation for them with examples and images.
 
-\newpage
 \section*{Focus of the work}
 \addcontentsline{toc}{section}{Focus of the work}
 
