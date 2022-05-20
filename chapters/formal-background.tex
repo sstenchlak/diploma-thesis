@@ -17,19 +17,7 @@ The topmost layer recognized by the model is CIM - \textit{Computation Independe
 
 \section{PIM layer}
 
-\paragraph{Definition} PIM is a triple $S=(S_c, S_a, S_r)$ of sets of classes, attributes and associations, respectively such that:
-\begin{itemize}
-    \item Attribute $A \in S_a$ belongs to class $C \in S_c$, which is denoted by function $\textrm{class}: S_a \rightarrow S_c$ as $\textrm{class}(A)=S$.
-    \item Association $R \in S_r$ is a set of exactly two association ends ${E_1, E_2}$ that are associated with classes similarly as with attributes by $\textrm{class}: E \rightarrow S_c$.
-\end{itemize}
 
-PIM can be decorated by various semantic and syntactic anotations, but those are not directly included in the definition above as they may not be required for every use-case that is intended as the intention is to keep the minimal requirements to model without breaking any functionality.
-
-\begin{itemize}
-    \item Classes, attributes, associations and association ends may have title and description, or potentially other describing properties that are not directly used in schema generation. However, the title may be used to propose naming of entities' labels in the PSM level.
-    \item Attributes and association ends have cardinalities.
-    \item Attributes have data types.
-\end{itemize}
 
 \begin{itemize}
     \item Why this PIM - maybe link to UFO?
