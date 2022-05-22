@@ -91,6 +91,12 @@
 \theoremstyle{definition}
 \newtheorem{requirement}{Requirement}
 \newtheorem{definition}{Definition}
+\newtheorem*{notation}{Notation}
+\usepackage{tabularx}
+\usepackage{makecell}
+
+\usepackage{xcolor}
+\newcommand{\td}[1]{\bigskip\par\noindent{\color{purple}#1}\par\bigskip}
 
 \usepackage[super]{nth}
 
@@ -160,7 +166,7 @@ Abstract.
 \include{chapters/introduction}
 \include{chapters/related-work}
 \include{chapters/analysis}
-\include{chapters/formal-background}
+%\include{chapters/formal-background}
 \include{chapters/implementation}
 \include{chapters/future-work}
 \include{chapters/epilog}

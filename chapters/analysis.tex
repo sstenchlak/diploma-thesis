@@ -1,67 +1,84 @@
-\chapter{Analysis and formal description of CIM and PIM layers}
+\chapter{Analysis and formal description}
 \label{chapters:analysis}
+
+\textit{This chapter analyzes several requirements for the software regarding framework layers and proposes modifications to the framework based on them.}
+
+
+
+
+
+\section{CIM and PIM layers}
 
 \begin{requirement}
     \label{requirement:ontologies-on-the-web}
-    As many ontologies are located on the web in formats like OWL, RDFs, UFO and etc.,
-    \begin{enumerate*}[label=\textit{(\alph*)}]
-        \item the application must support reading them.
-        \item The previous approach of creating the ontology directly in the application is not required, but there should be a support for \textit{some} modifications.
-      \end{enumerate*}
+    As many ontologies are located on the web in formats like OWL, RDFs, UFO, etc., the application shall support reading them. This has the following impacts:
+    \begin{enumerate}
+        \item The ontology may \textbf{not always be available}. Unavailability should not forbid us from generating the schemas and making minor changes to them if those changes are not directly related to reading the ontology.
+        \item The ontology may \textbf{change unexpectedly}. As there are no strict requirements, we must not expect to get the history of modifications yet still be able to perform schema evolution in some semi-automatic way.
+        \item The concepts in the ontology may \textbf{point to another ontology} according to Linked Open Data principles.
+    \end{enumerate}
 \end{requirement}
 
-In contrast with the approach introduced in \textit{XCase} and \textit{eXolutio} tools, the process of creating the domain ontology is moved from the application to the extednal tools. The application then only uses those existing ontologies in standart situations.
+In contrast with the approach introduced in \textit{XCase} and \textit{eXolutio} tools, the process of creating the domain ontology is moved from the application to the external tools. The application then only uses those ontologies if required.
 
-Before we proceed to formal description, lets focus on impacts of first part of the requirement.
-
-\begin{enumerate}
-    \item The ontology may \textbf{not be always avaiable}. This should not forbid us to generate the schemas and make small changes in the schemas if those changes are not directly related to reading the ontology.
-    \item The ontology may \textbf{change unexpectedly}. As there are no strict requirements, we must not expect to get the history of changes, yet still be able to perform schema evolution in some semi-automatic way.
-    \item The entities in the ontology may \textbf{point to another ontology} according to Linked Open Data principles.
-\end{enumerate}
-
-To support \nth{1} and \nth{2} point, the previously introduced five-level framework was modified. We have added new top-most level called CIM (from \textit{Computational Independent Model}). CIM represents the domain ontology. Although there can be more ontologies, with LOD approach we can see them as one. PIM is then used as a copy of CIM and only the necessary entities are copied to PIM. This modification is in accordance with point 1 and gives us base ground for implementing point 2, as we can compare CIM and PIM and try to create a sequence of operations that modifies PIM to be consistent with CIM.
+To support the first and second points, we modified the previously introduced five-level framework. We added new top-most level called CIM (from \textit{Computational Independent Model}). CIM represents the domain ontology. Although there can be more ontologies, with the LOD approach, we can see them as one. PIM is then used as a copy of CIM, and only the necessary entities are copied to PIM. This modification is in accordance with point 1 and gives us a base ground for implementing point 2, as we can compare CIM and PIM and try to create a sequence of operations that modifies PIM to be consistent with CIM.
 
 \begin{requirement}
     \label{requirement:multiple-technologies}
-    The application shall support multiple serialization technologies (such as JSON Schema, XSD and CSV schema) and it shall be possible to easily add support fot other.
+    The application shall support multiple data formats and their validation languages (such as JSON Schema, XSD, and CSV schema), and it shall be possible to add support for others easily.
 \end{requirement}
 
-Although the requirement \ref{requirement:multiple-technologies} mainly affects the PSM level, it has also impact to the definition of ontology. As we shall support all kinds of serialization technologies, some of them may not use all the information, which forces us to define the ontology and PIM layer in simpliest, most elementary way.
+Although requirement \ref{requirement:multiple-technologies} mainly affects the PSM level, it also impacts the definition of an ontology. As we shall support all kinds of serialization technologies, some of them may not use all the information, which pushes us to define the ontology and PIM level in the most elementary way.
 
 \begin{definition}[PIM] PIM is a triple $S=(S_c, S_a, S_r)$ of sets of classes, attributes and associations, respectively such that:
 \begin{itemize}
-    \item Attribute $A \in S_a$ belongs to class $C \in S_c$, which is denoted by function $\textrm{class}: S_a \rightarrow S_c$ as $\textrm{class}(A)=S$.
+    \item Attribute $A \in S_a$ belongs to class $C \in S_c$, which is denoted by anotation $\textrm{class}: S_a \rightarrow S_c$ as $\textrm{class}(A)=S$.
     \item Association $R \in S_r$ is a set of exactly two association ends ${E_1, E_2}$ that are associated with classes similarly as with attributes by $\textrm{class}: E \rightarrow S_c$.
 \end{itemize}
-\end{definition}
 
-PIM then can be decorated by various semantic and syntactic anotations:
+\td{why PIM has this specific form? UFO and history}
+
+We will call classes, attributes, and associations entities. PIM then can be decorated by various semantic and syntactic \textbf{annotations}. An annotation is a function on a subset of entity space. We do not require that anotation must be defined for every entity. Undefined annotation $a$ on entity $I$ will be formally denoted as $a(I) = \textrm{undefined}$.
 
 \begin{itemize}
-    \item Classes, attributes, associations and association ends may have title and description, or potentially other describing properties that are not directly used in schema generation. However, the title may be used to propose naming of entities' labels in the PSM level.
+    \item Classes, attributes, associations, and association ends\footnote{Because two association ends belong to an association, we may annotate the association itself instead of their ends. However, to simplify things, we say that association ends may also have annotations.} may have title and description, or potentially other describing properties that are not directly used in schema generation. However, the title may be used to propose the naming of entities' labels at the PSM level. (For example $name(C)="\textrm{Tourist destination}"@en$)
     \item Attributes and association ends have cardinalities.
     \item Attributes have data types.
 \end{itemize}
 
+\end{definition}
+
+\begin{definition}[interpretation]
+    We say that PIM entity $I$ is interpreted if and only if $interpretation(I) \neq \emptyset$ and is defined.
+\end{definition}
+
 \begin{definition}[CIM]
-CIM $O$ is an ontology database for which function \textit{CIM adapter} $A$ exists, such that $A(O) = S$ is a valid PIM, where every entity $I$ has unique interpretation $interpretation(I)$. Interpretations must be stable and consistent.
+CIM $O$ is an ontology database for which function \textbf{CIM adapter} $A$ exists, such that $A(O) = S$ is a valid PIM, where every entity $I$ is interpreted and the interpretation is unique, stable and consistent.
 \end{definition}
 
-The definition tells us, that CIM is everything that can be translated to PIM and that process is stable over time. If CIM is slightly changed, also the resulting PIM will be changed only slightly. If CIM is stored in LOD format, than the $interpretation$ function returns the URI of the CIM entity, that corresponds to the given PIM entity.
+The definition tells us, that CIM is everything that can be translated to PIM and that process is stable over time. If CIM is slightly changed, also the resulting PIM will be changed only slightly. If CIM is stored according to LOD format, than the $interpretation$ would be the URI of the CIM entity, that corresponds to the given PIM entity.
 
-For simplification, in the rest of the thesis we may ommit that CIM "needs to be translated" to PIM and suppose that is already in PIM-like format.
+For simplification, in the rest of the thesis we may ommit that CIM \textit{needs to be translated} to PIM and suppose that is already in PIM-like format.
 
-\begin{definition}[consistency]
-    We say that \textbf{PIM is consistent with CIM}, if PIM is a subset of CIM.
-\end{definition}
 
-From the descriptions above, the inconsistency may happen only if the CIM changes. It is easy to detect it as we can compare entities in PIM with those in CIM. To support the \nth{2} point from requirement \ref{requirement:ontologies-on-the-web}, we would need to create a set of atomic operations on the PIM level that make the PIM consistent again. These operations can be propagated up to schemas to apply the change from the ontology.
 
-\section{User modifications on the PIM level}
 
-As stated in the requirement \ref{requirement:ontologies-on-the-web}, the usual scenario for data modelling consists of reading an ontology from the web as a CIM. This section analyzes the second part of the requirement, whether there exists scenarios, where modifying the ontology in the tool may be beneficial than modification of the ontology itself.
+\subsection{User modifications on the PIM level}
 
+\td{\begin{itemize}
+        \item Semantically connecting entities is beneficial for all entities.
+        \item You can overwrite only one entity as this entity hide itself (automatically).
+        \item Overwrite is not extend.
+        \item The override must exists all the time as it is not possible to "use old iri".
+        \item simpliest would be to introduce $overrides$ anotation that has anotation itself, $deleted$ anotation and that would be all. Then introduce other PIM entities that can semantically map data between different entities.
+    \end{itemize}}
+
+\begin{requirement}
+    \label{requirement:pim-editing}
+    The previous approach of creating the ontology directly in the application is not required, but there should be a support for \textit{some} modifications.
+\end{requirement}
+
+As stated in the requirement \ref{requirement:ontologies-on-the-web}, the usual scenario for data modelling consists of reading an ontology from the web as a CIM. This section analyzes the requirement \ref{requirement:pim-editing}, whether there exists scenarios, where modifying the ontology in the tool may be beneficial than modification of the ontology itself.
 
 We can classify the reasons for modifying the ontology as follows:
 
@@ -73,18 +90,95 @@ We can classify the reasons for modifying the ontology as follows:
 
 Suppose the example with goods in the delivery company. Although the goods may be identified by EAN (barcode on items), the software team may prefer the other, iternal identifiers. There can be reasons for not including the identifier into the ontology, as it is too internal or specific for only a software team. That would correspond to the second category. The third category may represents the case, when we need to replace an address with a set of more specific attributes such as \textit{street}, \textit{number}, \textit{city}, \textit{country}, etc.
 
-Although in all the scenarios, the preffered way would be to create a new ontology, it can be too cumbersome and time consuming. Therefore, it should be possible to somehow allow modifying the PIM. PIM, that has been modified will be denoted as "user PIM" or \textbf{UPIM}.
+Although in all the scenarios, the preffered way would be to create a new ontology, it can be too cumbersome and time consuming. Therefore, it should be possible to somehow allow modifying the PIM.
 
-\bigskip
+\smallskip
 
 In context of other requirements and the framework used, this would also mean that:
 \begin{itemize}
-    \item PIM that is not consistent with CIM and we do not intent to make it consistent can be "marked" as UPIM. This would stop proposing the user to evolute the schemas according to the newest CIM.
-    \item If CIM changes, the semi-automatic update can respect UPIM and ask the user for changes, that can not be performed automatically.
+    \item PIM that is not consistent with CIM and we do not intent to make it consistent can be "marked" as modified. This would stop proposing the user to evolute the schemas according to the newest CIM.
+    \item If CIM changes, the semi-automatic update can respect modifications and ask the user for changes, that can not be performed automatically.
 \end{itemize}
 
-We propose to add UPIM to the framework as a new level between PIM and PSM. The purpose of UPIM will be modyfying the ontology stored in PIM by adding, or overwriting the entities.
+\smallskip
 
-Construct used in UPIM must be chosen wisely as we do not wont to create too complex ontologies that will be hard to maintain both by user and the evolution mechanism. Yet, it is prefered to give user more freedom than restricted, but more formal and stable model.
+We will expose $interpretation$ and new $overrides$ anotation of PIM in a following way:
 
-We allow all constructs from PIM as it shoud be definitelly possible to move everything from PIM to UPIM.
+\begin{definition}[overrides]
+    PIM anotation $overrides: i \mapsto j$, where $i$ is non-interpreted PIM entity, and $j$ is set of interpreted PIM entities denotes, that $j$-s are replaced by $i$. From the ontological point of view, $i$ then represents a subset of $j$. All entities from $j$ then must not be used in levels below.
+\end{definition}
+
+\begin{definition}[overrides]
+    PIM anotation $overrides: (i, a) \mapsto j$, where $i$ is interpreted PIM entity, $a$ is anotation other than $overrides$, and $j \in D(a)$ belongs to the domain of $a$, denotes locally overwritten anotations for given entity.
+\end{definition}
+
+$overrides$ anotation is used to introduce changes in interpreted entities that should not be changed by user to not interact with detection of inconsistency.
+
+Overriding can not be stacked and is not applicable to non-interpreted entities. Its purpose is to only fix entities that cannot be fixed directly. Overrides does not replace extensibility and vice versa. Extensibility adds more specific classes, whether overrides replace them.
+
+\begin{definition}[deleted]
+    PIM anotation $deleted: I \rightarrow \{\textrm{false}, \textrm{true}\}$, where $I$ is a set of interpreted classes, associations, and attributes, denotes that the interpreted entity is deleted and must not be used in the lower levels.
+\end{definition}
+
+As we say the PIM is a subset of CIM, simply deleting the entity would not be enough, as we would not know whether the entity is deleted or just not discovered. Deletion is purely cosmetic feature. It only forbids user to use it in the lower levels.
+
+\begin{notation}
+    Interpreted PIM entities represents subset of CIM and are not modified in order to change the ontology\footnote{Meaning that interpreted entities corresponds to CIM and are used to store the "latest snapshot" of CIM.}. Non-interpreted PIM entities then represents the user modifications. Each entity as-is adds new concept to the ontology and entity $I$ having non empty $overrides(I)$ overrides content of the given entities.
+\end{notation}
+
+The list below summarizes common operations:
+
+\begin{itemize}
+    \item Add attribute, association or class. - \textit{Create the corresponding PIM entitiy that has no interpretation. It may reference interpreted entities.}
+    \item Remove attribute, association or class. - \textit{It is not possible.}
+    \item Modify label, description, cardinality and other properties - \textit{Create the corresponding non-interpreted PIM entitiy and set $overrides$ to the entity that is being overwritten.}
+\end{itemize}
+
+The $overrides$ anotation formally returns a set. The reason for this is to allow advanced modifications on multiple entities at once. As an example consider a set of attributes representing a postal address (\textit{street}, \textit{number}, etc.). If the user wants to replace all those attributes with a concatenated string, then this mechanism can be used to preserve the semantics of which entity replaces which.
+
+By using other helper anotations that describe the relation better, it might be even possible for generators to correctly transform data between those different representations. Unfortunatelly, this is way beyond the scope of the thesis.
+
+\bigskip
+
+\begin{definition}[consistency]
+    %We say that \textbf{PIM is consistent with CIM}, if PIM is a subset of CIM.
+    We say that \textbf{PIM is consistent with CIM}, if a set of all interpreted PIM entities is a subset of CIM.
+\end{definition}
+
+From the descriptions above, the inconsistency may happen only if the CIM changes. It is easy to detect it as we can compare entities in PIM with those in CIM. To support the \nth{2} point from requirement \ref{requirement:ontologies-on-the-web}, we would need to create a set of atomic operations on the PIM level that make the PIM consistent again. These operations can be propagated up to schemas to apply the change from the ontology.
+
+\subsection{Evolution between interpreted and non-interpreted PIM entities}
+
+To show, that the proposed solution may work, we show that some operations can be mapped to update the non-interpreted PIM entities.
+
+\begin{table}[h]
+    \begin{tabularx}{\textwidth}{XX}
+    \thead{Operation on interpreted\\PIM entity $I$} & \thead{Mapped operation that will be performed\\ on non-iterpreted entity\\${N} = overrides(I)$} \\ \hline\hline
+    Create class, attribute or association  & -                                                                                     \\\hline
+    Remove class, attribute or association & Propose user to remove $N$ \\\hline
+    Update class, attribute or association anotations & Inform user, remove anotations from $N$ that are now equal to those in $I$.
+    \end{tabularx}
+\end{table}
+
+\begin{notation}[non-redundant non-interpreted PIM entities]
+We say that non-interpreted entity $I$ is \textbf{non-redundant} if by removing
+\end{notation}
+
+\section{PSM layer}
+
+\td{\begin{itemize}
+    \item General definition - most unique
+    \item analysis of basic constructs that may be used, OR and INCLUDE analysis
+    \item News compared to old version - reuse
+\end{itemize}}
+
+\section{Whole framework structure}
+
+\td{
+    \begin{itemize}
+        \item History of atomic operations is stored with the model because there is a requirement that we may have no access to everything + there is SOLID.
+        \item Everything belongs to schema.
+        \item Because of the first point in this list, the checks need to be performed differently, not during the evolution.
+        \item Operations are stored and can be re-recorded - this allow us to work separately on different parts of the model and then apply the changes by evolution.
+    \end{itemize}
+}
