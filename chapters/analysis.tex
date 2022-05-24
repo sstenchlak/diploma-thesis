@@ -1,11 +1,7 @@
 \chapter{Analysis and formal description}
 \label{chapters:analysis}
 
-\textit{This chapter analyzes several requirements for the software regarding framework layers and proposes modifications to the framework based on them.}
-
-
-
-
+\textit{This chapter analyzes several requirements for the software regarding framework layers and proposes modifications to them. As will be stated in the Implementation chapter \ref{chapters:implementation}, not everything is implemented yet due to its complexity, but it is crucial to properly design and plan everything in advance to minimize the technical debt.}
 
 \section{CIM and PIM layers}
 
@@ -63,14 +59,12 @@ For simplification, in the rest of the thesis we may ommit that CIM \textit{need
 
 
 
-\subsection{User modifications on the PIM level}
+\newpage\subsection{User modifications on the PIM level}
 
 \td{\begin{itemize}
-        \item Semantically connecting entities is beneficial for all entities.
-        \item You can overwrite only one entity as this entity hide itself (automatically).
-        \item Overwrite is not extend.
         \item The override must exists all the time as it is not possible to "use old iri".
         \item simpliest would be to introduce $overrides$ anotation that has anotation itself, $deleted$ anotation and that would be all. Then introduce other PIM entities that can semantically map data between different entities.
+        \item pros and cons
     \end{itemize}}
 
 \begin{requirement}
@@ -85,12 +79,12 @@ We can classify the reasons for modifying the ontology as follows:
 \begin{enumerate}
     \item The ontology is wrong and does not describe the domain correctly. - \textit{Then the most correct way would be to fix the ontology.}
     \item The ontology describes only a subset of the domain. Either only the core of the domain, or the ontology is complete, but only for one domain, whether in another, something may missing. - \textit{If the desired ontology is strictly a superset of the domain, we can exploit the features of linked data to add missing anotations in our own structured data. Then, we would use the new ontology.}
-    \item The ontology is not granular enough. Some entities can be represented in more details than currently are. - \textit{We would need to create a copy of affected classes or use advanced tool, if exists.}
+    \item The ontology is not granular enough. Some entities can be represented in more details than currently are, or vice versa. - \textit{We would need to create a copy of affected classes or use advanced tool, if exists.}
 \end{enumerate}
 
-Suppose the example with goods in the delivery company. Although the goods may be identified by EAN (barcode on items), the software team may prefer the other, iternal identifiers. There can be reasons for not including the identifier into the ontology, as it is too internal or specific for only a software team. That would correspond to the second category. The third category may represents the case, when we need to replace an address with a set of more specific attributes such as \textit{street}, \textit{number}, \textit{city}, \textit{country}, etc.
+Suppose the example with goods in the delivery company. Although the goods may be identified by EAN (barcode on items), the software team may prefer their own iternal identifiers. There can be reasons for not including the identifier into the ontology, as it is too specific for only a software team. That would correspond to the second category from the list above. The third category may represents the case, when we, for example, need to replace an address with a set of more specific attributes such as \textit{street}, \textit{number}, \textit{city}, \textit{country}, etc.
 
-Although in all the scenarios, the preffered way would be to create a new ontology, it can be too cumbersome and time consuming. Therefore, it should be possible to somehow allow modifying the PIM.
+Although in all the scenarios, the preffered way would be to create a new ontology, it can be too cumbersome and time consuming, especially if the change is too small. Therefore, it should be possible to somehow allow modifying the PIM.
 
 \smallskip
 
@@ -102,17 +96,17 @@ In context of other requirements and the framework used, this would also mean th
 
 \smallskip
 
-We will expose $interpretation$ and new $overrides$ anotation of PIM in a following way:
+As a solution, we expose $interpretation$ and new $overrides$ anotation of PIM in a following way:
 
-\begin{definition}[overrides]
-    PIM anotation $overrides: i \mapsto j$, where $i$ is non-interpreted PIM entity, and $j$ is set of interpreted PIM entities denotes, that $j$-s are replaced by $i$. From the ontological point of view, $i$ then represents a subset of $j$. All entities from $j$ then must not be used in levels below.
-\end{definition}
+% \begin{definition}[overrides]
+%     PIM anotation $overrides: i \mapsto j$, where $i$ is non-interpreted PIM entity, and $j$ is set of interpreted PIM entities denotes, that $j$-s are replaced by $i$. From the ontological point of view, $i$ then represents a subset of $j$. All entities from $j$ then must not be used in levels below.
+% \end{definition}
 
 \begin{definition}[overrides]
     PIM anotation $overrides: (i, a) \mapsto j$, where $i$ is interpreted PIM entity, $a$ is anotation other than $overrides$, and $j \in D(a)$ belongs to the domain of $a$, denotes locally overwritten anotations for given entity.
 \end{definition}
 
-$overrides$ anotation is used to introduce changes in interpreted entities that should not be changed by user to not interact with detection of inconsistency.
+$overrides$ anotation is used to introduce changes in interpreted entities as they should not be changed by user to not interact with detection of inconsistency.
 
 Overriding can not be stacked and is not applicable to non-interpreted entities. Its purpose is to only fix entities that cannot be fixed directly. Overrides does not replace extensibility and vice versa. Extensibility adds more specific classes, whether overrides replace them.
 
@@ -123,20 +117,20 @@ Overriding can not be stacked and is not applicable to non-interpreted entities.
 As we say the PIM is a subset of CIM, simply deleting the entity would not be enough, as we would not know whether the entity is deleted or just not discovered. Deletion is purely cosmetic feature. It only forbids user to use it in the lower levels.
 
 \begin{notation}
-    Interpreted PIM entities represents subset of CIM and are not modified in order to change the ontology\footnote{Meaning that interpreted entities corresponds to CIM and are used to store the "latest snapshot" of CIM.}. Non-interpreted PIM entities then represents the user modifications. Each entity as-is adds new concept to the ontology and entity $I$ having non empty $overrides(I)$ overrides content of the given entities.
+    Interpreted PIM entities with their anotations represents subset of CIM and are not modified directly in order to change the ontology\footnote{Meaning that interpreted entities corresponds to CIM and are used to store the "latest snapshot" of CIM.}. To modify interpreted entity, use overrides and delete anotations. Non-interpreted PIM entities then new concepts to the ontology.
 \end{notation}
 
-The list below summarizes common operations:
+The list below summarizes common operations regarding this problematics:
 
 \begin{itemize}
     \item Add attribute, association or class. - \textit{Create the corresponding PIM entitiy that has no interpretation. It may reference interpreted entities.}
-    \item Remove attribute, association or class. - \textit{It is not possible.}
-    \item Modify label, description, cardinality and other properties - \textit{Create the corresponding non-interpreted PIM entitiy and set $overrides$ to the entity that is being overwritten.}
+    \item Remove attribute, association or class. - \textit{Set $deleted$ to true if the entity is interpreted, remove otherwise.}
+    \item Modify label, description, cardinality and other properties - \textit{Modify the entity directly if is not interpreted. Otherwise, use overrides to set new values.}
 \end{itemize}
 
-The $overrides$ anotation formally returns a set. The reason for this is to allow advanced modifications on multiple entities at once. As an example consider a set of attributes representing a postal address (\textit{street}, \textit{number}, etc.). If the user wants to replace all those attributes with a concatenated string, then this mechanism can be used to preserve the semantics of which entity replaces which.
+\bigskip
 
-By using other helper anotations that describe the relation better, it might be even possible for generators to correctly transform data between those different representations. Unfortunatelly, this is way beyond the scope of the thesis.
+There are alternative solutions to the proposed one. The first one is to create a new level between PIM and PSM with user modifications. Let's say User PIM, or UPIM shortly. UPIM would contain non interpreted entities and mapping to interpreted ones to PIM level. Removing an entity would then correspond to the missing mapping and overriding for the mapping with anotations. Although this solution may be cleaner from several aspects, it would introduce two levels with almost same functionality. Setting or unsetting an interptetation for the resouce would mean to move it between the levels and using ontology without modification would still require empty identities on UPIM level that are mapped to those in PIM.
 
 \bigskip
 
@@ -147,24 +141,63 @@ By using other helper anotations that describe the relation better, it might be 
 
 From the descriptions above, the inconsistency may happen only if the CIM changes. It is easy to detect it as we can compare entities in PIM with those in CIM. To support the \nth{2} point from requirement \ref{requirement:ontologies-on-the-web}, we would need to create a set of atomic operations on the PIM level that make the PIM consistent again. These operations can be propagated up to schemas to apply the change from the ontology.
 
-\subsection{Evolution between interpreted and non-interpreted PIM entities}
+\newpage\subsection{Evolution of interpreted, non-interpreted PIM entities and PIM entities with overrides}
 
-To show, that the proposed solution may work, we show that some operations can be mapped to update the non-interpreted PIM entities.
+To demonstrate, that the proposed solution may work, we show that some operation can be easily propagated in PIM level.
 
-\begin{table}[h]
-    \begin{tabularx}{\textwidth}{XX}
-    \thead{Operation on interpreted\\PIM entity $I$} & \thead{Mapped operation that will be performed\\ on non-iterpreted entity\\${N} = overrides(I)$} \\ \hline\hline
-    Create class, attribute or association  & -                                                                                     \\\hline
-    Remove class, attribute or association & Propose user to remove $N$ \\\hline
-    Update class, attribute or association anotations & Inform user, remove anotations from $N$ that are now equal to those in $I$.
-    \end{tabularx}
-\end{table}
+\td{Dát sem kódy co se má provést na PIMu, pokud:\begin{itemize}
+    \item smaže se z CIMu entita.
+    \item změní se anotace entity v CIMu.
+    \item vznikne nová entita v CIMu, pak by se hodilo otestovat, jestli už neexistuje lokálně.
+\end{itemize}}
 
-\begin{notation}[non-redundant non-interpreted PIM entities]
-We say that non-interpreted entity $I$ is \textbf{non-redundant} if by removing
-\end{notation}
 
-\section{PSM layer}
+\newpage
+\subsection{Semantic mapping of related PIM entities}
+
+The third reason of modifying an ontology from the previous subsection may be analyzed from another point of view. As we decide to introduce a new entity/entities, that replace others, it may be beneficial to keep the information that the two groups are semantically connected. This would probably tends us to extend PIM with semantic mapping between entities which can be used for transformations purposes.
+
+As an example suppose the address again. Address as a whole can be mapped to its parts, such as street, number, etc and vice versa. The simpliest mapping would split the string by commas and new lines, and join them back, respectively.
+
+The mapping may not be used just for new PIM entities, as we have shown, but also between the entities in the ontology or between different ontologies.
+
+User then can decide, whether he/she wants to use the first, or the second group of entities and tranformation script would be still able to transform data between those two representations.
+
+\begin{figure}[h]\centering
+    \begin{tikzpicture}[
+        class/.style={rectangle, draw=orange!60, fill=orange!5, very thick, minimum size=5mm},
+        attribute/.style={rectangle, draw=blue!60, fill=blue!5, very thick, minimum size=5mm},
+        mapping/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+    ]
+        %Nodes
+        \node[class,align=center] (ci) {\textbf{PIM class}\\Contact information};
+
+        \node[attribute,align=center] (address) [below=.5cm of ci, xshift=2.5cm,anchor=north west] {\textbf{PIM attribute}\\address};
+
+        \node[attribute,align=center] (as) [below=.5cm of ci, xshift=-2.5cm,anchor=north east] {\textbf{PIM attribute}\\street};
+        \node[attribute,align=center] (an) [below=.5cm of as] {\textbf{PIM attribute}\\number};
+        \node[attribute,align=center] (ac) [below=.5cm of an] {\textbf{PIM attribute}\\city};
+
+        \node[mapping,align=center] (map) [below=3cm of ci, xshift=3cm, ,anchor=north] {\textbf{PIM mapping}\\\{address\}=\{street\}, \{number\}\textbackslash n\{city\}};
+        \node (psmDot) [below=.5cm of ac] {...};
+
+        %Lines
+        \draw[latex-] (ci) -- (address.west);
+        \draw[latex-] (ci) -- (as.east);
+        \draw[latex-] (ci) -- (an.east);
+        \draw[latex-] (ci) -- (ac.east);
+
+        \draw[-latex] (map.north) -- (address.south);
+        \draw[-latex] (map.west) -- (as.east);
+        \draw[-latex] (map.west) -- (an.east);
+        \draw[-latex] (map.west) -- (ac.east);
+    \end{tikzpicture}
+    \caption{Possible solution for the problem of semantic mapping between PIM entities. The example shows two groups of attributes that can be mapped on each other.}
+\end{figure}
+
+We will keep the question behind the mapping open as it is way too advanced for the current state of the project. Hovewer, introducing a new PIM construct to the framework, that maps the entities,  shoud not collide whith the rest of the framework and as it is in PIM level, it would be possible to extract this information from CIM.
+
+\newpage\section{PSM layer}
 
 \td{\begin{itemize}
     \item General definition - most unique
@@ -172,7 +205,10 @@ We say that non-interpreted entity $I$ is \textbf{non-redundant} if by removing
     \item News compared to old version - reuse
 \end{itemize}}
 
-\section{Whole framework structure}
+
+
+
+\newpage\section{Whole framework structure}
 
 \td{
     \begin{itemize}
