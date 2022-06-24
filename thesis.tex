@@ -95,6 +95,8 @@
 \usepackage{tabularx}
 \usepackage{makecell}
 
+\usepackage{caption}
+\usepackage{subcaption}
 \usepackage{xcolor}
 \newcommand{\td}[1]{\bigskip\par\noindent{\color{purple}#1}\par\bigskip}
 
@@ -102,6 +104,45 @@
 %\reversemarginpar
 %\geometry{marginparwidth=75pt}
 \usepackage[super]{nth}
+
+\usepackage{dsfont}
+\usepackage{xhfill}
+\usepackage[skins]{tcolorbox}
+\usepackage{varwidth}
+\makeatletter
+\newtcolorbox{mybox}[1][]{
+  enhanced,
+  colframe=black, colback=white,
+  sharp corners,
+  boxrule=0.6pt,
+  detach title,
+  coltitle=black,
+  colbacktitle=white,
+  fonttitle=\footnotesize,
+  enlarge left by=-8mm,
+  enlarge right by=-2mm,
+  width=\linewidth+10mm,
+  left=7mm,
+  right=2mm,
+  before upper=\setlength{\parindent}{17.62482pt}\everypar{{\setbox0\lastbox}\@minipagefalse\everypar{}},
+%  overlay={
+%    \node[rotate=90,
+%          fill=tcbcolbacktitle,
+%          font=\kvtcb@fonttitle,
+%          minimum width=1cm]
+%          at (frame.west)
+%      {\begin{varwidth}{\tcbtextheight}%
+%         \centering\tcbtitle\par
+%       \end{varwidth}};
+%  },
+#1}
+\makeatother
+
+\newenvironment{showcase}
+{\bigskip\begin{mybox}[title=Example]}
+{\end{mybox}\bigskip}
+
+
 
 %%% Basic information on the thesis
 
@@ -169,7 +210,7 @@ Abstract.
 \include{chapters/introduction}
 \include{chapters/related-work}
 \include{chapters/analysis}
-%\include{chapters/formal-background}
+\include{chapters/formal-background}
 \include{chapters/implementation}
 \include{chapters/future-work}
 \include{chapters/epilog}
