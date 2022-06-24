@@ -164,10 +164,16 @@ This has the following impacts:
 % https://github.com/mff-uk/dataspecer/issues/95
 
 \begin{requirement}
-    It shall be possible to easily handle inheritance of classes in the general schema. We shall be able to specify attributes and associations for more specific classes in the schema.
+    It shall be possible to easily add more specific classes to the universal schema that extends the base class in a way that data, that conforms the resulting schemas, may contain either the base class, or one of its specialization.
 \end{requirement}
 
-This requirement impacts the application in two ways.
+\begin{showcase}
+    We will start directly with an example. Suppose, that the warehouse also distributes foods besides the general goods. Food is of course type of good, but for storing purposes, it may have additional attributes, such as \textit{storing temperature}. When designing a schema that contains goods anywhere
+
+
+\end{showcase}
+
+This requirement impacts the application on two different levels. First, the universal schema model has to have constructs to represent the required problem and all generators shall understand them and generate a schema that corresponds to the intended result.
 
 Generaly speaking, inheritance is a complex concept, that can be expressed in more simple way. Unfortunatelly, to make this pleasible for a user, we need to represent some things % such as association to class
 
