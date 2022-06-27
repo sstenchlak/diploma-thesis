@@ -1,14 +1,12 @@
 \chapter{Requirement analysis}\label{chapters:analysis}
 
-This chapter summarizes expectations for the application in a form of requirements. The requirements are analyzed and the solution is proposed in the next chapter with focus on formal description of the framework.
+This chapter summarizes the expectations for the application in the form of requirements. The requirements are analyzed in this chapter, and in the following chapter, the solution is proposed with a focus on a formal description of the framework.
 
 \bigskip
 
-As a \textbf{stakeholder} we would consider data analyst, programmers, or at least people interested in the area of data-modelling, as the typical use-case of the application is (i) to design schemas for a large system of interconnected subystems or modules, or (ii) to design a recommendation for publishing data. Both these use-cases were described in the introduction of this chapter.
+As \textbf{stakeholders} we would consider data analysts, programmers, or at least people interested in the area of data-modeling, as the typical use-case of the application is (i) to design schemas for a large system of interconnected subsystems or modules, or (ii) to design a recommendation for publishing data. Both these use-cases were described in the introduction of this chapter.
 
-Because of the knowledge in the area of data modelling of all the stakeholders, we may have the UI of the application for those users more technical as the intent of the application and all the operations may be intuitive for them.
-
-Nevertheless, the basic functionality does not require the advanced knowledge in the fields mentioned above, therefore we propose an "expert mode". User will be asked whether he or she feels to be an expert in the field which would make available more advanced features of the application, while keeping the UI simple for those interested in basics of data modelling.
+Because of the stakeholders' knowledge in the area of data modeling, we may keep the UI of the application more technical as the intent of all operations may be intuitive for them. Nevertheless, the basic functionality does not require advanced knowledge in the mentioned fields, so we propose an "expert mode." User will be asked whether he or she feels to be an expert in the area, which would make available more advanced features of the application while keeping the UI simple for those interested in the basics of data modeling.
 
 \bigskip
 
@@ -20,37 +18,137 @@ The basic idea behind this requirement was already explained in the introduction
 
 \smallskip
 
-Our goal is to design a model capable of describing a data schema of common data formats. This schema will be used as a mapping from the ontology to the desired structure. The structure model must be robust enough to support different formats, as we want to use the same model for different formats.
+We aim to design a model that can describe most of the serialization data formats. This model will be used as a mapping from the ontology to the desired schema. The model must be robust enough to support different formats, as we want to use the same model for all of them.
 
-Data serialization is a process of storing object state in a format that can be read back later. There are many different models for serialization with the most known as:
+There are many different models for data serialization formats with the most known as:
 \begin{itemize}
-    \item \textbf{Hiearchical model} stores data in a tree-like structure. This was one of the most common model for serialization of data in past few decades as it was easy to understand and interpret. XML and JSON are examples of formats that use this model.
-    \item \textbf{Relational model} uses tables to store data. Each column is defined in advance and rows denotes the entities. Rows may point to rows in other tables to link data.
-    \item \textbf{Graph model} represents data in graph.
+    \item \textbf{Hiearchical model} stores data in a tree-like structure, having one root thing with properties that may recursively contain other things. It was one of the most common models for data serialization in the past few decades as it was easy to understand and interpret. XML and JSON are examples of formats that use this model.
+    \item \textbf{Relational model} uses a set of tables to store data. Each table represents a sequence of similar things, each on one row with columns as properties. Rows may point to rows in other tables to link data. The relational model is also famous for its simplicity in CSV and TSV files which can be easily parsed.
+    \item \textbf{Graph model} represents data in general graph structure with nodes and edges. RDF (Resource Description Framework) became a popular format using the graph model, where nodes usually represent things or literal values and edges connect them as properties.
 \end{itemize}
 
 % Tady vlastne rozeberu, ze ok, je to ve stromove strukture. No a ted jak by mela vypadat a proc zrovna takhle. Zamerim se na asociaci na tridu, ktera je na jedom radku. Nejaky obecny kocept, jak se treba vydat i do budoucna a jake jsou alternativey, napriklad ve srovnani s xcase, kde to bylo stromove.
 
-As our main intent is to support JSON and XML, we will use the first type of model to represent data in our general format. The translation from that format to individual schemas in hiearchical model would be implicit.
+As our primary intent is to support JSON and XML, we will use the first type of model to represent data in our general format. The translation from that format to individual schemas in the hiearchical model would be implicit.
 
-Supporting translation from the general schema in hiearchical model to other formats in relational and graph model should be possible in a limited way\footnote{That means we may not be able to reverse translation from specific schema to the general schema or it may not be possible to use the full power of the given specific schema. However, this is not important to us as our target is support for basic use-cases.}, which is sufficient and is in accordance with the requirement to have one general schema. The last type of model is not even necessary to generate as we use the ontology that is already in graph model, hence we can use directly the ontology as the schema to validate our data.
+Supporting translation from the general schema, which is in the hierarchical model, to the formats in the relational and graph models should be possible in a limited way\footnote{That means we may not be able to reverse translation from specific schema to the general schema or it may not be possible to use the full power of the given specific schema. However, this is not important to us as our target is support for basic use-cases.}, which is sufficient and follows the requirement to have one general schema.
+
+The graph model is not even necessary to generate as we use the ontology that is already in the graph model; hence we can use the ontology directly as the schema to validate our data.
+
+
+
+\section*{Analysis of the formats}
+
+We will analyze the standard formats to properly design a user interface for the schema modeling and the underlying general schema model that is capable of describing those formats.
+
+\textbf{JSON (JavaScript Object Notation)} is a simple format with two complex data types: objects and arrays. The objects represent data in key-value pairs, with values that can have any type, including other objects and arrays. Arrays then represent lists, and both arrays as objects may be in the root of the document tree. Semantically, objects represent things, with their values as properties.
+
+\textbf{XML (Extensible Markup Language)} is similar as both formats are hierarchical. XML tags represent either things or properties of things and can be nested similarly to the JSON format. In contrast to JSON, XML tags can have attributes.
+
+\begin{figure}[h!]\centering
+    \begin{subfigure}[b]{.5\textwidth}
+\begin{Verbatim}[commandchars=\\\{\}]
+\{
+  "id": 3758,
+  "title": "Chair",
+  "variants": [
+    \{
+      "title": "Black",
+      "price": 200,
+      "color": "black"
+    \},
+    \{
+      "title": "White",
+      "price": 200,
+      "color": "white"
+    \}
+  ]
+\}
+\end{Verbatim}
+        \caption{JSON}
+      \end{subfigure}%
+      \begin{subfigure}[b]{.5\textwidth}
+\begin{Verbatim}[commandchars=\\\{\}]
+<Good id="3758">
+  <title>Chair</title>
+  <Variant>
+    <title>Black</title>
+    <price>200</price>
+    <color>black</color>
+  </Variant>
+  <Variant>
+    <title>White</title>
+    <price>200</price>
+    <color>white</color>
+  </Variant>
+</Good>
+\end{Verbatim}
+
+\vfill
+
+        \caption{XML}
+      \end{subfigure}
+    \caption{Comparison of JSON and XML format both showing data about the same chair.}
+    \label{analysis/xml-json}
+\end{figure}
+
+As seen from \autoref{analysis/xml-json}, the XML format is more complex, as it supports tag attributes (see the \verb|id="3758"| attribute), and arrays can be written in two distinct ways. We can place items of the array directly in the parent container, as we can see with the \verb|<Variant>| tag, or we can wrap them into another container for clarity (for example, into \verb|<variants>| tag).
+
+Suppose we have chosen a structure very similar to JSON to be our general structure format. Because JSON is simpler than XML, we can convert JSON to XML, but not in the opposite way. To do it, we wound need additional XML-specific options such as:
+\begin{enumerate}
+  \item For every object property with a primitive value, there should be an option that the given property become an attribute of the parent tag. For example, the \verb|id| property of the chair may be either the attribute \verb|id="3758"| of the parent, or the full tag \verb|<id>3758</id>| inside the parent.
+  \item For every array property, there should be an option that the given list of tags will be wrapped.
+  \item XML, compared to JSON, recognizes an order of the elements in the document. This means that we may decide whether we want to enforce the specific order or not, which can also be fixed by another option in the parent.
+\end{enumerate}
+
+Comparing schema languages of JSON and XML once again, we can let a user use the JSON Schema-like structure with optional annotations for advanced XML features. This allows us to have a simple model which is easy to understand and use and can be annotated by other options for specific languages.
+
+\textbf{CSV (Comma-Separated Values)} or TSV stores data in tables. This, unfortunately, means that the structure is completely different than in the case of JSON and XML. Because having a separate schema would cause complications against other requirements, we will analyze whether it is possible to translate the hierarchical model to a relational.
+
+We are only interested in schema design for data interchange. Usually, that means we need to transfer a list of entities, not a general structure. A CSV table can represent a list of similar items, and complex properties can be stored in another table and linked to the main table. Hence, for ordinary use, it is possible to convert the hierarchical model to a relational model.
+
+\begin{figure}[h!]\centering
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \begin{tabular}{ll}\toprule
+      id   & title \\ \midrule
+      3758 & Chair \\ \bottomrule
+    \end{tabular}%
+  \end{subfigure}%
+  \begin{subfigure}{.5\textwidth}
+    \centering
+    \begin{tabular}{llll}\toprule
+      good-id & title & price & color \\ \midrule
+      3758 & Black & 200 & black \\
+      3758 & White & 200 & white \\ \bottomrule
+    \end{tabular}
+  \end{subfigure}
+  \caption{Two CSV tables representing the same data as in \autoref{analysis/xml-json}}
+  \label{analysis/csv}
+\end{figure}
+
+Because all the tables represent arrays, we can not formally convert the schema with an object in the root. We have suppressed this issue in the \autoref{analysis/csv} simply by wrapping the scheama root into the array. To support CSV documents containing tables that does not need to point to
+
+Although we have not formally proven that the conversion is always possible and all the model is robust enough to be used for every desired output, for most use-cases, it is sufficient.
+
+As a final step
+
+
+
+\bigskip
 
 To make the model applicable in practice, we need to support advanced format-specific constructs as well. Those constructs should not forbid us to use the model for other formats if possible and should be easily adaptable to new formats.
 
 Because of a vast majority of different schema languages, we cannot have too strict requirements on the model or the ontology, as some schemas may not require all the information or may be too simple. This pushes us to define these two concepts in the most elementary way.
 
-\begin{figure}\centering
-    \begin{tikzpicture}[
-        squarednode/.style={rectangle, draw=blue!60, fill=blue!5, very thick, minimum size=5mm},
-        schema/.style={rectangle, draw=yellow!60, fill=yellow!5, very thick, minimum size=5mm},
-        ontology/.style={rectangle, draw=purple!60, fill=purple!5, very thick, minimum size=5mm},
-    ]
+\begin{figure}[h!]\centering
+    \begin{tikzpicture}
         %Nodes
         \node[ontology] (ontology) at (0,0) {Ontology};
 
-        \node[squarednode] (schema1) at (-3.5,-1.5) {Universal schema 1};
+        \node[universal-schema] (schema1) at (-3.5,-1.5) {Universal schema 1};
         \node (psmDot) at (0,-1.5) {...};
-        \node[squarednode] (schemaN) at (3.5,-1.5) {Universal schema N};
+        \node[universal-schema] (schemaN) at (3.5,-1.5) {Universal schema N};
 
         \node[schema,align=center] (xml1) at (-5.5,-3) {XML\\schema};
         \node[schema,align=center] (json1) at (-3.5,-3) {JSON\\schema};
@@ -85,13 +183,11 @@ We have already stated that a hiearchical model is preferred for the internal un
 
 Previous tools \textit{xCase} and \textit{eXolutio} used full graph editor instead of simplier list to show and modify the universal schema. In the general case, users may benefit from the graph view if the schema refers to another schema multiple times, because this can be easily denoted in the graphical interface (see \autoref{analysis/difference-between-graphical-and-hiearchical}). On the other hand, schemas such as XML or CSV often depends on the order of its elements. This is easier to capture in the hiearchical model as all the items are in the list which has some order implicitly.
 
-\begin{figure}\centering
+\begin{figure}[h!]\centering
     \begin{subfigure}{.5\textwidth}
         \centering
         \begin{tikzpicture}[
             squarednode/.style={rectangle, draw=blue!60, fill=blue!5, very thick, minimum size=5mm},
-            schema/.style={rectangle, draw=yellow!60, fill=yellow!5, very thick, minimum size=5mm},
-            ontology/.style={rectangle, draw=purple!60, fill=purple!5, very thick, minimum size=5mm},
         ]
             %Nodes
             \node[ontology] (root) at (0,0) {root class};
@@ -146,6 +242,37 @@ Transformations have similar issue. There are multiple ways and technologies tha
 
 We will expose a way user can register his/her own generator that can create a set of files in a filesystem from the given schema. Generators may call others to modify its results or further expends it.
 % Pozadavek na OFN?
+
+\bigskip
+
+There is little difference between generated schemas, data transformations, documentation, and other output files. Based on the universal schema and provided configuration, if any, the application shall create a set of files that can either be published on the Web or stored in the file system. All the generated files will be denoted as \textbf{artifacts} and are created by the \textbf{generators}.
+
+We will distinguish two types of artifacts. (i) The \textbf{specification artifacts} does not depend on a concrete schema but uses the whole specification. Documentation may be an example of a specification artifact because it generates a single document concerning all the schemas. Of course, this still depends on user requirements, and scheme-specific documentation is possible. (ii) The \textbf{schema artifacts} are bound to concrete universal schema and are used to generate transformations or the schema documents.
+
+Artifacts may reference other artifacts. For example, documentation may be the front page of the whole structure, having links to other documents, schemas, images, etc.
+
+\begin{figure}[h!]\centering
+    \begin{tikzpicture}
+        \node[data-specification,align=center] (ds1) at (-3,0) {Data specification};
+
+        \node[universal-schema,align=center] (s11) at (-4.5,-1.5) {Universal\\schema};
+        \node[universal-schema,align=center] (s12) at (-1.5,-1.5) {Universal\\schema};
+
+        \node[artefact,align=center,cascaded] (sa1) at (-7.5,-1.5) {Specification\\artefacts};
+
+        \node[artefact,align=center,cascaded] (sa11) at (-4.5,-3) {Schema\\artefacts};
+        \node[artefact,align=center,cascaded] (sa12) at (-1.5,-3) {Schema\\artefacts};
+
+        \draw[-latex] (ds1) -- (s11);
+        \draw[-latex] (ds1) -- (s12);
+        \draw[-latex] (ds1) -- (sa1);
+
+        \draw[-latex] (s11) -- (sa11);
+        \draw[-latex] (s12) -- (sa12);
+    \end{tikzpicture}
+    \caption{Schemas, documentation, and other generated files are artefacts. Artefact are either schema-specific, that are generated for every schema, or specification-specific for a given data specification.}
+\end{figure}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -215,25 +342,20 @@ Similar to translational models, there are two approaches. Either create transfo
 
 We categorize two types of transformations - lifting and lowering.
 
-\begin{figure}\centering
-    \begin{tikzpicture}[
-        squarednode/.style={rectangle, draw=blue!60, fill=blue!5, very thick, minimum size=5mm,anchor=north},
-        schema/.style={rectangle, draw=yellow!60, fill=yellow!5, very thick, minimum size=5mm,anchor=north},
-        ontology/.style={rectangle, draw=purple!60, fill=purple!5, very thick, minimum size=5mm,anchor=north},
-        documents/.style={rectangle, draw=black!60, fill=black!5, very thick, minimum size=5mm,anchor=north},
-    ]
+\begin{figure}[h!]\centering
+    \begin{tikzpicture}
         %Nodes
         \node[ontology] (ontology) at (0,0) {Ontology};
 
-        \node[documents,align=center] (rdf) at (3,-1.5) {RDF documents};
+        \node[artefact,align=center] (rdf) at (3,-1.5) {RDF documents};
 
-        \node[squarednode,align=center] (schema1) at (-3,-1.5) {Universal\\schema};
+        \node[universal-schema,align=center] (schema1) at (-3,-1.5) {Universal\\schema};
 
         \node[schema,align=center] (xml1) at (-4,-3) {XML\\schema};
         \node[schema,align=center] (json1) at (-2,-3) {JSON\\schema};
 
-        \node[documents,align=center] (xml_document) at (1.5,-3.5) {XML\\document};
-        \node[documents,align=center] (json_document) at (4.5,-3.5) {JSON\\document};
+        \node[artefact,align=center] (xml_document) at (1.5,-3.5) {XML\\document};
+        \node[artefact,align=center] (json_document) at (4.5,-3.5) {JSON\\document};
 
 
         %Lines
@@ -242,8 +364,8 @@ We categorize two types of transformations - lifting and lowering.
         \draw[-latex] (ontology) -- (schema1);
         \draw[-latex] (schema1) -- (xml1);
         \draw[-latex] (schema1) -- (json1);
-        \draw[-latex] (xml_document) to[bend left] node[below, anchor=north] {conforms} (xml1);
-        \draw[-latex] (json_document) to[bend left] node[below, anchor=north] {conforms} (json1);
+        \draw[-latex] (xml_document) to[bend left] node[below] {conforms} (xml1);
+        \draw[-latex] (json_document) to[bend left] node[below] {conforms} (json1);
 
         \draw [->,line width=1pt, transform canvas={xshift=-1.25em}] (xml_document) -- (rdf);
         \draw [->,line width=1pt, transform canvas={xshift=-0.5em}] (rdf) -- (xml_document);
@@ -251,8 +373,8 @@ We categorize two types of transformations - lifting and lowering.
         \draw [->,line width=1pt, transform canvas={xshift=0.5em}] (json_document) -- (rdf);
         \draw [->,line width=1pt, transform canvas={xshift=1.25em}] (rdf) -- (json_document);
 
-        \node[rectangle,fill=white, anchor=north] at (3,-2.5) {lifting and lowering};
-        %        \node[matrix,anchor=north west,cells={nodes={anchor=west}},inner sep=1ex] at (5,0) {
+        \node[rectangle,fill=white] at (3,-2.35) {lifting and lowering};
+        %        \node[matri west,cells={nodes={anchor=west}},inner sep=1ex] at (5,0) {
             %  \draw[-latex,color=red,line width=1.5pt](0,0) -- ++ (0.6,0); & \node{Lifting to RDF};\\
 %  \draw[-latex,color=blue,line width=1.5pt](0,0) -- ++ (0.6,0); & \node{Lowering from RDF};\\
 %  \draw[-latex,color=purple](0,0) -- ++ (0.6,0); & \node{conforms given schema};\\
@@ -308,3 +430,42 @@ The later one is already included in the previous requirement TODO. Subclasses (
 \begin{showcase}
     % example with address
 \end{showcase}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% analyza jak se to bude psat na radek
+
+
+% todo solid pod
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{requirement}
+    It shall be possible to refer to other schemas to use them as building blocks for larger ones. Schema reference shall be treated as a reference on the resulting schemas as well and in the documentation.
+\end{requirement}
+
+Referencing other schemas is crucial for advanced use-cases where it is essential to split large schemas into smaller blocks that can be published and used separately.
+
+For most schema languages, it should be sufficient to refer to the other schema as is. For example, in JSON, we can use the \verb|$ref| keyboard with a path to the referenced schema. On the other hand, data transformations might not always be able to handle this approach. Hence having a full copy of the schema might be necessary. Referencing a schema would thus require access to all data of its specification.
+
+To avoid problems with tracking references and knowing which data specification needs to be loaded to generate artifacts properly, a user would need to set explicitly that a given \textbf{data specification is being reused}. Similar to the requirement with the ontology, we do not require that the reused data specification be always available.\footnote{See the requirement X for context.} The application shall work even if the data specification is not available at the moment if the presence of the specification is not required directly - such as for creating a new reference or generating artifacts that depend on it.
+
+\begin{figure}[h!]\centering
+    \begin{tikzpicture}
+        \node[data-specification,align=center] (ds1) at (-3,0) {Data specification 1};
+        \node[data-specification,align=center] (ds2) at (3,0) {Data specification 2};
+
+        \node[universal-schema,align=center] (s11) at (-4.5,-1.5) {Universal\\schema};
+        \node[universal-schema,align=center] (s12) at (-1.5,-1.5) {Universal\\schema};
+        \node[universal-schema,align=center] (s21) at (3,-1.5) {Universal\\schema};
+
+        \draw[-latex] (ds1) -- (s11);
+        \draw[-latex] (ds1) -- (s12);
+        \draw[-latex] (ds2) -- (s21);
+
+        \draw[-latex,densely dotted] (ds1) -- node[above] {reuses} (ds2);
+        \draw[-latex,densely dotted] (s12) -- node[above] {refers} (s21);
+    \end{tikzpicture}
+    \caption{Example of reusing of specifications. All schemas from reused specification become available to refer from local schemas. Only the root of the schema may be refered.}
+\end{figure}

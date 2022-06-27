@@ -68,10 +68,55 @@
 	\SetBgVshift{.5cm}
 \fi\fi
 
+\usepackage{listings}
+\lstset{
+  basicstyle=\ttfamily,
+  columns=fixed,
+  fontadjust=true,
+  basewidth=0.5em,
+  showstringspaces=false,
+}
+\definecolor{gray}{rgb}{0.4,0.4,0.4}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.6}
+\definecolor{cyan}{rgb}{0.0,0.6,0.6}
+\lstdefinelanguage{XML}
+{
+  morestring=[b]",
+  morestring=[s]{>}{<},
+  morecomment=[s]{<?}{?>},
+  stringstyle=\color{black},
+  identifierstyle=\color{darkblue},
+  keywordstyle=\color{cyan},
+  morekeywords={xmlns,version,type}% list your attributes here
+}
+\lstdefinelanguage{json}{
+    literate=
+     *{0}{{{\color{numb}0}}}{1}
+      {1}{{{\color{numb}1}}}{1}
+      {2}{{{\color{numb}2}}}{1}
+      {3}{{{\color{numb}3}}}{1}
+      {4}{{{\color{numb}4}}}{1}
+      {5}{{{\color{numb}5}}}{1}
+      {6}{{{\color{numb}6}}}{1}
+      {7}{{{\color{numb}7}}}{1}
+      {8}{{{\color{numb}8}}}{1}
+      {9}{{{\color{numb}9}}}{1}
+      {:}{{{\color{punct}{:}}}}{1}
+      {,}{{{\color{punct}{,}}}}{1}
+      {\{}{{{\color{delim}{\{}}}}{1}
+      {\}}{{{\color{delim}{\}}}}}{1}
+      {[}{{{\color{delim}{[}}}}{1}
+      {]}{{{\color{delim}{]}}}}{1},
+}
 \usepackage{tikz}
 \usetikzlibrary{positioning}
 \usetikzlibrary{shadows}
 \tikzset{%
+  data-specification/.style={rectangle, draw=blue!60, fill=blue!5, very thick, minimum size=5mm},
+  universal-schema/.style={rectangle, draw=blue!60, fill=blue!5, very thick, minimum size=5mm},
+  schema/.style={rectangle, draw=yellow!60, fill=yellow!5, very thick, minimum size=5mm},
+  ontology/.style={rectangle, draw=purple!60, fill=purple!5, very thick, minimum size=5mm},
+  artefact/.style={rectangle, draw=black!60, fill=black!5, very thick, minimum size=5mm},
   cascaded/.style = {%
     general shadow = {%
       shadow scale = 1,
