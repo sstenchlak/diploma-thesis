@@ -16,6 +16,40 @@ A user shall be able to easily derive a \textbf{general schema} structure from t
 
 The basic idea behind this requirement was already explained in the introduction chapter. From an ontology, which specifies the relations between things from a real world, it should be possible to easily select relations and things that will describe a schema. The schema then describes a structure of data that represents those things.
 
+\begin{figure}[h!]\centering
+  \begin{tikzpicture}
+      %Nodes
+      \node[ontology] (ontology) at (0,0) {Ontology};
+
+      \node[universal-schema] (schema1) at (-3.5,-1.5) {Universal schema 1};
+      \node (psmDot) at (0,-1.5) {...};
+      \node[universal-schema] (schemaN) at (3.5,-1.5) {Universal schema N};
+
+      \node[schema,align=center] (xml1) at (-5.5,-3) {XML\\schema};
+      \node[schema,align=center] (json1) at (-3.5,-3) {JSON\\schema};
+      \node[schema,align=center] (csv1) at (-1.5,-3) {CSV\\schema};
+
+      \node (psmDot) at (0,-3) {...};
+
+      \node[schema,align=center] (xmlN) at (1.5,-3) {XML\\schema};
+      \node[schema,align=center] (jsonN) at (3.5,-3) {JSON\\schema};
+      \node[schema,align=center] (csvN) at (5.5,-3) {CSV\\schema};
+
+      %Lines
+      \draw[-latex] (ontology) -- (schema1);
+      \draw[-latex] (ontology) -- (schemaN);
+
+      \draw[-latex] (schema1) -- (xml1);
+      \draw[-latex] (schema1) -- (json1);
+      \draw[-latex] (schema1) -- (csv1);
+
+      \draw[-latex] (schemaN) -- (xmlN);
+      \draw[-latex] (schemaN) -- (jsonN);
+      \draw[-latex] (schemaN) -- (csvN);
+  \end{tikzpicture}
+  \caption{Diagram showing the core workflow behind the data modelling from a ontology. User can create universal schemas (blue rectangles) from the ontology from which are created traditional data schemas, such as XSD, CSV Schema or JSON schema.}
+\end{figure}
+
 \smallskip
 
 We aim to design a model that can describe most of the serialization data formats. This model will be used as a mapping from the ontology to the desired schema. The model must be robust enough to support different formats, as we want to use the same model for all of them.
@@ -38,6 +72,8 @@ The graph model is not even necessary to generate as we use the ontology that is
 
 
 \section*{Analysis of the formats}
+
+% todo pletu schemata a struktury
 
 We will analyze the standard formats to properly design a user interface for the schema modeling and the underlying general schema model that is capable of describing those formats.
 
@@ -105,7 +141,7 @@ Comparing schema languages of JSON and XML once again, we can let a user use the
 
 \textbf{CSV (Comma-Separated Values)} or TSV stores data in tables. This, unfortunately, means that the structure is completely different than in the case of JSON and XML. Because having a separate schema would cause complications against other requirements, we will analyze whether it is possible to translate the hierarchical model to a relational.
 
-We are only interested in schema design for data interchange. Usually, that means we need to transfer a list of entities, not a general structure. A CSV table can represent a list of similar items, and complex properties can be stored in another table and linked to the main table. Hence, for ordinary use, it is possible to convert the hierarchical model to a relational model.
+We are only interested in schema design for data interchange. Usually, that means we need to transfer a list of entities, not a general structure. A CSV table can represent a list of similar items, and complex properties can be stored in another table and linked to the main table. Hence, for ordinary use, it is possible to convert the hierarchical model to a relational model. % todo rozvest
 
 \begin{figure}[h!]\centering
   \begin{subfigure}{.5\textwidth}
@@ -123,102 +159,86 @@ We are only interested in schema design for data interchange. Usually, that mean
       3758 & White & 200 & white \\ \bottomrule
     \end{tabular}
   \end{subfigure}
-  \caption{Two CSV tables representing the same data as in \autoref{analysis/xml-json}}
+  \caption{Document of two CSV tables representing the same data as in the \autoref{analysis/xml-json}. Left table contains the root.}
   \label{analysis/csv}
 \end{figure}
 
-Because all the tables represent arrays, we can not formally convert the schema with an object in the root. We have suppressed this issue in the \autoref{analysis/csv} simply by wrapping the scheama root into the array. To support CSV documents containing tables that does not need to point to
+Because all the tables represent arrays, we can not formally convert the schema with an object in the root. We have suppressed this in the \autoref{analysis/csv} simply by wrapping the schema root into the array. To support CSV documents containing unrelated data, specifically CSV tables, that do not reference each other, we may need to have a schema with multiple roots. Multiple root schemas may be helpful in some advanced data-modeling problems. We keep the question behind multiple root schemas open as there are not enough use-cases right now.
 
-Although we have not formally proven that the conversion is always possible and all the model is robust enough to be used for every desired output, for most use-cases, it is sufficient.
+Although we have not formally proven that (i) the conversion above is always possible and (ii) the model is robust enough to for every desired output, for most use-cases, it is sufficient.
 
-As a final step
+\section*{General schema format}
 
+So far, we have shown that JSON Schema-like model with format-specific annotations is sufficient for describing a structure of JSON, XML and CSV documents. In general, we cannot have too strict requirements on the model as some other formats may not require all the information or may be too simple. This pushes us to define the schema in the most elementary way.
 
+We will allow only classes to be a root of the schemas and instead add an option that the root can be an array. This simplifies the work with the model as we may always expect a class.
+
+Classes then may have an ordered list of properties. This is different from JSON, where properties have no order. A property may be an attribute or association. An attribute represents a property with a primitive type, such as a string or a number. Association is a property to another class. Because we have forbidden the use of arrays in the root, we omit them entirely as an array of primitive values and array of classes can be achieved by the cardinality of attributes and associations respectively.
+
+\smallskip
+
+We can use two different approaches to visualize the model's hierarchical structure. Previous tools \textit{xCase} and \textit{eXolutio} used graph visualization, where nodes were used to show classes and edges to show associations. An alternative approach is to use a textual "bullet list" representation, as the model is a tree.
+
+The latter approach is easier to understand as the final product is a schema for documents having a similar "structure" as the representation. It is easier to implement, more compact in size on the screen, and easier to work with on smaller devices. Also, the order of the properties is more intuitive, and we can use more styling options for advanced constructs.\footnote{So far, we have described only a basic schema structure.} However, in the general case, users may benefit from the graph view if the schema refers to another schema\footnote{See the \autoref{analysis/requirement/schema-reference}.} multiple times because this can be easily denoted in the graphical interface (see \autoref{analysis/difference-between-graphical-and-hiearchical}).
+
+Because the main use-case is to generate simple or moderately advanced schemas, the textual approach is preferred. Nevertheless, the graph view might be implemented in the future.
+
+\begin{figure}[h!]\centering
+  \begin{subfigure}{.5\textwidth}
+      \centering
+      \begin{tikzpicture}[
+          squarednode/.style={rectangle, draw=blue!60, fill=blue!5, very thick, minimum size=5mm},
+      ]
+          %Nodes
+          \node[ontology] (root) at (0,0) {root class};
+
+          \node[squarednode] (a1) at (-1.5,-1.5) {association 1};
+          \node[squarednode] (a2) at (1.5,-1.5) {association 2};
+
+          \node[ontology] (ref) at (0,-3) {referenced class};
+
+          %Lines
+          \draw[-latex] (root) -- (a1);
+          \draw[-latex] (root) -- (a2);
+          \draw[-latex] (a1) -- (ref);
+          \draw[-latex] (a2) -- (ref);
+      \end{tikzpicture}
+      \caption{Graphical representation}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{purple!60}root class}
+  {\color{blue!60}- association 1} to
+      {\color{purple!60}referenced class}
+  {\color{blue!60}- association 2} to
+      {\color{purple!60}referenced class}
+\end{Verbatim}
+      \caption{Hiearchical representation}
+    \end{subfigure}
+
+  \caption{Figure showing a schema referencing the same subschema twice, essencially creating a cycle in unoriented graph. Two different representations are shown - graph and hiearchical.  The former one shows that both associations refer the same subschema, which later representation can not show.}
+  \label{analysis/difference-between-graphical-and-hiearchical}
+\end{figure}
+
+As shown in the \autoref{analysis/difference-between-graphical-and-hiearchical}, the schema may be represented as a "bullet list" where each class, association, or attribute is on a separate line. Classes have a list of properties under the class name. Associations point directly to other classes, and, therefore, it can be merged with the class name on a single line. Other attributes, including format-specific, will be on the line next to the item name.
+
+\begin{figure}[h!]\centering
+  \begin{Verbatim}[commandchars=\\\{\}]
+{\color{purple!60}class \textbf{Good}}
+  {\color{blue!60}- attribute \textbf{id}}[1..1]: string
+  {\color{blue!60}- attribute \textbf{title}}[1..1]: string
+  {\color{purple!60}- association \textbf{variants}}[0..*]: \textbf{Variant}
+    {\color{blue!60}- attribute \textbf{title}}[1..1]: string
+    {\color{blue!60}- attribute \textbf{price}}[1..1]: number
+    {\color{blue!60}- attribute \textbf{color}}[1..1]: string
+\end{Verbatim}
+  \caption{Proposition for how the general schema may be represented for the example that validates data with the chair.}
+\end{figure}
 
 \bigskip
 
-To make the model applicable in practice, we need to support advanced format-specific constructs as well. Those constructs should not forbid us to use the model for other formats if possible and should be easily adaptable to new formats.
-
-Because of a vast majority of different schema languages, we cannot have too strict requirements on the model or the ontology, as some schemas may not require all the information or may be too simple. This pushes us to define these two concepts in the most elementary way.
-
-\begin{figure}[h!]\centering
-    \begin{tikzpicture}
-        %Nodes
-        \node[ontology] (ontology) at (0,0) {Ontology};
-
-        \node[universal-schema] (schema1) at (-3.5,-1.5) {Universal schema 1};
-        \node (psmDot) at (0,-1.5) {...};
-        \node[universal-schema] (schemaN) at (3.5,-1.5) {Universal schema N};
-
-        \node[schema,align=center] (xml1) at (-5.5,-3) {XML\\schema};
-        \node[schema,align=center] (json1) at (-3.5,-3) {JSON\\schema};
-        \node[schema,align=center] (csv1) at (-1.5,-3) {CSV\\schema};
-
-        \node (psmDot) at (0,-3) {...};
-
-        \node[schema,align=center] (xmlN) at (1.5,-3) {XML\\schema};
-        \node[schema,align=center] (jsonN) at (3.5,-3) {JSON\\schema};
-        \node[schema,align=center] (csvN) at (5.5,-3) {CSV\\schema};
-
-        %Lines
-        \draw[-latex] (ontology) -- (schema1);
-        \draw[-latex] (ontology) -- (schemaN);
-
-        \draw[-latex] (schema1) -- (xml1);
-        \draw[-latex] (schema1) -- (json1);
-        \draw[-latex] (schema1) -- (csv1);
-
-        \draw[-latex] (schemaN) -- (xmlN);
-        \draw[-latex] (schemaN) -- (jsonN);
-        \draw[-latex] (schemaN) -- (csvN);
-    \end{tikzpicture}
-    \caption{Diagram showing the core workflow behind the data modelling from a ontology. User can create universal schemas (blue rectangles) from the ontology from which are created traditional data schemas, such as XSD, CSV Schema or JSON schema.}
-\end{figure}
-
 %Tady pozadavek na tu strukturu, tedy ze bude stromova, do radku chceme sjednocovat asociace a celkove to ma byt barevne a ikonkove odlisene.
 
-
-
-We have already stated that a hiearchical model is preferred for the internal universal schema as it can be used to create also CSVs, that are in a relational model. Although we havent specified how the structure should look like, there might be references, as the schema may point to other schemas. This
-
-Previous tools \textit{xCase} and \textit{eXolutio} used full graph editor instead of simplier list to show and modify the universal schema. In the general case, users may benefit from the graph view if the schema refers to another schema multiple times, because this can be easily denoted in the graphical interface (see \autoref{analysis/difference-between-graphical-and-hiearchical}). On the other hand, schemas such as XML or CSV often depends on the order of its elements. This is easier to capture in the hiearchical model as all the items are in the list which has some order implicitly.
-
-\begin{figure}[h!]\centering
-    \begin{subfigure}{.5\textwidth}
-        \centering
-        \begin{tikzpicture}[
-            squarednode/.style={rectangle, draw=blue!60, fill=blue!5, very thick, minimum size=5mm},
-        ]
-            %Nodes
-            \node[ontology] (root) at (0,0) {root class};
-
-            \node[squarednode] (a1) at (-1.5,-1.5) {association 1};
-            \node[squarednode] (a2) at (1.5,-1.5) {association 2};
-
-            \node[ontology] (ref) at (0,-3) {referenced class};
-
-            %Lines
-            \draw[-latex] (root) -- (a1);
-            \draw[-latex] (root) -- (a2);
-            \draw[-latex] (a1) -- (ref);
-            \draw[-latex] (a2) -- (ref);
-        \end{tikzpicture}
-        \caption{Graphical representation}
-      \end{subfigure}%
-      \begin{subfigure}{.5\textwidth}
-\begin{Verbatim}[commandchars=\\\{\}]
-{\color{purple!60}root class}
-  {\color{blue!60}- association 1}
-    {\color{purple!60}- referenced class}
-  {\color{blue!60}- association 2}
-    {\color{purple!60}- referenced class}
-\end{Verbatim}
-        \caption{Hiearchical representation}
-      \end{subfigure}
-
-    \caption{Figure showing a schema referencing the same subschema twice, essencially creating a cycle in unoriented graph. Two different representations are shown - graph and hiearchical.  The former one shows that both associations refer the same subschema, which later representation can not show.}
-    \label{analysis/difference-between-graphical-and-hiearchical}
-\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -229,53 +249,6 @@ Previous tools \textit{xCase} and \textit{eXolutio} used full graph editor inste
 As the main goal of the application should be to generate schemas, we also need to create documentations to them, diagrams and examples. This requirement has already been described in the introduction chapter. % generovani obrazku ontologie: popsat proc to chceme a jak to ma fungovat, to uz by melo byt v introduction
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{requirement}
-    List of supported schemas, transformations, documents, and other files generated from the universal schema shall be easily expandable so that the application can be adapted to different use-cases.
-\end{requirement}
-
-Generation of schemas is robust enough to be used in every common scenario, therefore we do not expect that user may want to intervene the process besides the standart configuration, such as indentation, using of comments, or a default language.
-
-On the other hand, documentation is very vague concept that neither we have properly specified. Sometimes a simple Markdown documentation may be sufficient, while elsewhere user may require a strict format of multiple documents in HTML.
-
-Transformations have similar issue. There are multiple ways and technologies that transform data between different schemas. We have already mentioned transformation throught RDF format, either by RML, or custom scripts, such as XSLT for XML. For more demanding user, it is even possible to create transformation scripts between pairs of technology, such as between XML and CSV.
-
-We will expose a way user can register his/her own generator that can create a set of files in a filesystem from the given schema. Generators may call others to modify its results or further expends it.
-% Pozadavek na OFN?
-
-\bigskip
-
-There is little difference between generated schemas, data transformations, documentation, and other output files. Based on the universal schema and provided configuration, if any, the application shall create a set of files that can either be published on the Web or stored in the file system. All the generated files will be denoted as \textbf{artifacts} and are created by the \textbf{generators}.
-
-We will distinguish two types of artifacts. (i) The \textbf{specification artifacts} does not depend on a concrete schema but uses the whole specification. Documentation may be an example of a specification artifact because it generates a single document concerning all the schemas. Of course, this still depends on user requirements, and scheme-specific documentation is possible. (ii) The \textbf{schema artifacts} are bound to concrete universal schema and are used to generate transformations or the schema documents.
-
-Artifacts may reference other artifacts. For example, documentation may be the front page of the whole structure, having links to other documents, schemas, images, etc.
-
-\begin{figure}[h!]\centering
-    \begin{tikzpicture}
-        \node[data-specification,align=center] (ds1) at (-3,0) {Data specification};
-
-        \node[universal-schema,align=center] (s11) at (-4.5,-1.5) {Universal\\schema};
-        \node[universal-schema,align=center] (s12) at (-1.5,-1.5) {Universal\\schema};
-
-        \node[artefact,align=center,cascaded] (sa1) at (-7.5,-1.5) {Specification\\artefacts};
-
-        \node[artefact,align=center,cascaded] (sa11) at (-4.5,-3) {Schema\\artefacts};
-        \node[artefact,align=center,cascaded] (sa12) at (-1.5,-3) {Schema\\artefacts};
-
-        \draw[-latex] (ds1) -- (s11);
-        \draw[-latex] (ds1) -- (s12);
-        \draw[-latex] (ds1) -- (sa1);
-
-        \draw[-latex] (s11) -- (sa11);
-        \draw[-latex] (s12) -- (sa12);
-    \end{tikzpicture}
-    \caption{Schemas, documentation, and other generated files are artefacts. Artefact are either schema-specific, that are generated for every schema, or specification-specific for a given data specification.}
-\end{figure}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \begin{requirement}
     \label{requirement:ontologies-on-the-web}
     As many ontologies are located on the web in formats like OWL (Web Ontology Language), RDFs (RDF Schema), UFO (Unified Foundational Ontology), etc., the application shall support reading them.
@@ -383,6 +356,55 @@ We categorize two types of transformations - lifting and lowering.
     \caption{Example of data transformation. An XML document that conforms to XML schema may be lifted to RDF representation, which conforms to the ontology. The RDF can then be lowered to another format.}
 \end{figure}
 
+
+\begin{requirement}
+  List of supported schemas, transformations, documents, and other files generated from the universal schema shall be easily expandable so that the application can be adapted to different use-cases.
+\end{requirement}
+
+Generation of schemas is robust enough to be used in every common scenario, therefore we do not expect that user may want to intervene the process besides the standart configuration, such as indentation, using of comments, or a default language.
+
+On the other hand, documentation is very vague concept that neither we have properly specified. Sometimes a simple Markdown documentation may be sufficient, while elsewhere user may require a strict format of multiple documents in HTML.
+
+Transformations have similar issue. There are multiple ways and technologies that transform data between different schemas. We have already mentioned transformation throught RDF format, either by RML, or custom scripts, such as XSLT for XML. For more demanding user, it is even possible to create transformation scripts between pairs of technology, such as between XML and CSV.
+
+We will expose a way user can register his/her own generator that can create a set of files in a filesystem from the given schema. Generators may call others to modify its results or further expends it.
+% Pozadavek na OFN?
+
+\section*{Artifacts}
+
+There is little difference between generated schemas, data transformations, documentation, and other output files. Based on the universal schema and provided configuration, if any, the application shall create a set of files that can either be published on the Web or stored in the file system. All the generated files will be denoted as \textbf{artifacts} and are created by the \textbf{generators}.
+
+We will distinguish two types of artifacts. (i) The \textbf{specification artifacts} does not depend on a concrete schema but uses the whole specification. Documentation may be an example of a specification artifact because it generates a single document concerning all the schemas. Of course, this still depends on user requirements, and scheme-specific documentation is possible. (ii) The \textbf{schema artifacts} are bound to concrete universal schema and are used to generate transformations or the schema documents.
+
+Artifacts may reference other artifacts. For example, documentation may be the front page of the whole structure, having links to other documents, schemas, images, etc.
+
+\begin{figure}[h!]\centering
+  \begin{tikzpicture}
+      \node[data-specification,align=center] (ds1) at (-3,0) {Data specification};
+
+      \node[universal-schema,align=center] (s11) at (-4.5,-1.5) {Universal\\schema};
+      \node[universal-schema,align=center] (s12) at (-1.5,-1.5) {Universal\\schema};
+
+      \node[artefact,align=center,cascaded] (sa1) at (-7.5,-1.5) {Specification\\artefacts};
+
+      \node[artefact,align=center,cascaded] (sa11) at (-4.5,-3) {Schema\\artefacts};
+      \node[artefact,align=center,cascaded] (sa12) at (-1.5,-3) {Schema\\artefacts};
+
+      \draw[-latex] (ds1) -- (s11);
+      \draw[-latex] (ds1) -- (s12);
+      \draw[-latex] (ds1) -- (sa1);
+
+      \draw[-latex] (s11) -- (sa11);
+      \draw[-latex] (s12) -- (sa12);
+  \end{tikzpicture}
+  \caption{Schemas, documentation, and other generated files are artefacts. Artefact are either schema-specific, that are generated for every schema, or specification-specific for a given data specification.}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
 % Necaskeho pozadavek na OR a hierarchii
 % https://github.com/mff-uk/dataspecer/issues/95
 
@@ -443,6 +465,7 @@ The later one is already included in the previous requirement TODO. Subclasses (
 
 \begin{requirement}
     It shall be possible to refer to other schemas to use them as building blocks for larger ones. Schema reference shall be treated as a reference on the resulting schemas as well and in the documentation.
+    \label{analysis/requirement/schema-reference}
 \end{requirement}
 
 Referencing other schemas is crucial for advanced use-cases where it is essential to split large schemas into smaller blocks that can be published and used separately.
