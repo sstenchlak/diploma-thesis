@@ -283,68 +283,94 @@ It may seem that designing the ontology directly in the tool is beneficial becau
     \item It is better to split a complex problem into smaller ones.
 \end{enumerate}
 
-On the other hand, not having direct access to the ontology, as it will be on the web, will have the following impacts:
+On the other hand, not having direct access to the ontology, as it will be on the web, has the following impacts:
 
 \begin{enumerate}
     \item The ontology may \textbf{not always be available}. Unavailability should not forbid us from generating the schemas and making minor changes to them if those changes are not directly related to exploring the ontology.
     \item The concepts in the ontology may \textbf{point to another ontology} according to Linked Open Data principles.
 \end{enumerate}
 
-For the reasons above, the preferred workflow is designing the ontology separately in the external tool, publishing it on the web, and then modeling the schema in the application. There is the \autoref{requirement:pim-editing} later in the text specifying that a user shall modify the ontology directly in the application. This is not inconsistent with the statements as it deals with minor changes instead of defining a complete ontology.
+For the reasons above, the preferred workflow is designing the ontology separately in the external tool, publishing it on the web, and then modeling the schema in the application. There is the \autoref{requirement:pim-editing} later in the text specifying that a user can do modifications in the application. This is not inconsistent with the statements as it deals with minor changes instead of defining a complete ontology.
 
-The term ontology has already been defined in the introductory chapter, and we will formally define its specific requirements in the next chapter. It shall be easy to add support for other types of ontologies, and all of them shall be linkable.
+The term ontology has already been defined in the introductory chapter, and we will formally define its specific requirements in the next chapter.
+
+It shall be easy to implement support for other types of ontologies, and all of them shall be linkable according to LOD principles.
 
 \section*{Format of the ontology}
 
-In the requirement above, several formats were proposed for the ontology. This section will analyze the minimal requirements for any ontology format and how we will treat additional information in them. Because the core goal is to design schemas, we will start with a proposed model from the \autoref{requirement:general-schema}. The schema consists of classes and their properties. A class corresponds to a thing from real life. An attribute is a literal that belongs to the given class only. An association, on the other hand, is a link between two (not necessarily different) classes. From this point of view, the association is an independent entity.
+In the requirement above, several different formats were proposed for the ontology. This section will analyze the minimal requirements for any ontology format and how we will treat additional information in them. Because the core goal is to design schemas, we will start with a proposed model from the \autoref{requirement:general-schema}. The schema consists of classes and their properties. A class corresponds to a thing from real life. An attribute is a literal that belongs to the given class only. An association, on the other hand, is a link between two (not necessarily different) classes. From this point of view, the association is an independent entity.
 
-Associations are usually oriented, but some ontologies may specify a title and a description for a reverse direction. For example, RDFS is simple, where association (or property in RDFS terminology) is an entity of type {\tt rdf:Property} having domain and range classes and a title and description. Therefore, it only describes the forward direction. We can, of course, create a property in the other direction as well, but there would not be a connection between a forward and a reverse direction. Hence we would not know those are semantically the same properties. UFO (Unified Foundational Ontology), as an example of more complex ontology, introduces relators. Relators are relationships between two or more things connected by mediation. The mediation can be described, giving us a way to describe both directions differently.
+Associations are usually oriented, and some ontologies may specify a title and a description for a reverse direction. For example, in RDFS, the association (or property in RDFS terminology) is an entity of type {\tt rdf:Property} having domain and range classes and a title and description. Therefore, it only describes the forward direction. We can, of course, create a property in the other direction as well, but there would not be a connection between a forward and a reverse direction. Hence we would not know those are semantically the same properties. UFO (Unified Foundational Ontology), as an example of more complex ontology, introduces relators. Relators are relationships between two or more things connected by mediation. The mediation can be described, giving us a way to describe both directions differently.
 
-Therefore, following the patter of UFO, associations are relations between two or more classes, where both the association and the "pointers" (mediations in the UFO context) of the association can be described. For simple ontologies such as RDFS, only the association itself is described as there is no additional info, nevertheless complex ontologies may exploit
+Although the latter approach is more complex, using simple concepts for associations may be disadvantageous because of the abovementioned reason. Therefore, we will follow the pattern of UFO and any other simpler ontologies, such as RDFS, will not have the reverse direction described.
+
+\smallskip
+
+An ontology in the context of this requirement is a set of classes that have attributes. Associations then connect two classes together. The connected classes may not be from the same ontology.
+
+As some formats specify ontology in a more complex way, the application may use the additional information to better design the schema. This statement is better defined in the next chapter.
+
+\begin{figure}[h!]\centering
+  \centering
+  \begin{tikzpicture}[
+    class/.style={shape=rectangle, draw=orange!60, fill=orange!5, very thick, minimum size=5mm,align=center},
+    attribute/.style={align=center},
+  ]
+    \node[class] (good) at (0,0) {<<class>>\\\textbf{Good}};
+    \node[class] (variant) at (9,0) {<<class>>\\\textbf{Good variant}};
+
+    \node[attribute] (a11) at (-.75,1.5) {<<attr>>\\id};
+    \node[attribute] (a12) at (.75,1.5) {<<attr>>\\title};
+
+    \node[attribute] (a21) at (7.5,1.5) {<<attr>>\\title};
+    \node[attribute] (a22) at (9,1.5) {<<attr>>\\price};
+    \node[attribute] (a23) at (10.5,1.5) {<<attr>>\\color};
+
+    \draw (good) -- (a11);
+    \draw (good) -- (a12);
+
+    \draw (variant) -- (a21);
+    \draw (variant) -- (a22);
+    \draw (variant) -- (a23);
+
+    \draw (good) -- node[pos=0.225,below]{$\blacktriangleleft$ is variant of} node[above]{<<association>>} node[pos=0.775,below]{has variant $\blacktriangleright$} (variant);
+  \end{tikzpicture}
+
+  \caption{Schematic diagram of an ontology which could be used for the schema from the \autoref{analysis/general-schema-representation}.}
+\end{figure}
 
 % todo popis, jak by mela ontologie vypadat na zaklade toho schematu. Jakou by mela mit strukturu a co musi obsahovat
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{requirement}
-    \label{requirement:pim-editing}
-    The approach from previous tools of creating the ontology directly in the application is not required, but there should be support for \textit{some} modifications.
-\end{requirement}
-
-As stated in the \autoref{requirement:ontologies-on-the-web}, the preffered way is to create a complete ontology externally and keep it up-to-date and valid against requirements of all involved parties. But it is hard to always follow all the rules, especially when doing experiments, or small errors need to be fixed.
-
-Allowing such changes must be made carefully, as it may interfere with some mechanisms.
-\begin{enumerate}
-    \item If the ontology changes, the local overwrites may need to be changed as well, otherwise may become invalid. Overwritten data may get removed or moved elsewhere. Evolution mechanism hence must work with the overwrites as well.
-    \item Moreover, the overwriten data may change, which can lead to two scenarios. Either user wishes to keep the local version as if nothing happend, or he/she may want to discard the local version as the new version fixes the issue that caused the modification in the first place.
-\end{enumerate}
-
-This issue is too complex and due to the nature of the requirement, it must be solved directly in the application. We keep the question behind this problem partially open and focus only to simple modifications, as this will cover most use-cases.\footnote{From our specific use-case on the Semantic government vocabulary (SGOV), most of the changes consist of adding a missing cardinality or fixing labels and descriptions.}
+% mozna ze to je jak uml
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{requirement}
-    The application shall support generating transformations between different data formats conforming supported schemas and RDF representation.
+    The application shall support generating transformations between different data conforming to supported schemas and RDF representation.
 \end{requirement}
 
-Data transformation were also introduced at the beginning of this thesis. Generally speaking, \textbf{data transformations} are used to convert data (not schemas, but data that conforms given schemas) from one schema to another without changing its meaning.
+Data transformation was also introduced at the beginning of this thesis. Generally speaking, \textbf{data transformations} are used to convert data (not schemas, but data that conforms to given schemas) from one schema to another without changing its meaning.
 
-One example may be to convert CSV to JSON array of object, where each object represent a row in the CSV. There are plenty of online tools to do it, but they do not understand the context of the data. On the other hand, because both schemas were designed in the tool, we may exploit the known mapping to the original ontology and properly map columns from CSV to the fields in JSON object.
+One example may be to convert CSV to a JSON array of objects, where each object represents a row in the CSV. There are plenty of online tools to do it, but they do not understand the context of the data. Because both schemas were designed in the tool, we may exploit the knowledge of the mapping to the original ontology and correctly map columns from CSV to the fields in a JSON object.
 
-In the context of this tool, tranformation means both (i) transfomation between different schemas under the same general schema and (ii) between different general schemas if it is possible.
+In the context of this tool, transformation means both (i) transformation between different schemas under the same general schema and (ii) between different general schemas, if possible. As an example of the second case, we may have two general schemas for the same thing, where one is simpler than the other. For example, we may have the schema from the \autoref{analysis/general-schema-representation} and similar with more attributes and associations, possibly with a different order of properties and labels. It is then possible to convert data from the more complex schema to the simpler one by losing information. If default values are provided, or additional properties are optional, the transformation in the other direction should also be possible.
 
-There are plenty of ways how to transform data.
+\medskip
+
+Regarding the transformation process, there are plenty of ways how to transform data:
 \begin{enumerate}
-    \item Data engineers use \textbf{Python} with support of many formats using libraries. In this case, transformation would mean a generated Python script with pre-defined interface, that takes data from one format and outputs in another.
-    \item There is \textbf{XSLT} (Extensible Stylesheet Language Transformations) language for transforming between XML documents or from XML to XML-like, plain-text or CSV documents. XSLT is a XML document that can be executed with input document by XSLT processor producing an resulting document. One disadvantage is that the input document must be in XML format, hence it can not be used alone for JSON and CSV transformation.
-    \item There are mapping tools such as RML (RDF Mapping Language) specifically designed for mapping purposes. RML maps common serialization frameworks such as XML, CSV, and JSON to RDF from a set of rules written in RDF. The translation mechanism is similar to the XSLT.
+    \item Data engineers use \textbf{Python} with support of many formats using libraries. In this case, the transformation would mean a generated Python script with a pre-defined interface that takes data from one format and outputs in another. Depending on the use case, the script may be configurable (besides the possibility to configure the generation of transformation itself).
+    \item There is \textbf{XSLT} (Extensible Stylesheet Language Transformations) language for transforming between XML documents or from XML to XML-like, plain-text or CSV documents. XSLT is an XML document that can be executed with an input document by an XSLT processor producing a resulting document. One disadvantage is that the input document must be in XML format; hence it can not be used alone for bi-directional JSON and CSV transformation.
+    \item There are mapping tools such as RML \cite{dimou2014rml} (RDF Mapping Language) designed explicitly for mapping purposes. RML maps common serialization frameworks such as XML, CSV, and JSON to RDF from a set of rules written in RDF. The translation mechanism is similar to the XSLT.
 \end{enumerate}
 
-Although RML is a ready-to-use solution with support for all three technologies, it requires its own toolchain for transformation. In contrast, XSLT is well-known technology among people working with XML and is widely supported. Therefore, our primary concern will be to implement XSLT for XML while keeping the RML for latex.
+Although RML is a ready-to-use solution with support for all three technologies, it requires its own toolchain for transformation. In contrast, XSLT is well-known technology among people working with XML and is widely supported. Therefore, our primary concern will be to implement XSLT for XML while keeping the RML for later.
 
-Similar to translational models, there are two approaches. Either create transformation for each pair or have one standard format where all others can be transformed and vice versa. The latter approach is more straightforward regarding different transformations needed and requires only one transformation for each new format added. Because the schemas are built from ontologies whose primary source is RDF, we will exploit this and have RDF as the middle format, which creates symmetry and gives us another format we can transform data.
+Similar to the translation of a human text, there are two approaches. Either create transformation for each pair or have one standard format where all others can be transformed and vice versa. The latter approach requires only one transformation for each new format added and is easier to debug, as there is a middle format. Because the schemas are built from ontologies whose primary source is RDF, we will exploit this and have RDF as the middle format, which is another format we can transform data to.
 
-We categorize two types of transformations - lifting and lowering.
+\medskip
+
+We categorize two types of transformations - lifting and lowering. Lifting is a process of converting semi-structured data such as JSON, XML, or CSV into RDF. Lowering is the opposite process, and by combining them, we can achieve a transformation between various formats. That means that even if we want to transform XML to CSV, which would be possible by a single XSLT document for simple structures, we would need to execute two transfomations.
 
 \begin{figure}[h!]\centering
     \begin{tikzpicture}
@@ -361,8 +387,6 @@ We categorize two types of transformations - lifting and lowering.
         \node[artefact,align=center] (xml_document) at (1.5,-3.5) {XML\\document};
         \node[artefact,align=center] (json_document) at (4.5,-3.5) {JSON\\document};
 
-
-        %Lines
         \draw[-latex] (rdf) -- node[above,anchor=south west,align=left] {conforms} (ontology);
 
         \draw[-latex] (ontology) -- (schema1);
@@ -378,15 +402,45 @@ We categorize two types of transformations - lifting and lowering.
         \draw [->,line width=1pt, transform canvas={xshift=1.25em}] (rdf) -- (json_document);
 
         \node[rectangle,fill=white] at (3,-2.35) {lifting and lowering};
-        %        \node[matri west,cells={nodes={anchor=west}},inner sep=1ex] at (5,0) {
-            %  \draw[-latex,color=red,line width=1.5pt](0,0) -- ++ (0.6,0); & \node{Lifting to RDF};\\
-%  \draw[-latex,color=blue,line width=1.5pt](0,0) -- ++ (0.6,0); & \node{Lowering from RDF};\\
-%  \draw[-latex,color=purple](0,0) -- ++ (0.6,0); & \node{conforms given schema};\\
-% };
     \end{tikzpicture}
     \caption{Example of data transformation. An XML document that conforms to XML schema may be lifted to RDF representation, which conforms to the ontology. The RDF can then be lowered to another format.}
 \end{figure}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{requirement}
+  It shall be possible to refer to other schemas to use them as building blocks for larger ones. Schema reference shall be treated as a reference on the resulting schemas and documentation as well.
+  \label{analysis/requirement/schema-reference}
+\end{requirement}
+
+Referencing other schemas is crucial for advanced use-cases where it is essential to split large schemas into smaller blocks that can be published and used separately.
+
+For most schema languages, it should be sufficient to refer to the other schema as is. For example, in JSON, we can use the \verb|$ref| keyword with a path to the referenced schema. On the other hand, data transformations might not always be able to handle this approach. Hence having a full copy of the schema might be necessary. Referencing a schema would thus require access to all data of its specification.
+
+To avoid problems with tracking references and knowing which data specification needs to be loaded to generate artifacts properly, a user would need to set explicitly that a given \textbf{data specification is being reused}. Similar to the requirement with the ontology, we do not require that the reused data specification be always available.\footnote{See the requirement X for context.} The application shall work even if the data specification is not available at the moment if the presence of the specification is not required directly - such as for creating a new reference or generating artifacts that depend on it.
+
+\begin{figure}[h!]\centering
+  \begin{tikzpicture}
+      \node[data-specification,align=center] (ds1) at (-3,0) {Data specification 1};
+      \node[data-specification,align=center] (ds2) at (3,0) {Data specification 2};
+
+      \node[general-schema,align=center] (s11) at (-4.5,-1.5) {General\\schema};
+      \node[general-schema,align=center] (s12) at (-1.5,-1.5) {General\\schema};
+      \node[general-schema,align=center] (s21) at (3,-1.5) {General\\schema};
+
+      \draw[-latex] (ds1) -- (s11);
+      \draw[-latex] (ds1) -- (s12);
+      \draw[-latex] (ds2) -- (s21);
+
+      \draw[-latex,densely dotted] (ds1) -- node[above] {reuses} (ds2);
+      \draw[-latex,densely dotted] (s12) -- node[above] {refers} (s21);
+  \end{tikzpicture}
+  \caption{Example of reusing of specifications. All schemas from reused specification become available to refer from local schemas. Only the root of the schema may be refered.}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{requirement}
   List of supported schemas, transformations, documents, and other files generated from the general schema shall be easily expandable so that the application can be adapted to different use-cases.
@@ -398,7 +452,9 @@ On the other hand, documentation is very vague concept that neither we have prop
 
 Transformations have similar issue. There are multiple ways and technologies that transform data between different schemas. We have already mentioned transformation throught RDF format, either by RML, or custom scripts, such as XSLT for XML. For more demanding user, it is even possible to create transformation scripts between pairs of technology, such as between XML and CSV.
 
-We will expose a way user can register his/her own generator that can create a set of files in a filesystem from the given schema. Generators may call others to modify its results or further expends it.
+We will expose a way user can register his/her own generator that can create a set of files in a filesystem from the given schema.
+
+Generators may use others to modify their results, further expends them, or just link them.
 % Pozadavek na OFN?
 
 \section*{Artifacts}
@@ -432,39 +488,6 @@ Artifacts may reference other artifacts. For example, documentation may be the f
 \end{figure}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\begin{requirement}
-  It shall be possible to refer to other schemas to use them as building blocks for larger ones. Schema reference shall be treated as a reference on the resulting schemas as well and in the documentation.
-  \label{analysis/requirement/schema-reference}
-\end{requirement}
-
-Referencing other schemas is crucial for advanced use-cases where it is essential to split large schemas into smaller blocks that can be published and used separately.
-
-For most schema languages, it should be sufficient to refer to the other schema as is. For example, in JSON, we can use the \verb|$ref| keyboard with a path to the referenced schema. On the other hand, data transformations might not always be able to handle this approach. Hence having a full copy of the schema might be necessary. Referencing a schema would thus require access to all data of its specification.
-
-To avoid problems with tracking references and knowing which data specification needs to be loaded to generate artifacts properly, a user would need to set explicitly that a given \textbf{data specification is being reused}. Similar to the requirement with the ontology, we do not require that the reused data specification be always available.\footnote{See the requirement X for context.} The application shall work even if the data specification is not available at the moment if the presence of the specification is not required directly - such as for creating a new reference or generating artifacts that depend on it.
-
-\begin{figure}[h!]\centering
-  \begin{tikzpicture}
-      \node[data-specification,align=center] (ds1) at (-3,0) {Data specification 1};
-      \node[data-specification,align=center] (ds2) at (3,0) {Data specification 2};
-
-      \node[general-schema,align=center] (s11) at (-4.5,-1.5) {General\\schema};
-      \node[general-schema,align=center] (s12) at (-1.5,-1.5) {General\\schema};
-      \node[general-schema,align=center] (s21) at (3,-1.5) {General\\schema};
-
-      \draw[-latex] (ds1) -- (s11);
-      \draw[-latex] (ds1) -- (s12);
-      \draw[-latex] (ds2) -- (s21);
-
-      \draw[-latex,densely dotted] (ds1) -- node[above] {reuses} (ds2);
-      \draw[-latex,densely dotted] (s12) -- node[above] {refers} (s21);
-  \end{tikzpicture}
-  \caption{Example of reusing of specifications. All schemas from reused specification become available to refer from local schemas. Only the root of the schema may be refered.}
-\end{figure}
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -488,9 +511,29 @@ Generaly speaking, inheritance is a complex concept, that can be expressed in mo
 
 % Analyza co vsechno se da udelat, co bude privetive a co ne. Rozeberu to na zakladni OR a include.
 
+
+
+
 \section{Future requirements}
 
 Following requirements in this section are analyzed and may have an impact on the final model that will be discussed in the next chapter. But due to its complexity, full implementation and analysis will be kept as authors future work and this thesis cover only the necessity to not introduce a technical debt.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{requirement}
+  \label{requirement:pim-editing}
+  The approach from previous tools of creating the ontology directly in the application is not required, but there should be support for \textit{some} modifications.
+\end{requirement}
+
+As stated in the \autoref{requirement:ontologies-on-the-web}, the preffered way is to create a complete ontology externally and keep it up-to-date and valid against requirements of all involved parties. But it is hard to always follow all the rules, especially when doing experiments, or small errors need to be fixed.
+
+Allowing such changes must be made carefully, as it may interfere with some mechanisms.
+\begin{enumerate}
+  \item If the ontology changes, the local overwrites may need to be changed as well, otherwise may become invalid. Overwritten data may get removed or moved elsewhere. Evolution mechanism hence must work with the overwrites as well.
+  \item Moreover, the overwriten data may change, which can lead to two scenarios. Either user wishes to keep the local version as if nothing happend, or he/she may want to discard the local version as the new version fixes the issue that caused the modification in the first place.
+\end{enumerate}
+
+This issue is too complex and due to the nature of the requirement, it must be solved directly in the application. We keep the question behind this problem partially open and focus only to simple modifications, as this will cover most use-cases.\footnote{From our specific use-case on the Semantic government vocabulary (SGOV), most of the changes consist of adding a missing cardinality or fixing labels and descriptions.}
 
 \begin{requirement}
     It shall be possible to perform a top-down evolution of schemas and other documents from an ontology. The evolution shall be automatic, if possible, and shall also transorm the data that conform the given schemas. The application shall also deduce the changes from an ontology that does not support versioning.
