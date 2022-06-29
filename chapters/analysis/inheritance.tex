@@ -1,18 +1,49 @@
 % Necaskeho pozadavek na OR a hierarchii
 % https://github.com/mff-uk/dataspecer/issues/95
 
+% Zacnu tim, co vlastne chci a pak introducnu ten or
+% neni to uz pak nahodou problem formalni analyzou
+
 \begin{requirement}
-    It shall be possible to easily add more specific classes to the general schema that extends the base class in a way that data, that conforms the resulting schemas, may contain either the base class, or one of its specialization.
+    The tool shall support class inheritance on a general schema level and in generated schemas. That means it shall be possible to design a schema that validates data where both the base and derived classes can be used. The derived class may have additional properties.
 \end{requirement}
 
 \begin{showcase}
-    We will start directly with an example. Suppose, that the warehouse also distributes foods besides the general goods. Food is of course type of good, but for storing purposes, it may have additional attributes, such as \textit{storing temperature}. When designing a schema that contains goods anywhere
+    We will start directly with an example. Suppose that the warehouse also distributes foods besides the general goods. Food is a type of good, but it may have additional attributes for storing purposes, such as \textit{storing temperature} or \textit{expiration date}. Suppose we want to design a schema for a JSON list of goods, as seen in \autoref{analysis:inheritance:json-data}. The document is an array of objects where each object has basic properties such as \textit{name} and \textit{price}. If the object represents food, we want it to have the additional attributes. JSON Schema format is capable of supporting this.
 
-
+    Without any additional information, we can only say that if the object contains only one of those additional properties, it is not valid, because there is no such class that has only one of them. Nevertheless, we can add a property that specifies the type (or category) of goods and use this to validate the object.
+    \begin{figure}[H]\centering
+        \begin{Verbatim}[commandchars=\\\{\}]
+[
+  \{
+    "name": "Chair",
+    "price": 100,
+    "type": "furniture"
+  \},
+  \{
+    "name": "Ice-cream",
+    "price": 10,
+    "type": {\textbf{\color{red!80}"food"}},
+    "expirationDate": "2022-07-21",
+    "storingTemperature": "frozen"
+  \}
+]
+        \end{Verbatim}
+        \caption{Example of JSON data we want to validate. Based on the type of good, the object may have additional properties.}
+        \label{analysis:inheritance:json-data}
+    \end{figure}
 \end{showcase}
 
-This requirement impacts the application on two different levels. First, the general schema model has to have constructs to represent the required problem and all generators shall understand them and generate a schema that corresponds to the intended result.
+This requirement impacts the application on three different levels. (i) the general schema model has to have constructs to represent the required problem, (ii) the inheritance must be somehow represented in the user interface, and (ii) all generators shall understand them and generate a schema that corresponds to the intended result.
 
-Generaly speaking, inheritance is a complex concept, that can be expressed in more simple way. Unfortunatelly, to make this pleasible for a user, we need to represent some things % such as association to class
+\subsection*{Restrictions}
+
+An advanced reader may point out that the problem can be generalized by introducing disjunction to the schema. As we will show in the following text, this assumption is correct. Hovewer designing schemas only with disjunction is cumbersome and complicated task for less advanced users. Hence, we still want to provide the ability to easily work with the inheritance.
+
+To restrict the problem, we introduce the following rules
+\begin{enumerate}
+  \item If a user wants to specify attributes and associations for a more specific class to the base class in a given schema, the specific class must have all the attributes and associations of the parent in the same order.
+\end{enumerate}
+
 
 % Analyza co vsechno se da udelat, co bude privetive a co ne. Rozeberu to na zakladni OR a include.

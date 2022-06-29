@@ -68,6 +68,7 @@
 	\SetBgVshift{.5cm}
 \fi\fi
 
+\usepackage{float}
 \usepackage{import}
 \usepackage{listings}
 \lstset{
@@ -186,10 +187,13 @@
 #1}
 \makeatother
 
-\newenvironment{showcase}
-{\bigskip\begin{mybox}[title=Example]}
-{\end{mybox}\bigskip}
+% \newenvironment{showcase}
+% {\bigskip\begin{mybox}[title=Example]}
+% {\end{mybox}\bigskip}
 
+\newenvironment{showcase}
+{\bigskip}
+{\bigskip}
 
 
 %%% Basic information on the thesis
