@@ -1,0 +1,14 @@
+\begin{requirement}
+  \label{requirement:pim-editing}
+  The approach from previous tools of creating the ontology directly in the application is not required, but there should be support for \textit{some} modifications.
+\end{requirement}
+
+As stated in the \autoref{requirement:ontologies-on-the-web}, the preffered way is to create a complete ontology externally and keep it up-to-date and valid against requirements of all involved parties. But it is hard to always follow all the rules, especially when doing experiments, or small errors need to be fixed.
+
+Allowing such changes must be made carefully, as it may interfere with some mechanisms.
+\begin{enumerate}
+  \item If the ontology changes, the local overwrites may need to be changed as well, otherwise may become invalid. Overwritten data may get removed or moved elsewhere. Evolution mechanism hence must work with the overwrites as well.
+  \item Moreover, the overwriten data may change, which can lead to two scenarios. Either user wishes to keep the local version as if nothing happend, or he/she may want to discard the local version as the new version fixes the issue that caused the modification in the first place.
+\end{enumerate}
+
+This issue is too complex and due to the nature of the requirement, it must be solved directly in the application. We keep the question behind this problem partially open and focus only to simple modifications, as this will cover most use-cases.\footnote{From our specific use-case on the Semantic government vocabulary (SGOV), most of the changes consist of adding a missing cardinality or fixing labels and descriptions.}

@@ -1,0 +1,9 @@
+\begin{requirement}
+    The application shall create supporting documents for the generated schemas.
+\end{requirement}
+
+As the application's main goal should be to generate schemas, we also need to create documentation for them, diagrams, and examples. This requirement has already been described in the introduction chapter.
+
+Schemas use things from ontology, a complex graph of different concepts and relations. To let users better understand it, a diagram of a subset of the ontology used by the given schema may be extremely beneficial. % todo jeste se na to podivat
+
+For the schema in the \autoref{analysis/general-schema-representation}, Figures \ref{analysis/xml-json} and \ref{analysis/csv} are examples that can be automatically generated. This would require additional knowledge from the ontology as the application needs to understand that the title should be a buyable item and the price should correspond to the item's actual price. % todo splitnout a dat do future requirements

@@ -1,0 +1,13 @@
+\begin{requirement}
+    As there shall be a support for data transformations between different schemas, the data transfomations shall respect various ontology alignments to transform data between different ontologies. Alignments shall be created also during user modification of the ontology, between the modification and the original ontology.
+\end{requirement}
+
+\textbf{Alignment} as defined in TODO is a set of relations between entities \textit{usually} from different ontologies. These relations specify the semantic equivalence between the entities and create a mapping that can transform data from one ontology to another.
+
+There are already well-known RDF predicates that can cover basic alignment. For semantically identicall entities, we may use \verb|owl:equivalentClass| or \verb|skos:exactMatch|. More usefull RDF predicate is \verb|rdfs:subClassOf| for more specific classes representing things.
+
+The later one is already included in the previous requirement TODO. Subclasses (i) reuses attributes and associations from its parent class, but also semantically denotes, that (ii) the subclass can also be treated as "the parent class". The second point is an example of a simple ontology alignment.
+
+\begin{showcase}
+    % example with address
+\end{showcase}

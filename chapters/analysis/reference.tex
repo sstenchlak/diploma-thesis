@@ -1,0 +1,29 @@
+\begin{requirement}
+  It shall be possible to refer to other schemas to use them as building blocks for larger ones. Schema reference shall be treated as a reference on the resulting schemas and documentation as well.
+  \label{analysis/requirement/schema-reference}
+\end{requirement}
+
+Referencing other schemas is crucial for advanced use-cases where it is essential to split large schemas into smaller blocks that can be published and used separately.
+
+For most schema languages, it should be sufficient to refer to the other schema as is. For example, in JSON, we can use the \verb|$ref| keyword with a path to the referenced schema. On the other hand, data transformations might not always be able to handle this approach. Hence having a full copy of the schema might be necessary. Referencing a schema would thus require access to all data of its specification.
+
+To avoid problems with tracking references and knowing which data specification needs to be loaded to generate artifacts properly, a user would need to set explicitly that a given \textbf{data specification is being reused}. Similar to the requirement with the ontology, we do not require that the reused data specification be always available.\footnote{See the requirement X for context.} The application shall work even if the data specification is not available at the moment if the presence of the specification is not required directly - such as for creating a new reference or generating artifacts that depend on it.
+
+\begin{figure}[h!]\centering
+  \begin{tikzpicture}
+      \node[data-specification,align=center] (ds1) at (-3,0) {Data specification 1};
+      \node[data-specification,align=center] (ds2) at (3,0) {Data specification 2};
+
+      \node[general-schema,align=center] (s11) at (-4.5,-1.5) {General\\schema};
+      \node[general-schema,align=center] (s12) at (-1.5,-1.5) {General\\schema};
+      \node[general-schema,align=center] (s21) at (3,-1.5) {General\\schema};
+
+      \draw[-latex] (ds1) -- (s11);
+      \draw[-latex] (ds1) -- (s12);
+      \draw[-latex] (ds2) -- (s21);
+
+      \draw[-latex,densely dotted] (ds1) -- node[above] {reuses} (ds2);
+      \draw[-latex,densely dotted] (s12) -- node[above] {refers} (s21);
+  \end{tikzpicture}
+  \caption{Example of reusing of specifications. All schemas from reused specification become available to refer from local schemas. Only the root of the schema may be refered.}
+\end{figure}
