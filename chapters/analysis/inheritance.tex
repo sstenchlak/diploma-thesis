@@ -23,7 +23,7 @@
   \{
     "name": "Ice-cream",
     "price": 10,
-    "type": {\textbf{\color{red!80}"food"}},
+    "type": "food",
     "expirationDate": "2022-07-21",
     "storingTemperature": "frozen"
   \}
@@ -34,16 +34,184 @@
     \end{figure}
 \end{showcase}
 
-This requirement impacts the application on three different levels. (i) the general schema model has to have constructs to represent the required problem, (ii) the inheritance must be somehow represented in the user interface, and (ii) all generators shall understand them and generate a schema that corresponds to the intended result.
+This requirement impacts the application on three different levels. (i) The general schema model must have constructs representing the required problem. This is analyzed mainly in the following chapter. (ii) We must somehow represent the inheritance in the user interface. By this, we mean how to show that the class has a specialization in the "bullet list" representation (see \autoref{analysis/general-schema-representation}). (iii) All generators shall understand them and generate a schema that corresponds to the intended result.
 
-\subsection*{Restrictions}
+\medskip
 
-An advanced reader may point out that the problem can be generalized by introducing disjunction to the schema. As we will show in the following text, this assumption is correct. Hovewer designing schemas only with disjunction is cumbersome and complicated task for less advanced users. Hence, we still want to provide the ability to easily work with the inheritance.
+An advanced reader may point out that the problem can be generalized by introducing disjunction to the schema. As we will show in the following text, this assumption is correct. Hovewer, designing schemas only with disjunction is a cumbersome and complicated task for less advanced users. Hence, we still want to provide the ability to work more efficiently with the inheritance.
 
-To restrict the problem, we introduce the following rules
-\begin{enumerate}
-  \item If a user wants to specify attributes and associations for a more specific class to the base class in a given schema, the specific class must have all the attributes and associations of the parent in the same order.
-\end{enumerate}
+In ordinary cases, a more general class shares its properties with all its descendants. This can be seen in the example, where the \textit{Ice-cream} has all properties a \textit{Chair} has. In UML modeling and most programming languages, copying the properties is unnecessary as they are inherited. We want to achieve a similar thing in our schema representation, not polluting the page with redundant information. This, however, restricts the use of inheritance because we can not select the order of properties in the descendant class if the properties are not shown.
 
+To formalize the restriction, a descendant class implicitly has all properties of the parent in the same order, and those properties are before any other properties of the descendant class. This is a limitation for XML and CSV documents as JSON does not depend on the order of properties. However, the order usually does not play a huge role in the modeling. For advanced use cases, the low-level constructs introduced later can be used.
 
-% Analyza co vsechno se da udelat, co bude privetive a co ne. Rozeberu to na zakladni OR a include.
+The rule is applied through the whole chain of inheritance. If there are classes $A$, $B$, and $C$, where $C$ is a descendant of $B$ and $B$ is a descendant of $A$, then $C$ has properties of $A$, properties of $B$, and then its own properties.
+
+In some situations, we might want to omit the parent class from a schema. Let us have a base class $B$ and its two descendants, $M$ and $N$. So far, we can model a schema with either $B$, $M$, or $N$, where $B$ provides properties to both $M$ and $N$. $B$ may not represent a real thing per se. It may correspond to an abstract class that only serves as a base for the other classes. In that scenario, we only want to allow $M$ and $N$ to be used.
+
+\medskip
+
+Because we do not want to show inherited properties, the descendant classes must visually belong to their parent to understand that it shares its properties. Hence, we propose that if a class has a specialization in a schema, the specialization will be shown after the properties of the parent. If the base class should be omitted from the schema but has some properties, it will be shown visually differently.
+
+\begin{figure}[h!]\centering
+  \begin{Verbatim}[commandchars=\\\{\}]
+{\color{purple!60}class \textbf{Good}}
+  {\color{blue!60}- attribute \textbf{name}}[1..1]: string
+  {\color{blue!60}- attribute \textbf{price}}[1..1]: number
+  {\color{purple!60}specialization \textbf{Food}}
+    {\color{blue!60}- attribute \textbf{expirationDate}}[1..1]: string
+    {\color{blue!60}- attribute \textbf{storingTemperature}}[1..1]: number
+    {\color{purple!60}specialization \textbf{Fruit and Vegetables}}
+    ...
+  {\color{purple!60}specialization \textbf{Drink}}
+    ...
+\end{Verbatim}
+  \caption{Proposition for representing an inheritance in the schema. The row with specialization classes is below the property list and does not belong to it.}
+\end{figure}
+
+So far, the internal schema model, yet not formally defined, does not support constructs for the purpose of inheritance. We can build on the current proposal of the UI, but this approach is not robust enough. We want to compose the desired results from low-level constructs.
+
+\subsection{Disjunction in schemas}
+
+First, we introduce the concept of a disjunction. Disjunction in a schema context is a set of rules (or subschemas) where exactly one rule must be satisfied. Disjunction serves as the "OR" operator in the schema. We can use it in our inheritance problem to create an association to a disjunction of classes that have a common ancestor. It nicely solves part of the inheritance problem and can be used for other things too. For example, the title can be either a string or an object of language and translation pairs.
+
+Both JSON Schema and XML Schema support some kind of disjunction. JSON Schema has {\tt anyOf} keyword, which specifies that the given value must match at least one rule, effectively creating OR. XSD hs {\tt xs:choice} element doing the similar thing.
+
+There are two ways of implementing OR operator in our proposed hierarchical model: on a \textbf{class level} and \textbf{property level}. The former approach allows placing the OR operator anywhere where classes can be placed. Either in the root of the schema or at the association. The OR is then a set of classes. The latter approach is more flexible as OR is in the property list of a class allowing users to specify the disjunction between tuples of properties.
+
+\begin{figure}[h!]\centering
+  \begin{subfigure}[b]{.5\textwidth}
+    \centering
+    \begin{tikzpicture}[
+      type-or/.style={diamond, draw=orange!60, fill=orange!5, very thick},
+      type-class/.style={rectangle, draw=red!60, fill=red!5, very thick},
+      type-attribute/.style={rectangle, draw=blue!60, fill=blue!5, very thick},
+      level 1/.style = {sibling distance = 3.5cm, level distance = 1cm},
+      level 2/.style = {sibling distance = 1cm, level distance = 1cm},
+      every child/.style={-latex}
+    ]
+      \node[type-or] (root) {or}
+        child {
+          node[type-class] {$C^1$}
+            child {node {...}}
+            child {node[type-attribute] {$A_1$}}
+            child {node {...}}
+        }
+        child {
+          node[type-class] {$C^2$}
+            child {node {...}}
+            child {node[type-attribute] {$A_2$}}
+            child {node[type-attribute] {$A_3$}}
+            child {node {...}}
+        };
+      \draw[-latex] (0,1) -- (root);
+    \end{tikzpicture}
+    \caption{Class-level OR}
+    \end{subfigure}%
+    \begin{subfigure}[b]{.5\textwidth}
+    \centering
+    \begin{tikzpicture}[
+      type-or/.style={diamond, draw=orange!60, fill=orange!5, very thick},
+      type-class/.style={rectangle, draw=red!60, fill=red!5, very thick},
+      type-attribute/.style={rectangle, draw=blue!60, fill=blue!5, very thick},
+      type-or-group/.style={circle, draw=orange!60, fill=orange!5, very thick},
+      level 1/.style = {sibling distance = 1.5cm, level distance = 1.125cm},
+      level 2/.style = {sibling distance = 2cm, level distance = .5cm},
+      level 3/.style = {sibling distance = 1cm, level distance = 0.75cm},
+      every child/.style={-latex}
+    ]
+      \node[type-class] (root) {$C$}
+        child {node {...}}
+        child {
+          node[type-or] {or}
+            child {node[type-or-group]{} child{node[type-attribute] {$A_1$}}}
+            child {node[type-or-group]{}
+                child {node[type-attribute] {$A_2$}}
+                child {node[type-attribute] {$A_3$}}
+            }
+        }
+        child {node {...}};
+      \draw[-latex] (0,1) -- (root);
+    \end{tikzpicture}
+    \caption{Property-level OR}
+    \end{subfigure}%
+  \caption{Comparison of two models of the semantically same subschemas of class $C$ having either attribute $A_1$, or both $A_2$ and $A_3$.}
+\end{figure}
+
+The model using a property-level OR can not use the disjunction in the root of the schema, which is an essential disadvantage as there may be use-cases for those schemas. On the other hand, this model is better suited for the cartesian product of multiple disjunctions in a single class. Suppose a schema for class $C$ having the following attributes: the first attribute is either $A_11$ or $A_12$, the second attribute is either $A_21$ or $A_22$, and the third attribute is either $A_31$ or $A_32$.
+
+\begin{figure}[h!]\centering
+  \begin{subfigure}[b]{.6\textwidth}
+    \centering
+    \begin{tikzpicture}[
+      type-or/.style={diamond, draw=orange!60, fill=orange!5, very thick},
+      type-class/.style={rectangle, draw=red!60, fill=red!5, very thick},
+      type-attribute/.style={rectangle, draw=blue!60, fill=blue!5, very thick},
+      level 1/.style = {sibling distance = 2.2cm, level distance = 1cm},
+      level 2/.style = {sibling distance = 1cm, level distance = 1cm},
+      every child/.style={-latex}
+    ]
+      \node[type-or] (root) {or}
+        child {
+          node[type-class] {$C^1$}
+            child {node[type-attribute] {$A_{11}^1$}}
+            child {node[type-attribute] {$A_{21}^1$}}
+        }
+        child {
+          node[type-class] {$C^2$}
+            child {node[type-attribute] {$A_{11}^2$}}
+            child {node[type-attribute] {$A_{22}^2$}}
+        }
+        child {
+          node[type-class] {$C^3$}
+            child {node[type-attribute] {$A_{12}^3$}}
+            child {node[type-attribute] {$A_{21}^3$}}
+        }
+        child {
+          node[type-class] {$C^4$}
+            child {node[type-attribute] {$A_{12}^4$}}
+            child {node[type-attribute] {$A_{22}^4$}}
+        }
+        ;
+      \draw[-latex] (0,1) -- (root);
+    \end{tikzpicture}
+    \caption{Class-level OR}
+    \end{subfigure}%
+    \begin{subfigure}[b]{.4\textwidth}
+    \centering
+    \begin{tikzpicture}[
+      type-or/.style={diamond, draw=orange!60, fill=orange!5, very thick},
+      type-class/.style={rectangle, draw=red!60, fill=red!5, very thick},
+      type-attribute/.style={rectangle, draw=blue!60, fill=blue!5, very thick},
+      type-or-group/.style={circle, draw=orange!60, fill=orange!5, very thick},
+      level 1/.style = {sibling distance = 2.2cm, level distance = 1.125cm},
+      level 2/.style = {sibling distance = 1cm, level distance = .5cm},
+      level 3/.style = {level distance = 0.75cm},
+      every child/.style={-latex}
+    ]
+      \node[type-class] (root) {$C$}
+        child {
+          node[type-or] {or}
+            child {node[type-or-group]{} child{node[type-attribute] {$A_{11}$}}}
+            child {node[type-or-group]{} child{node[type-attribute] {$A_{12}$}}}
+        }
+        child {
+          node[type-or] {or}
+            child {node[type-or-group]{} child{node[type-attribute] {$A_{21}$}}}
+            child {node[type-or-group]{} child{node[type-attribute] {$A_{22}$}}}
+        };
+      \draw[-latex] (0,1) -- (root);
+    \end{tikzpicture}
+    \caption{Property-level OR}
+    \end{subfigure}%
+  \caption{Comparison of two models of the semantically same subschemas of class $C$ having either attribute $A_1$, or both $A_2$ and $A_3$.}
+\end{figure}
+
+% jak to ma vypadat v ui, jake jsou moznosti
+% jak to ma vypadat v modelu, ze musime udelat ten or a include, ale tady pozor, to koliduje s dalsi kapitolou
+% pak jsem uplne zapomnel na popis toho, jak treba pridat koren, nebo jak pridavat properties
+% zamyslet se nad tim, jak bude fungovat lifting a lowering
+
+% potom v te formalni popsat ty dva typy oru, jeden je generalization, jeden specialization
+
+% jeste jak se pridavaji veci jako atributy a ze je mozne pridavat z nadrazenych trid
+
