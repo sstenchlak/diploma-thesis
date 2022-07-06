@@ -4,6 +4,8 @@
 % Zacnu tim, co vlastne chci a pak introducnu ten or
 % neni to uz pak nahodou problem formalni analyzou
 
+\section{Inheritance}
+
 \begin{requirement}
     The tool shall support class inheritance on a general schema level and in generated schemas. That means it shall be possible to design a schema that validates data where both the base and derived classes can be used. The derived class may have additional properties.
     \label{requirement:inheritance}
@@ -72,7 +74,7 @@ Because we do not want to show inherited properties, the descendant classes must
 
 So far, the internal schema model, yet not formally defined, does not support constructs for the purpose of inheritance. We can build on the current proposal of the UI, but this approach is not robust enough. We want to compose the desired results from low-level constructs.
 
-\subsection*{Disjunction in schemas}
+\subsection{Disjunction in schemas}
 
 First, we introduce the concept of a disjunction. Disjunction in a schema context is a set of rules (or subschemas) where exactly one rule must be satisfied. Disjunction serves as the "OR" operator in the schema. We can use it in our inheritance problem to create an association to a disjunction of classes that have a common ancestor. It nicely solves part of the inheritance problem and can be used for other things too. For example, the title can be either a string or an object of language and translation pairs.
 
@@ -214,7 +216,7 @@ The model using a property-level OR can not use the disjunction in the root of t
 
 As seen from \autoref{fig:cartesian-product}, the model with a class-level OR tends to have wider trees for cartesian products of disjunctions as we have to create (automatically, of course) each combination.
 
-\subsection*{Include in schemas}
+\subsection{Include in schemas}
 
 Before proceeding with the disjunctions, we will solve the rest of the problem with inheriting properties. Each class may explicitly use attributes and association that belongs to a parent class, as stated in the previous requirements. In the inheritance problem, however, we do not want to do that as those properties are already set on the parent. Therefore, we would need a mechanism to include those properties from the parent class.
 

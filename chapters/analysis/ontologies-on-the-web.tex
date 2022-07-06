@@ -1,3 +1,5 @@
+\section{Ontology}
+
 \begin{requirement}
     \label{requirement:ontologies-on-the-web}
     As many ontologies are located on the web in formats like OWL (Web Ontology Language), RDFs (RDF Schema), UFO (Unified Foundational Ontology), etc., the application shall support reading them.
@@ -24,7 +26,7 @@ The term ontology has already been defined in the introductory chapter, and we w
 
 It shall be easy to implement support for other types of ontologies, and all of them shall be linkable according to LOD principles.
 
-\section*{Format of the ontology}
+\subsection{Format of the ontology}
 
 In the requirement above, several different formats were proposed for the ontology. This section will analyze the minimal requirements for any ontology format and how we will treat additional information in them. Because the core goal is to design schemas, we will start with a proposed model from the \autoref{requirement:general-schema}. The schema consists of classes and their properties. A class corresponds to a thing from real life. An attribute is a literal that belongs to the given class only. An association, on the other hand, is a link between two (not necessarily different) classes. From this point of view, the association is an independent entity.
 

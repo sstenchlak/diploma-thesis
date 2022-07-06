@@ -63,6 +63,13 @@ XRG used only the last two layers of the architecture. PIM represents the domain
 
 The major benefit of the strategy presented is a shared conceptual model between various XML schemas, as other works at that time had a conceptual model for every schema. This was not practical as usually multiple schemas are applied in a single software. Authors have also formalized the model and have proven that their approach is correct. That means that (i) every conceptual schema models XML schema, (ii) their translation algorithm from the internal model to schema respects introduced rules and is reversible, and (iii) their normalization and optimization algorithms produce semantically same schema.
 
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/exolutio.png}
+    \caption{Preview of the eXolutio tool. The left panel shows the PIM model as a UML class diagram, while the right panel represents a PSM schema in a tree-like structure that can be converted to an XML schema.}
+    \label{fig:exolutio}
+\end{figure}
+
 \subsection{Evolution of schemas}
 
 The focus of XRG was also directed to the evolution \cite{nevcasky2012evolution} of their proposed model to minimize the work of the data designer. As already stated in the introduction of the thesis, changes may be inevitable (either from the user requirements or from the surrounding environment) in large and complex systems, and propagating even a tiny change from the domain ontology to all affected schemas is time-consuming and error-prone.
@@ -73,12 +80,52 @@ They proposed, formalized, and later implemented a solution in restricting the c
 
 Their result were implemented in two tools \textit{XCase} \cite{xcase} and \textit{eXolutio} \cite{exolutio}. The former one was simpler, focused only on modeling. The latter then supported schema evolution as described in the previous section. Tools let users define the ontology from which the schemas and operations were derived for XML documents.
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.8\textwidth]{img/exolutio.png}
-    \caption{Preview of the eXolutio tool. The left panel shows the PIM model as a UML class diagram, while the right panel represents a PSM schema in a tree-like structure that can be converted to an XML schema.}
-    \label{fig:exolutio}
+\section{OSLO}
+
+OSLO\footnote{\url{https://joinup.ec.europa.eu/collection/oslo-open-standards-linked-organisations-0/about}} - Open Standards for Linked Organisations is an initiative that originated in Flanders, Dutch-speaking northern portion of Belgium, to promote the use of technical standards for the data exchange between various organizations, government, and a local government. The goal of OSLO is to maintain and create the standards through the open process (hence everyone can intervene), keep the rules respected, provide a publication platform and support the adoption of the standards. So far, OSLO contains over 18 different domains consisting definitions from 107 organizations.
+
+The initiative developed a toolchain to ease the process of publication of the standards. The standards are modeled in \textit{Enterprise Architect UML} software and then converted into an RDF representation with their tool\footnote{\url{https://github.com/Informatievlaanderen/OSLO-EA-to-RDF}}. The next tool then generates artifacts (resulting files) that are automatically published on one centralized server \url{https://data.vlaanderen.be/ns}. The artifacts contain HTML documentation, RDF vocabulary, SHACL templates for validation of RDF, and a JSON-LD context for developers that prefer JSON formats. Their toolchain uses the GitHub platform for storing their standards and triggering the rest of the toolchain. They also provide tools for organizations to validate their data against the standards to check that data are machine-readable without errors.
+
+OSLO also focuses on the interoperability of services that provide those data so that every service has a generic hyper-media-driven API.
+
+\medskip
+
+Compared to our approach, OSLO's primary focus is on the interoperability of public services and their data in LOD format. Their goal is to provide a set of tools to create and later validate public services effectively. Our approach is to design a general tool (hence it can be used for any related purpose, such as software development process) for services that use non-RDF formats, such as CSV or XML files, and rather provide tools to convert them to linked data format.
+
+As noted in the introduction chapter, we also focus on the public sector. Yet, our tool is not as advanced as theirs to provide features such as (i) automatic publishing of the standards or (ii) web tools to validate organizations-data against them. Nevertheless, we may take a similar route for the open data publication process in the future.
+
+\section{LinkML}
+
+LinkML is a general-purpose language using YAML for modeling schemas that can be converted to various formats such as JSON, CSV, RDF, or Python Dataclasses. It also generates human-readable documentation and can validate the data in different formats.
+
+The core concepts in their model are classes and slots, which are properties of classes. Classes then support inheritance. The model supports many options for the data types, cardinalities, regular expression patterns, and other constraints.
+
+
+\begin{figure}[h!]\centering
+    \begin{Verbatim}[commandchars=\\\{\}]
+classes:
+  Person:
+    attributes:
+      id:
+        identifier: true
+      full_name:
+        required: true
+        description:
+          name of the person
+      aliases:
+        multivalued: true
+        description:
+          other names for the person
+      phone:
+        pattern: "^[\textbackslash{}\textbackslash{}d\textbackslash{}\textbackslash{}(\textbackslash{}\textbackslash{})\textbackslash{}\textbackslash{}-]+$"
+      age:
+        range: integer
+        minimum_value: 0
+        maximum_value: 200
+    \end{Verbatim}
+    \caption{Example of part of the YAML configuration file for LinkML.}
 \end{figure}
+
 
 \section{Similar work}
 
