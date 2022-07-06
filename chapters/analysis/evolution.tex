@@ -1,7 +1,31 @@
 \begin{requirement}
-    It shall be possible to perform a top-down evolution of schemas and other documents from an ontology. The evolution shall be automatic, if possible, and shall also transorm the data that conform the given schemas. The application shall also deduce the changes from an ontology that does not support versioning.
+    It shall be possible to perform an evolution of schemas and other artifacts from an ontology. The evolution shall be automatic, if possible, and shall also transform the data that conform to the given schemas. The application shall also deduce the changes from an ontology that does not support versioning.
+    \label{requirement:evolution}
 \end{requirement}
 
-Schema evolution is a large topic with many theoreticall issues.
+Although designing the schemas with the documentation may seem like a one-time job, later management of schemas is also essential. The user requirements may change, resulting in changing the ontology and underlying schemas. The change may be as simple as adding a new property but can also be more complex, such as splitting classes, moving properties, or changing their semantics. (Another example may be splitting an address into individual parts, as shown in \autoref{requirement:ontology-alignments}).
 
-% popis evoluce, priklady
+As the tool's purpose is to support the whole process of designing the schemas, the tool shall also provide the possibility to change the schemas easily in the future. We can analyze this requirement on two levels: how to change the schemas and how the change is reflected.
+
+Our current goal is not to create a complex model capable of any change but rather to create a simple, easy-to-maintain solution that can handle most cases. Moreover, for complex changes, it may be cleaner to recreate the schemas from scratch without the need for any evolution mechanism.
+
+\subsection*{Changing the schemas}
+
+The source of the change is the ontology, as we are interested only in a top-down (from the ontology to schemas) modeling. Because we want to support all kinds of ontologies, we can not have additional requirements, such as the history of changes. Therefore, the tool needs to have a mechanism to analyze the ontology in the current state and generate a list of changes.
+
+Having a list of changes and the previously-designed schemas, we can perform the evolution. Depending on the context and the user preferences, some changes may be performed automatically. For example, suppose that the \textit{name} of goods is changed to \textit{title}. This change is simple, and as we are performing the evolution, we probably want the change to be applied as is. On the other hand, some changes may be more complex, where user interaction is necessary.
+
+In any case, the result of the evolution is a new general schema conforming to the ontology. We can use this general schema to re-generate documentation and schemas for desired languages. In some cases, this can be sufficient, and the work ends here.
+
+\subsection*{Reflecting changes}
+
+Nevertheless, some users may not be satisfied with just a new version of schemas and documentation as it may be difficult to actually find out what has changed and how. To painlessly apply the changes in their systems and understand the change, they may require:
+
+\begin{enumerate}
+    \item \textbf{Data transformations between the old and new schemas} to easily convert the data between old and new representations. This may be useful as a temporary workaround to switch to a new format without actually changing the application that uses it. The transformations, of course, can be used to convert all data to the current format if data are stored in it.
+    \item \textbf{Document describing what has changed} to easily apply those changes. The format of the document can be, for example, an HTML file containing the table of renamed attributes, associations, and classes and a textual description of the more advanced changes. The document's purpose can be similar to the documentation, as the main document containing links to other supporting files.
+\end{enumerate}
+
+Data transformations are de-facto already handled by the previous requirements. We won't modify the existing schema during the evolution but rather create a copy. Because both schemas use the same ontology, we can generate data transformations between them with RDF as the central format.
+
+Generating documents would probably require a new type of generator that would work on two schemas at once. This, however, is too complex for the current state of the project. Therefore, we will keep this problem for later.

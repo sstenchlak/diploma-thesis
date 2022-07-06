@@ -58,30 +58,12 @@ To analyze the relation between CIM and PIM
 
 % dedicnost
 
-\newpage\subsection{Hierarchy on the PIM level}
+%\newpage\subsection{Hierarchy on the PIM level}
 
 
 
 
 \newpage\subsection{User modifications on the PIM level and evolution from CIM}
-
-
-
-As stated in requirement \ref{requirement:ontologies-on-the-web}, the usual scenario for data modeling consists of reading an ontology from the web as a CIM. This section analyzes the requirement \ref{requirement:pim-editing}, whether there exist situations where modifying the ontology in the tool may be more beneficial than modification of the ontology itself.
-
-We can classify the reasons for modifying the ontology as follows:
-
-\begin{enumerate}
-    \item The ontology is wrong and does not describe the domain correctly. - \textit{Then, a correct way would be to fix the ontology.}
-    \item The ontology describes only a subset of the domain. Either only the core of the domain or the ontology is complete, but only for one domain, whether in another, something may be missing. - \textit{If the desired ontology is strictly a superset of the domain, we can exploit the linked data features to add missing annotations in our own structured data. Then, we would use the new ontology.}
-    \item The ontology is not granular enough. Some entities can be represented in more detail than they currently are or vice versa. - \textit{We would need to create a copy of affected classes or use an advanced tool if it exists.}
-\end{enumerate}
-
-Suppose the example with goods in the delivery company. Although the goods may be identified by EAN (barcode on items), the software team may prefer their own internal identifiers. There can be reasons for not including the identifier in the ontology, as it is too specific for only a software team, for example. This would correspond to the second category from the list above. The missing attribute then may belong to either the original class or the new extended class. The third category may represent the case when we, for example, need to replace an address with a set of more specific attributes such as \textit{street}, \textit{number}, \textit{city}, \textit{country}, etc.
-
-Although in all the scenarios, the preferred way would be to create a new ontology, it can be too cumbersome and time-consuming, especially if the change is too small. Therefore, the possibility of modifying the PIM should be possible.
-
-\smallskip
 
 This issue must be analyzed concurrently with the second point of requirement \ref{requirement:ontologies-on-the-web}, that the ontology may change. Ideally, the changes in CIM should be reflected in the resulting schemas; therefore we need a mechanism that tells us what has changed. Having PIM strictly as a copy of CIM may help in this process as we can compare the two levels and \textit{somehow} generate a sequence of operations that modifies PIM. The modifications may be as simple as \textit{changing a class title}, or \textit{changing an association cardinality} to the complex ones such as \textit{join two attributes into one} or \textit{move an attribute to another class}. It is essential to have the changes that complex as they carry the information on how the schemas and their data should be modified, not just the final state.
 
@@ -154,53 +136,6 @@ To make modifications complete, we also need to delete the entities. As we say, 
 From the descriptions above, the inconsistency may happen if the CIM changes or when user modifies the PIM. It is easy to detect it as we can compare entities in PIM with those in CIM. To support the second point from requirement \ref{requirement:ontologies-on-the-web}, we would need to create a set of atomic operations on the PIM level that make the PIM consistent again. These operations can be propagated up to schemas to apply the change from the ontology.
 
 \td{Chtěl bych ještě zmínit alternativní řešení nad kterýma jsem přemýšlel a zjistil jsem, že jsou z nějakého důvodu špatná.}
-
-\newpage
-\subsection{Semantic mapping of related PIM entities}
-
-The third reason for modifying an ontology from the previous subsection may be analyzed from another point of view. As we decide to introduce a new entity/entities that replace others, it may be beneficial to keep the information that the two groups are semantically connected. This would probably tend us to extend PIM with semantic mapping between entities which can be used for transformations purposes.
-
-As an example, suppose the address again. Address as a whole can be mapped to its parts, such as street, number, etc., and vice versa. The simplest mapping would split the string by commas and new lines, and join them back, respectively.
-
-The mapping may not be used just for new PIM entities, as we have shown, but also between the entities in the ontology or between different ontologies.
-
-The user then can decide whether he/she wants to use the first or the second group of entities, and the transformation script would still be able to transform data between those two representations.
-
-\begin{figure}[h]\centering
-    \begin{tikzpicture}[
-        class/.style={rectangle, draw=orange!60, fill=orange!5, very thick, minimum size=5mm},
-        attribute/.style={rectangle, draw=blue!60, fill=blue!5, very thick, minimum size=5mm},
-        mapping/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
-    ]
-        %Nodes
-        \node[class,align=center] (ci) {\textbf{PIM class}\\Contact information};
-
-        \node[attribute,align=center] (address) [below=.5cm of ci, xshift=2.5cm,anchor=north west] {\textbf{PIM attribute}\\address};
-
-        \node[attribute,align=center] (as) [below=.5cm of ci, xshift=-2.5cm,anchor=north east] {\textbf{PIM attribute}\\street};
-        \node[attribute,align=center] (an) [below=.5cm of as] {\textbf{PIM attribute}\\number};
-        \node[attribute,align=center] (ac) [below=.5cm of an] {\textbf{PIM attribute}\\city};
-
-        \node[mapping,align=center] (map) [below=3cm of ci, xshift=3cm, ,anchor=north] {\textbf{PIM mapping}\\\{address\}=\{street\}, \{number\}\textbackslash n\{city\}};
-        \node (psmDot) [below=.5cm of ac] {...};
-
-        %Lines
-        \draw[latex-] (ci) -- (address.west);
-        \draw[latex-] (ci) -- (as.east);
-        \draw[latex-] (ci) -- (an.east);
-        \draw[latex-] (ci) -- (ac.east);
-
-        \draw[-latex] (map.north) -- (address.south);
-        \draw[-latex] (map.west) -- (as.east);
-        \draw[-latex] (map.west) -- (an.east);
-        \draw[-latex] (map.west) -- (ac.east);
-    \end{tikzpicture}
-    \caption{Possible solution for the problem of semantic mapping between PIM entities. The example shows two groups of attributes that can be mapped on each other.}
-\end{figure}
-
-This approach, together with data transformations, can even be used to create transformation scripts between old and new data if the ontology changes. We would simply instruct the propagation mechanism not to modify the PIM but rather create new entities and keep the old uninterpreted. We would then copy all schemas that were affected and evolute the copies. This would create new schemas and keeps old ones under the same PIM. Semantic mapping with data transformations would then generate the transformation scripts.
-
-We will keep the question behind the mapping open as it is way too advanced for the current state of the project. However, introducing a new PIM construct to the framework that maps the entities should not collide with the rest of the framework. And as it is at the PIM level, it would be possible to extract this information from CIM.
 
 \newpage\subsection{Evolution of interpreted and non-interpreted PIM entities}
 

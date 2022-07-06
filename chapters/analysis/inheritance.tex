@@ -6,14 +6,14 @@
 
 \begin{requirement}
     The tool shall support class inheritance on a general schema level and in generated schemas. That means it shall be possible to design a schema that validates data where both the base and derived classes can be used. The derived class may have additional properties.
+    \label{requirement:inheritance}
 \end{requirement}
 
 \begin{showcase}
-    We will start directly with an example. Suppose that the warehouse also distributes foods besides the general goods. Food is a type of good, but it may have additional attributes for storing purposes, such as \textit{storing temperature} or \textit{expiration date}. Suppose we want to design a schema for a JSON list of goods, as seen in \autoref{analysis:inheritance:json-data}. The document is an array of objects where each object has basic properties such as \textit{name} and \textit{price}. If the object represents food, we want it to have the additional attributes. JSON Schema format is capable of supporting this.
+  We will start directly with an example. Suppose that the warehouse also distributes foods besides the general goods. Food is a type of good, but it may have additional attributes for storing purposes, such as \textit{storing temperature} or \textit{expiration date}. Suppose we want to design a schema for a JSON list of goods, as seen in \autoref{analysis:inheritance:json-data}. The document is an array of objects where each object has basic properties such as \textit{name} and \textit{price}. If the object represents food, we want it to have the additional attributes. JSON Schema format is capable of supporting this.
 
-    Without any additional information, we can only say that if the object contains only one of those additional properties, it is not valid, because there is no such class that has only one of them. Nevertheless, we can add a property that specifies the type (or category) of goods and use this to validate the object.
-    \begin{figure}[H]\centering
-        \begin{Verbatim}[commandchars=\\\{\}]
+  \begin{figure}[H]\centering
+      \begin{Verbatim}[commandchars=\\\{\}]
 [
   \{
     "name": "Chair",
@@ -28,10 +28,12 @@
     "storingTemperature": "frozen"
   \}
 ]
-        \end{Verbatim}
-        \caption{Example of JSON data we want to validate. Based on the type of good, the object may have additional properties.}
-        \label{analysis:inheritance:json-data}
-    \end{figure}
+      \end{Verbatim}
+      \caption{Example of JSON data we want to validate. Based on the type of good, the object may have additional properties.}
+      \label{analysis:inheritance:json-data}
+  \end{figure}
+
+    Without any additional information, we can only say that if the object contains only one of those additional properties, it is not valid, because there is no such class that has only one of them. Nevertheless, we can add a property that specifies the type (or category) of goods and use this to validate the object.
 \end{showcase}
 
 This requirement impacts the application on three different levels. (i) The general schema model must have constructs representing the required problem. This is analyzed mainly in the following chapter. (ii) We must somehow represent the inheritance in the user interface. By this, we mean how to show that the class has a specialization in the "bullet list" representation (see \autoref{analysis/general-schema-representation}). (iii) All generators shall understand them and generate a schema that corresponds to the intended result.
@@ -70,7 +72,7 @@ Because we do not want to show inherited properties, the descendant classes must
 
 So far, the internal schema model, yet not formally defined, does not support constructs for the purpose of inheritance. We can build on the current proposal of the UI, but this approach is not robust enough. We want to compose the desired results from low-level constructs.
 
-\subsection{Disjunction in schemas}
+\subsection*{Disjunction in schemas}
 
 First, we introduce the concept of a disjunction. Disjunction in a schema context is a set of rules (or subschemas) where exactly one rule must be satisfied. Disjunction serves as the "OR" operator in the schema. We can use it in our inheritance problem to create an association to a disjunction of classes that have a common ancestor. It nicely solves part of the inheritance problem and can be used for other things too. For example, the title can be either a string or an object of language and translation pairs.
 
@@ -137,7 +139,9 @@ There are two ways of implementing OR operator in our proposed hierarchical mode
   \caption{Comparison of two models of the semantically same subschemas of class $C$ having either attribute $A_1$, or both $A_2$ and $A_3$.}
 \end{figure}
 
-The model using a property-level OR can not use the disjunction in the root of the schema, which is an essential disadvantage as there may be use-cases for those schemas. On the other hand, this model is better suited for the cartesian product of multiple disjunctions in a single class. Suppose a schema for class $C$ having the following attributes: the first attribute is either $A_11$ or $A_12$, the second attribute is either $A_21$ or $A_22$, and the third attribute is either $A_31$ or $A_32$.
+The former model is more common for programmers, as in some languages (such as TypeScript), it is possible to specify a type of property in this way, as an OR of multiple types. On the other hand, the latter approach is more known in data modeling, as XSD's {\tt xs:choice} may work exactly the same way.
+
+The model using a property-level OR can not use the disjunction in the root of the schema, which is an essential disadvantage as there may be use-cases for those schemas. On the other hand, this model is better suited for the cartesian product of multiple disjunctions in a single class. Suppose a schema for class $C$ having the following attributes: the first attribute is either $A_11$ or $A_12$, and the second attribute is either $A_21$ or $A_22$.
 
 \begin{figure}[h!]\centering
   \begin{subfigure}[b]{.6\textwidth}
@@ -202,13 +206,116 @@ The model using a property-level OR can not use the disjunction in the root of t
       \draw[-latex] (0,1) -- (root);
     \end{tikzpicture}
     \caption{Property-level OR}
+    \label{fig:cartesian-product:property-or}
     \end{subfigure}%
-  \caption{Comparison of two models of the semantically same subschemas of class $C$ having either attribute $A_1$, or both $A_2$ and $A_3$.}
+  \caption{Comparison of two models for cartesian product of disjunctions.}
+  \label{fig:cartesian-product}
 \end{figure}
 
-% jak to ma vypadat v ui, jake jsou moznosti
-% jak to ma vypadat v modelu, ze musime udelat ten or a include, ale tady pozor, to koliduje s dalsi kapitolou
-% pak jsem uplne zapomnel na popis toho, jak treba pridat koren, nebo jak pridavat properties
+As seen from \autoref{fig:cartesian-product}, the model with a class-level OR tends to have wider trees for cartesian products of disjunctions as we have to create (automatically, of course) each combination.
+
+\subsection*{Include in schemas}
+
+Before proceeding with the disjunctions, we will solve the rest of the problem with inheriting properties. Each class may explicitly use attributes and association that belongs to a parent class, as stated in the previous requirements. In the inheritance problem, however, we do not want to do that as those properties are already set on the parent. Therefore, we would need a mechanism to include those properties from the parent class.
+
+The most straightforward way is to implement classical inheritance, as known from programming languages, between the physical classes in the model. However, this limits us in some schemas, where the order of the attributes matter. Therefore, we will use a new construct \textbf{include}, which can "copy" all the properties of the given class and insert them in the place where the include is located. Include is hence a part of class properties alongside attributes and classes. The include with the class-level OR can be fully used to implement the desired inheritance.
+
+All classes that participate in the inheritance are internally under the same OR, as only one of those classes is used in the resulting data representation. Each class, except the base class, has an include as a first element in the property list. The include then points to the nearest parent class.
+
+\begin{figure}[h!]\centering
+  \centering
+      \begin{tikzpicture}[
+        level 1/.style = {sibling distance = 5cm, level distance = 1cm},
+        level 2/.style = {sibling distance = 1.75cm, level distance = 1cm},
+        level 3/.style = {level distance = 0.75cm},
+        every child/.style={-latex}
+      ]
+        \node[typeor] (root) {or}
+          child {
+              node[typeclass] (good) {Good}
+              child { node[typeattribute] {name} }
+              child { node[typeattribute] {price} }
+          }
+          child {
+              node[typeclass] {Food}
+              child { node[typeincludes] (includes) {includes} }
+              child { node[typeattribute] {exp.\\date} }
+              child { node[typeattribute] {storing\\temp.} }
+          }
+        ;
+
+        \draw[-latex] (0,1) -- (root);
+         \path[every node/.style={font=\sffamily\small}]
+          (includes) edge [-latex,out=225, in=0]  (good);
+      \end{tikzpicture}
+
+    \caption{Proposed schema model that handles the inheritance problem with an include and an OR constructs.}
+  \end{figure}
+
+\bigskip
+
+Having the include construct allows us to overcome the problem of the cartesian product of disjunctions, which is shown in \autoref{fig:cartesian-product}. This is not a proposed solution as we currently do not have a use case where solving this problem is important. Because the include extracts properties of the included subject, we may combine include to OR to a set of classes, which according to the defined logic, would extract properties of one of the included classes.
+
+\begin{figure}[h!]\centering
+  \centering
+  \begin{tikzpicture}[
+    type-or/.style={diamond, draw=orange!60, fill=orange!5, very thick},
+    type-class/.style={rectangle, draw=red!60, fill=red!5, very thick},
+    type-attribute/.style={rectangle, draw=blue!60, fill=blue!5, very thick},
+    type-or-group/.style={circle, draw=orange!60, fill=orange!5, very thick},
+    level 1/.style = {sibling distance = 4cm, level distance = 1cm},
+    level 2/.style = {sibling distance = 1.5cm, level distance = 1.25cm},
+    level 3/.style = {sibling distance = 1.5cm, level distance = 1cm},
+    every child/.style={-latex}
+    ]
+      \node[type-class] (root) {$C$}
+        child {
+          node[typeincludes] {include}
+            child {
+                node[type-or]{or}
+                child{
+                    node[type-class] {$C$}
+                        child {node[type-attribute] {$A_{11}$}}
+                }
+                child{
+                    node[type-class] {$C$}
+                        child {node[type-attribute] {$A_{12}$}}
+                }
+            }
+        }
+        child {
+          node[typeincludes] {include}
+            child {
+                node[type-or]{or}
+                child{
+                    node[type-class] {$C$}
+                        child {node[type-attribute] {$A_{21}$}}
+                }
+                child{
+                    node[type-class] {$C$}
+                        child {node[type-attribute] {$A_{22}$}}
+                }
+            }
+        };
+      \draw[-latex] (0,1) -- (root);
+    \end{tikzpicture}
+  \caption{Using include-to-or construction to achieve the same thing as in \autoref{fig:cartesian-product:property-or}. The OR selects one of the two classes, and the include copies the content to the parent.}
+\end{figure}
+
+\bigskip
+
+Although both \textit{OR} and \textit{include} constructs bring complexity to the model, it is still possible to ensure basic type safety rules.
+
+The purpose of an \textit{include} is to take all the properties of a given class and insert them in the place where the \textit{include} is located. Class
+
+
+There are no restrictions for an \textit{OR} located in the root of the schema tree as there are no restrictions for classes either. We will analyze reference later
+
+\textit{OR} in association, on the other hand, is restricted by the type of the class that is on the association end. We have already stated that only the given class (that the association points to) and its descendants are allowed to be at the association's end. This, however, nicely fits with the \textit{OR} logic as its type can be determined as the nearest common ancestor of all classes in the \textit{OR}.
+
+The last use case for the \textit{OR} was in the include-to-or constructs.
+
+% pak jsem uplne zapomnel na popis toho, jak treba pridat koren, nebo jak pridavat properties a ze i tam je dedicnost
 % zamyslet se nad tim, jak bude fungovat lifting a lowering
 
 % potom v te formalni popsat ty dva typy oru, jeden je generalization, jeden specialization

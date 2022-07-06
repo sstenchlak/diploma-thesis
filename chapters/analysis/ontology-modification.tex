@@ -3,7 +3,21 @@
   The approach from previous tools of creating the ontology directly in the application is not required, but there should be support for \textit{some} modifications.
 \end{requirement}
 
-As stated in the \autoref{requirement:ontologies-on-the-web}, the preffered way is to create a complete ontology externally and keep it up-to-date and valid against requirements of all involved parties. But it is hard to always follow all the rules, especially when doing experiments, or small errors need to be fixed.
+As stated in the \autoref{requirement:ontologies-on-the-web}, the preferred way is to create a complete ontology externally and keep it up-to-date and valid against the requirements of all involved parties.
+
+Nevertheless, there may be scenarios when it may be beneficial to change the ontology directly. Some of them are the following:
+
+\begin{enumerate}
+  \item The ontology is wrong and does not describe the domain correctly. - \textit{Then, a correct way would be to fix the ontology.}
+  \item The ontology describes only a subset of the domain. Either only the core of the domain or the ontology is complete, but only for one domain, whether in another, something may be missing. - \textit{If the desired ontology is strictly a superset of the domain, we can exploit the linked data features to add missing annotations in our own structured data. Then, we would use the new ontology.}
+  \item The ontology is not granular enough. Some entities can be represented in more detail than they currently are or vice versa. - \textit{We would need to create a copy of affected classes or use an advanced tool if it exists.}
+\end{enumerate}
+
+Suppose the example with goods in the delivery company. Although the goods may be identified by EAN (barcode on items), the software team may prefer their own internal identifiers. There can be reasons for not including the identifier in the ontology, as it is too specific for only a software team, for example. This would correspond to the second category from the list above. The missing attribute then may belong to either the original class or the new extended class. The third category may represent the case when we, for example, need to replace an address with a set of more specific attributes such as \textit{street}, \textit{number}, \textit{city}, \textit{country}, etc.
+
+Although in all the scenarios, the preferred way would be to create a new ontology or modify the remaining, it can be too cumbersome and time-consuming, especially if the change is too small or the data modeler is performing an experiment. Therefore, the possibility of modifying the ontology should be possible.
+
+But, it may be hard to follow the rules, especially when doing experiments, or small errors need to be fixed.
 
 Allowing such changes must be made carefully, as it may interfere with some mechanisms.
 \begin{enumerate}

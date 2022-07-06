@@ -58,7 +58,7 @@ The graph model is not even necessary to generate as we use the ontology that is
 
 
 %==============================================================================%
-\section*{Analysis of the formats}
+\subsection*{Analysis of the formats}
 
 We will analyze the standard formats to properly design a user interface for the schema modeling and the underlying general schema model capable of describing those formats.
 
@@ -169,7 +169,7 @@ To support CSV documents containing unrelated data, specifically CSV tables, tha
 
 Although we have not dealt with advanced cases, the model is robust enough for most use cases.
 
-\section*{General schema format}
+\subsection*{Designing the model}
 
 So far, we have shown that a JSON Schema-like model with format-specific annotations is sufficient for describing a structure of JSON, XML, and CSV documents. In general, we cannot have too strict requirements on the model as some other formats may not require all the information or may be too simple. This pushes us to define the schema in the most elementary way.
 
