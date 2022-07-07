@@ -12,7 +12,7 @@
 \end{requirement}
 
 \begin{showcase}
-  We will start directly with an example. Suppose that the warehouse also distributes foods besides the general goods. Food is a type of good, but it may have additional attributes for storing purposes, such as \textit{storing temperature} or \textit{expiration date}. Suppose we want to design a schema for a JSON list of goods, as seen in \autoref{analysis:inheritance:json-data}. The document is an array of objects where each object has basic properties such as \textit{name} and \textit{price}. If the object represents food, we want it to have the additional attributes. JSON Schema format is capable of supporting this.
+  We will start directly with an example. Suppose that the warehouse also distributes foods in addition to general goods. Food is a type of good, but it may have additional attributes for storage purposes, such as \textit{storing temperature} or \textit{expiration date}. Suppose that we want to design a schema for a JSON list of goods, as seen in \autoref{analysis:inheritance:json-data}. The document is an array of objects, where each object has basic properties such as \textit{name} and \textit{price}. If the object represents food, we want it to have the additional attributes. JSON Schema format is capable of supporting this.
 
   \begin{figure}[H]\centering
       \begin{Verbatim}[commandchars=\\\{\}]
@@ -38,19 +38,19 @@
     Without any additional information, we can only say that if the object contains only one of those additional properties, it is not valid, because there is no such class that has only one of them. Nevertheless, we can add a property that specifies the type (or category) of goods and use this to validate the object.
 \end{showcase}
 
-This requirement impacts the application on three different levels. (i) The general schema model must have constructs representing the required problem. This is analyzed mainly in the following chapter. (ii) We must somehow represent the inheritance in the user interface. By this, we mean how to show that the class has a specialization in the "bullet list" representation (see \autoref{analysis/general-schema-representation}). (iii) All generators shall understand them and generate a schema that corresponds to the intended result.
+This requirement impacts the application at three different levels. (i) The general schema model must have constructs representing the required problem. This is analyzed mainly in the following chapter. (ii) We must somehow represent the inheritance in the user interface. By this, we mean how to show that the class has a specialization in the "bullet list" representation (see \autoref{analysis/general-schema-representation}). (iii) All generators shall understand them and generate a schema that corresponds to the intended result.
 
 \medskip
 
-An advanced reader may point out that the problem can be generalized by introducing disjunction to the schema. As we will show in the following text, this assumption is correct. Hovewer, designing schemas only with disjunction is a cumbersome and complicated task for less advanced users. Hence, we still want to provide the ability to work more efficiently with the inheritance.
+An advanced reader may point out that the problem can be generalized by introducing a disjunction to the schema. As we will show in the following text, this assumption is correct. Hovewer, designing schemas only with disjunction is a cumbersome and complicated task for less advanced users. Therefore, we still want to provide the ability to work more efficiently with the inheritance.
 
 In ordinary cases, a more general class shares its properties with all its descendants. This can be seen in the example, where the \textit{Ice-cream} has all properties a \textit{Chair} has. In UML modeling and most programming languages, copying the properties is unnecessary as they are inherited. We want to achieve a similar thing in our schema representation, not polluting the page with redundant information. This, however, restricts the use of inheritance because we can not select the order of properties in the descendant class if the properties are not shown.
 
-To formalize the restriction, a descendant class implicitly has all properties of the parent in the same order, and those properties are before any other properties of the descendant class. This is a limitation for XML and CSV documents as JSON does not depend on the order of properties. However, the order usually does not play a huge role in the modeling. For advanced use cases, the low-level constructs introduced later can be used.
+To formalize the restriction, a descendant class implicitly has all properties of the parent in the same order, and those properties are before any other properties of the descendant class. This is a limitation for XML and CSV documents as JSON does not depend on the order of properties. However, order generally does not play a huge role in modeling. For advanced use cases, the low-level constructs introduced later can be used.
 
 The rule is applied through the whole chain of inheritance. If there are classes $A$, $B$, and $C$, where $C$ is a descendant of $B$ and $B$ is a descendant of $A$, then $C$ has properties of $A$, properties of $B$, and then its own properties.
 
-In some situations, we might want to omit the parent class from a schema. Let us have a base class $B$ and its two descendants, $M$ and $N$. So far, we can model a schema with either $B$, $M$, or $N$, where $B$ provides properties to both $M$ and $N$. $B$ may not represent a real thing per se. It may correspond to an abstract class that only serves as a base for the other classes. In that scenario, we only want to allow $M$ and $N$ to be used.
+In some situations, we might want to omit the parent class from a schema. Let us have a base class $B$ and its two descendants $M$ and $N$. So far, we can model a schema with either $B$, $M$, or $N$, where $B$ provides properties to both $M$ and $N$. $B$ may not represent a real thing per se. It may correspond to an abstract class that serves only as a base for the other classes. In that scenario, we only want to allow $M$ and $N$ to be used.
 
 \medskip
 
@@ -72,15 +72,15 @@ Because we do not want to show inherited properties, the descendant classes must
   \caption{Proposition for representing an inheritance in the schema. The row with specialization classes is below the property list and does not belong to it.}
 \end{figure}
 
-So far, the internal schema model, yet not formally defined, does not support constructs for the purpose of inheritance. We can build on the current proposal of the UI, but this approach is not robust enough. We want to compose the desired results from low-level constructs.
+So far, the internal schema model, although not formally defined, does not support constructs for the purpose of inheritance. We can build on the current proposal of the UI, but this approach is not robust enough. We want to compose the desired results from low-level constructs.
 
 \subsection{Disjunction in schemas}
 
-First, we introduce the concept of a disjunction. Disjunction in a schema context is a set of rules (or subschemas) where exactly one rule must be satisfied. Disjunction serves as the "OR" operator in the schema. We can use it in our inheritance problem to create an association to a disjunction of classes that have a common ancestor. It nicely solves part of the inheritance problem and can be used for other things too. For example, the title can be either a string or an object of language and translation pairs.
+First, we introduce the concept of a disjunction. The disjunction in a schema context is a set of rules (or subschemas) where exactly one rule must be satisfied. The disjunction serves as the "OR" operator in the schema. We can use it in our inheritance problem to create an association to a disjunction of classes that have a common ancestor. It nicely solves part of the inheritance problem and can be used for other things, as well. For example, the title can be either a string or an object of language and translation pairs.
 
-Both JSON Schema and XML Schema support some kind of disjunction. JSON Schema has {\tt anyOf} keyword, which specifies that the given value must match at least one rule, effectively creating OR. XSD hs {\tt xs:choice} element doing the similar thing.
+Both the JSON Schema and the XML Schema support some kind of disjunction. JSON Schema has the {\tt anyOf} keyword, which specifies that the given value must match at least one rule, effectively creating an OR. XSD has {\tt xs:choice} element doing the similar thing.
 
-There are two ways of implementing OR operator in our proposed hierarchical model: on a \textbf{class level} and \textbf{property level}. The former approach allows placing the OR operator anywhere where classes can be placed. Either in the root of the schema or at the association. The OR is then a set of classes. The latter approach is more flexible as OR is in the property list of a class allowing users to specify the disjunction between tuples of properties.
+There are two ways to implement the OR operator in our proposed hierarchical model: on a \textbf{class level} and \textbf{property level}. The former approach allows the OR operator to be placed anywhere where classes can be placed. Either in the root of the schema or in the association. The OR is then a set of classes. The latter approach is more flexible, allowing users to specify the disjunction between tuples of properties.
 
 \begin{figure}[h!]\centering
   \begin{subfigure}[b]{.5\textwidth}
@@ -141,9 +141,9 @@ There are two ways of implementing OR operator in our proposed hierarchical mode
   \caption{Comparison of two models of the semantically same subschemas of class $C$ having either attribute $A_1$, or both $A_2$ and $A_3$.}
 \end{figure}
 
-The former model is more common for programmers, as in some languages (such as TypeScript), it is possible to specify a type of property in this way, as an OR of multiple types. On the other hand, the latter approach is more known in data modeling, as XSD's {\tt xs:choice} may work exactly the same way.
+The former model is more common for programmers, as in some languages (such as TypeScript), it is possible to specify a type of property in this particular way as an OR of multiple types. On the other hand, the latter approach is more well known in data modeling, as XSD's {\tt xs:choice} works exactly the same way.
 
-The model using a property-level OR can not use the disjunction in the root of the schema, which is an essential disadvantage as there may be use-cases for those schemas. On the other hand, this model is better suited for the cartesian product of multiple disjunctions in a single class. Suppose a schema for class $C$ having the following attributes: the first attribute is either $A_11$ or $A_12$, and the second attribute is either $A_21$ or $A_22$.
+The model using a property-level OR can not use the disjunction in the root of the schema, which is an essential disadvantage as there may be use-cases for those schemas. On the other hand, this model is better suited for the Cartesian product of multiple disjunctions in a single class. Suppose a schema for class $C$ having the following attributes: the first attribute is either $A_11$ or $A_12$, and the second attribute is either $A_21$ or $A_22$.
 
 \begin{figure}[h!]\centering
   \begin{subfigure}[b]{.6\textwidth}
@@ -210,17 +210,17 @@ The model using a property-level OR can not use the disjunction in the root of t
     \caption{Property-level OR}
     \label{fig:cartesian-product:property-or}
     \end{subfigure}%
-  \caption{Comparison of two models for cartesian product of disjunctions.}
+  \caption{Comparison of two models for the Cartesian product of disjunctions.}
   \label{fig:cartesian-product}
 \end{figure}
 
-As seen from \autoref{fig:cartesian-product}, the model with a class-level OR tends to have wider trees for cartesian products of disjunctions as we have to create (automatically, of course) each combination.
+As seen in \autoref{fig:cartesian-product}, the model with a class-level OR tends to have wider trees for Cartesian products of disjunctions because we have to create (automatically, of course) each combination.
 
 \subsection{Include in schemas}
 
-Before proceeding with the disjunctions, we will solve the rest of the problem with inheriting properties. Each class may explicitly use attributes and association that belongs to a parent class, as stated in the previous requirements. In the inheritance problem, however, we do not want to do that as those properties are already set on the parent. Therefore, we would need a mechanism to include those properties from the parent class.
+Before proceeding with the disjunctions, we will solve the rest of the problem with inheriting properties. Each class may explicitly use attributes and associations that belong to a parent class, as stated in the previous requirements. In the inheritance problem, however, we do not want to do that, as those properties are already set on the parent. Therefore, we would need a mechanism to include those properties from the parent class.
 
-The most straightforward way is to implement classical inheritance, as known from programming languages, between the physical classes in the model. However, this limits us in some schemas, where the order of the attributes matter. Therefore, we will use a new construct \textbf{include}, which can "copy" all the properties of the given class and insert them in the place where the include is located. Include is hence a part of class properties alongside attributes and classes. The include with the class-level OR can be fully used to implement the desired inheritance.
+The most straightforward way is to implement classical inheritance, as is known from programming languages, between the physical classes in the model. However, this limits us in some schemas where the order of the attributes matters. Therefore, we will use a new construct \textbf{include}, which can "copy" all properties of the given class and insert them in the place where the include is located. Include is hence a part of class properties alongside attributes and classes. The include with the class-level OR can be fully used to implement the desired inheritance.
 
 All classes that participate in the inheritance are internally under the same OR, as only one of those classes is used in the resulting data representation. Each class, except the base class, has an include as a first element in the property list. The include then points to the nearest parent class.
 
@@ -304,11 +304,13 @@ Having the include construct allows us to overcome the problem of the cartesian 
   \caption{Using include-to-or construction to achieve the same thing as in \autoref{fig:cartesian-product:property-or}. The OR selects one of the two classes, and the include copies the content to the parent.}
 \end{figure}
 
-\bigskip
+\subsection{Type coherency}
 
-Although both \textit{OR} and \textit{include} constructs bring complexity to the model, it is still possible to ensure basic type safety rules.
+\td{Tady mi to ještě chybí dopsat.}
 
-The purpose of an \textit{include} is to take all the properties of a given class and insert them in the place where the \textit{include} is located. Class
+Although both constructs \textit{OR} and \textit{include} add complexity to the model, it is still possible to ensure basic type safety rules.
+
+The purpose of an \textit{include} is to take all properties of a given class and insert them in the place where \textit{include} is located. Class
 
 
 There are no restrictions for an \textit{OR} located in the root of the schema tree as there are no restrictions for classes either. We will analyze reference later

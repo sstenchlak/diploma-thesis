@@ -2,18 +2,18 @@
 
 \subsection{Type coherency}
 
-As already mentioned, an ontology is not just a supporting source for the modeling process but rather the only source we can use to create schemas. The schema then represents a mapping to the ontology for further processing.
+As already mentioned, an ontology is not just a supporting source for the modeling process, but rather the only source that we can use to create schemas. The schema then represents a mapping to the ontology for further processing.
 
-Because the parts of the schema are mapped, we can check whether the attributes and associations do belong to the given class. This allows us to check, whether the schema is being built correctly and provide the appropriate help during the modeling based on the type of the classes.
+Because parts of the schema are mapped, we can check whether the attributes and associations belong to the given class. This allows us to check whether the schema is being built correctly and to provide the appropriate help during the modeling based on the type of the classes.
 
-Although it may seem that the problem is trivial, there are advanced scenarios that need to be considered.
+Although the problem may seem trivial, there are advanced scenarios that must be considered.
 
 \begin{enumerate}
   \item We may want to add additional attributes and associations directly into the schema without a connection to the ontology. This is a schema-modeling problem as we may need, for example, to wrap several properties into an additional object (JSON) or a tag (XML) or add another property because the data we validate contains it.
   \item If we have class $A$ in association with $B$ and we have schema with the class $A$ having $B$, then it may be possible to move attributes from $A$ into $B$. Because for each $B$ we know to which $A$ it belongs, we do not loose any information during this process.
 \end{enumerate}
 
-As an example of the second case, suppose our ontology has \textit{Goods} and their \textit{Variants}. Variants are colors, sizes, materials, etc., for the given good. Surely all variants are made by one manufacturer. Therefore, it makes sense that the \textit{manufacturer} attribute would be associated with the \textit{Goods} class, whether the \textit{color} with the \textit{Variants}. This may not be beneficiary for all data consumers. Hence a schema with the \textit{manufacturer} attribute moved into the \textit{Variants} class would be a better solution.
+As an example of the second case, suppose that our ontology has \textit{Goods} and their \textit{Variants}. Variants are colors, sizes, materials, etc., for the given item. Surely, all variants are made by one manufacturer. Therefore, it makes sense that the \textit{manufacturer} attribute would be associated with the \textit{Goods} class, whether the \textit{color} with the \textit{Variants}. This may not be a beneficiary for all data consumers. Therefore, a schema with the \textit{manufacturer} attribute moved into the \textit{Variants} class would be a better solution.
 
 \begin{figure}[h!]\centering
   \begin{subfigure}[b]{.5\textwidth}
@@ -48,17 +48,17 @@ As an example of the second case, suppose our ontology has \textit{Goods} and th
   \caption{Examples of data with some attributes moved. The former moves attribute \textit{manufacturer} from the parent into the other class that has a counterpart in the ontology. The latter takes attributes such as \textit{name} and \textit{address} and wraps them with additional objects that do not correspond to the ontology.}
 \end{figure}
 
-This, however, is too complex for the current state of development, but it gives us a chance to think about the problem in a more general way.
+However, this is too complex for the current state of development, but it gives us a chance to think about the problem in a more general way.
 
 \subsection{Data modeling process}
 
 So far, we have only described the desired structure of an ontology and a schema model, but we did not tackle the actual process of how the schema is created.
 
-A user shall start by selecting a root of the schema. Schema under the given root would then describe one entity of the given type, or a list of those entities, depending on the later configuration. Because a set of possible root classes is not limited in any way, the most suitable option is to let user search for the class by its name, descriptions, or other parameters, depending on the given ontology format.
+The user starts by selecting a root of the schema. Schema under the given root would then describe one entity of the given type, or a list of those entities, depending on the later configuration. Because a set of possible root classes is not limited in any way, the most suitable option is to let the user search for the class by its name, descriptions, or other parameters, depending on the given ontology format.
 
-As soon the root is placed in the schema, we get a context because the following attributes and associations to other classes depend on the class where the properties are being added. For that, we use a prompt dialog where it is possible to select those properties to be added.
+As soon as the root is placed in the schema, we get a context because the following attributes and associations to other classes depend on the class where the properties are being added. For that, we use a prompt dialog where it is possible to select those properties to be added.
 
-Although we did not enforce that an ontology must support inheritance, most of them do. Therefore the dialog also allows adding properties of the parent class.
+Although we did not enforce that an ontology must support inheritance, most of them do. Therefore, the dialog also allows adding properties of the parent class.
 
 \medskip
 

@@ -2,10 +2,10 @@
 
 \begin{requirement}
     \label{requirement:ontologies-on-the-web}
-    As many ontologies are located on the web in formats like OWL (Web Ontology Language), RDFs (RDF Schema), UFO (Unified Foundational Ontology), etc., the application shall support reading them.
+    As many ontologies are located on the web in formats such as OWL (Web Ontology Language), RDFs (RDF Schema), UFO (Unified Foundational Ontology), etc., the application shall support reading them.
 \end{requirement}
 
-It may seem that designing the ontology directly in the tool is beneficial because a user does not need to use other tools, and the application may already build the schema, which is feedback to the user. This approach was used in tools \textit{xCase} and \textit{eXolutio} as can be seen in the \autoref{fig:exolutio} in the left panel. However, this approach has the following drawbacks:
+It may seem that designing the ontology directly in the tool is beneficial because a user does not need to use other tools and the application may already build the schema, which is a feedback to the user. This approach was used in tools \textit{xCase} and \textit{eXolutio} as can be seen in the \autoref{fig:exolutio} in the left panel. However, it has the following drawbacks:
 
 \begin{enumerate}
     \item Designing an ontology is a well-defined problem. There are many great and time-proven tools we could not cope with.
@@ -13,32 +13,32 @@ It may seem that designing the ontology directly in the tool is beneficial becau
     \item It is better to split a complex problem into smaller ones.
 \end{enumerate}
 
-On the other hand, not having direct access to the ontology, as it will be on the web, has the following impacts:
+On the other hand, not having direct access to the ontology, as it will be on the Web, has the following impacts:
 
 \begin{enumerate}
-    \item The ontology may \textbf{not always be available}. Unavailability should not forbid us from generating the schemas and making minor changes to them if those changes are not directly related to exploring the ontology.
-    \item The concepts in the ontology may \textbf{point to another ontology} according to Linked Open Data principles.
+    \item The ontology may \textbf{not always be available}. Unavailability should not prevent us from generating the schemas and making minor changes to them if those changes are not directly related to exploring the ontology.
+    \item The concepts in the ontology may \textbf{point to another ontology} according to the Linked Data principles.
 \end{enumerate}
 
-For the reasons above, the preferred workflow is designing the ontology separately in the external tool, publishing it on the web, and then modeling the schema in the application. There is the \autoref{requirement:pim-editing} later in the text specifying that a user can do modifications in the application. This is not inconsistent with the statements as it deals with minor changes instead of defining a complete ontology.
+For the reasons mentioned above, the preferred workflow is to design the ontology separately in the external tool, publish it on the Web, and then model the schema in the application. There is \autoref{requirement:pim-editing} later in the text specifying that a user can make modifications in the application. This is not inconsistent with the statements, as it deals with minor changes instead of defining a complete ontology.
 
 The term ontology has already been defined in the introductory chapter, and we will formally define its specific requirements in the next chapter.
 
-It shall be easy to implement support for other types of ontologies, and all of them shall be linkable according to LOD principles.
+It shall be easy to implement support for other types of ontologies, and all of them shall be linkable according to the LD principles.
 
 \subsection{Format of the ontology}
 
-In the requirement above, several different formats were proposed for the ontology. This section will analyze the minimal requirements for any ontology format and how we will treat additional information in them. Because the core goal is to design schemas, we will start with a proposed model from the \autoref{requirement:general-schema}. The schema consists of classes and their properties. A class corresponds to a thing from real life. An attribute is a literal that belongs to the given class only. An association, on the other hand, is a link between two (not necessarily different) classes. From this point of view, the association is an independent entity.
+In the above requirement, several different formats were proposed for the ontology. This section will analyze the minimal requirements for any ontology format and how we will treat additional information in them. Because the core goal is to design schemas, we will start with a model proposed from \autoref{requirement:general-schema}. The schema consists of classes and their properties. A class corresponds to a thing from real life. An attribute is a literal that belongs to the given class only. On the other hand, an association is a link between two (not necessarily different) classes. From this point of view, the association is an independent entity.
 
-Associations are usually oriented, and some ontologies may specify a title and a description for a reverse direction. For example, in RDFS, the association (or property in RDFS terminology) is an entity of type {\tt rdf:Property} having domain and range classes and a title and description. Therefore, it only describes the forward direction. We can, of course, create a property in the other direction as well, but there would not be a connection between a forward and a reverse direction. Hence we would not know those are semantically the same properties. UFO (Unified Foundational Ontology), as an example of more complex ontology, introduces relators. Relators are relationships between two or more things connected by mediation. The mediation can be described, giving us a way to describe both directions differently.
+Associations are usually oriented, and some ontologies may specify a title and a description for a reverse direction. For example, in RDFS, the association (or property in the RDFS terminology) is an entity of type {\tt rdf:Property} having domain and range classes and a title and description. Therefore, it only describes the forward direction. We can, of course, create a property in the other direction as well, but there would not be a connection between a forward and a reverse direction. Hence, we would not know that those are semantically the same properties. UFO (Unified Foundational Ontology), as an example of a more complex ontology, introduces relators. Relators are relationships between two or more things connected by mediation. The mediation can be described, giving us a way to describe both directions differently.
 
-Although the latter approach is more complex, using simple concepts for associations may be disadvantageous because of the abovementioned reason. Therefore, we will follow the pattern of UFO and any other simpler ontologies, such as RDFS, will not have the reverse direction described.
+Although the latter approach is more complex, using simple concepts for associations may be disadvantageous for the aforementioned reason. Therefore, we will follow the pattern of UFO and any other simpler ontologies, such as RDFS, will not have the reverse direction described.
 
-\smallskip
+\medskip
 
-An ontology in the context of this requirement is a set of classes that have attributes. Associations then connect two classes together. The connected classes may not be from the same ontology.
+An ontology in the context of this requirement is a set of classes that have attributes. The associations then connect two classes together. The connected classes may not have the same ontology.
 
-As some formats specify ontology in a more complex way, the application may use the additional information to better design the schema. This statement is better defined in the next chapter.
+As some formats specify the ontology in a more complex way, the application may use the additional information to better design the schema. This statement is better defined in the next chapter.
 
 \begin{figure}[h!]\centering
   \centering
