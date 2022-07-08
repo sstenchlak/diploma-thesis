@@ -46,6 +46,27 @@ The purpose of annotations is to bring additional information to the model that 
 
 We do not provide a complete list of all annotations as the intention is to let programmers use their own if necessary, either when creating a new generator or adding support for the new format of an ontology.
 
+\begin{figure}[h!]\centering
+\centering
+\begin{tikzpicture}[]
+    \node[typeclass] (goods) {\textbf{class}\\$title$: Goods\\$description$: Represents goods\\that can be bought};
+    \node[typeattribute] (title) at (6,0) {\textbf{attribute}\\$title$: title\\$type$: xs:string\\$cardinality$: 1..1};
+    \node[typeassociation] (variant) at (5,-3.25) {\textbf{association}};
+    \node[typeassociationend] (varianta) at (0,-2.5) {\textbf{association end}\\$title$: is variant of};
+    \node[typeassociationend] (variantb) at (0,-4) {\textbf{association end}\\$title$: has variant};
+    \node[typeclass] (variantc) at (0,-6.5) {\textbf{class}\\$title$: Goods variant\\$description$: Variant of good, such\\as color, material..};
+
+    \draw[-latex] (title) -- node[below]{$class$} (goods);
+    \draw[-latex] (varianta) -- node[right]{$class$} (goods);
+    \draw[-latex] (variantb) -- node[right]{$class$} (variantc);
+    \draw[-latex] (variant) -- node[above]{$end[0]$} (varianta);
+    \draw[-latex] (variant) -- node[below]{$end[1]$} (variantb);
+
+    \end{tikzpicture}
+
+  \caption{Example of the PIM model shown as graph. Rectangles represent entities. Italic font either inside the rectangle or on the arrow represent the given anotation function with the given value. }
+\end{figure}
+
 \bigskip
 
 Because during the modeling process, CIM (specifically ontologies under different formats) is being copied to PIM, it would make sense to define the CIM in a way that is compatible with PIM.
