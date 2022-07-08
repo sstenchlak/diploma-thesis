@@ -1,49 +1,75 @@
 \chapter{Formal background}
 \label{chapters:formal-background}
 
-% Otazka, zda vychazet z ontologie, nebo z PIMu. Ontologie se da okopirovat z knihy, kde je popsano, jak vetsina ontologii vypada. Daji se tady take vyjmenovat a shrnout jejich vlastnosti. Na zaklade toho sestavit PIM.
+This chapter proposes modifications to the framework layers introduced by previous tools \textit{xCase} and \textit{eXolutio} and formally describes them. As mentioned in the previous chapter, not everything has been implemented yet due to the complexity of the problem. Nevertheless, it is crucial to properly design and plan everything in advance to minimize the technical debt.
 
-This chapter proposes modification to the introduced framework layers and formally describes them. As will be stated in the chapter \ref{chapters:implementation} Implementation, not everything is implemented yet due to its complexity. Nevertheless, it is crucial to properly design and plan everything in advance to minimize the technical debt.
-
-\medskip
+\section{Framework layers}
 
 In contrast with the approach introduced in \textit{XCase} and \textit{eXolutio} tools, the process of creating the domain ontology is moved from the application to the external tools. The application then only uses those ontologies if required.
 
-To support the first and second points, we modified the previously introduced five-level framework. We added new top-most level called CIM (from \textit{Computational Independent Model}). CIM represents the remote ontology on the web. Although there can be more ontologies, with the LOD approach, we can see them as one. PIM is then used as a copy of CIM, and only the necessary entities are copied to it, which corresponds to the previous tools whose ontology was stored in PIM. This modification is in accordance with point 1 and gives us a base ground for implementing point 2, as we can compare CIM and PIM and try to create a sequence of operations that modifies PIM to be consistent with CIM again.
+To fullfil the introduced requirements, we have modified the previously introduced five-level framework in the following way:
+\begin{itemize}
+    \item We have added a new top-most level called \textbf{CIM} (from \textit{Computational Independent Model}). CIM represents the remote ontology on the web according to \autoref{requirement:ontologies-on-the-web}. Although the level is part of the framework, it is important to stress that it has no direct representation in the code because the data are stored on the internet. Because we suppose ontologies respect LD principles, we can see them as one.
+    \item Previous \textbf{PIM} layer is used as a copy of the CIM layer, and only the necessary entities are copied to it. This approach is compatible with the design of the previous tools, which used PIM as the source of the ontology.
+\end{itemize}
 
-\smallskip
+This modification, brings several advantages:
+\begin{enumerate}
+    \item As the ontology is copied, this allows us to use the tool seamlessly without depending on the ontology. We can generate artifacts and modify the schema. Only the operations related to directly using the ontology depend on CIM.
+    \item The mechanism that derives a list of changes during the evolution (see \autoref{requirement:evolution}) may use the PIM layer as a comparison.
+    \item The layer still separates the ontology from the rest of the model, simplifying the design of the whole framework. For example, the other layers may refer to information in PIM.
+\end{enumerate}
+
+\bigskip
+
+We will start with definition of PIM, as the CIM depends on it.
 
 \begin{definition}[PIM] PIM is a triple $S=(S_c, S_a, S_r)$ of sets of classes, attributes and associations, respectively (we will call them as entities), with a set of anotation functions such that:
     \begin{itemize}
         \item Attribute $A \in S_a$ belongs to class $C \in S_c$, which is denoted by anotation function ${class}: S_a \rightarrow S_c$ as ${class}(A)=S$.
-        \item Association $R \in S_r$ is a set of exactly two association ends ${E_1, E_2}$ that are associated with classes similarly as with attributes by annotation function ${class}: E \rightarrow S_c$.
+        \item Association $R \in S_r$ is a tuple of exactly two association ends $(E_1, E_2)$ that are associated with classes similarly as with attributes by annotation function ${class}: E \rightarrow S_c$.
     \end{itemize}
 
-    PIM then can be decorated by other various semantic and syntactic annotations as it can be seen from the definition above. We do not require that an annotation must be defined for every entity if not stated otherwise. %Undefined annotation $a$ on entity $I$ will be formally denoted as $a(I) = \textrm{undefined}$.
+    PIM entities then can be decorated by other various semantic and syntactic annotations. We do not require that an annotation must be defined for every entity if not stated otherwise.
 
     \begin{itemize}
-        \item Classes, attributes, associations, and association ends\footnote{Because two association ends belong to an association, we may annotate the association itself instead of their ends. However, to simplify things, we say that association ends may also have annotations.} may have title and description, or potentially other describing properties that are not directly used in schema generation. However, the title may be used to propose the naming of entities' labels at the PSM level. (For example $name(C)="\textrm{Tourist destination}"@en$)
-        \item Classes have a set of other classes that they extends by anotation $extends: S_c \rightarrow \mathcal{P}(S_c)$.
+        \item Classes, attributes, associations, and association ends\footnote{Because two association ends belong to an association, we may annotate the association itself instead of their ends. However, to simplify things, we say that association ends may also have annotations.} may have title and description, or potentially other describing properties that are not directly used in schema generation. However, the title may be used to propose the naming of entities' labels at the PSM level. (For example $title(C)="\textrm{Tourist destination}"@en$)
+        \item Each class have a set of classes that they extends by anotation $extends: S_c \rightarrow \mathcal{P}(S_c)$. (see \autoref{requirement:inheritance})
         \item Attributes and association ends have cardinalities $card_{min}: S_a \cup E \rightarrow \mathds{N}_0$ and $card_{max}: S_a \cup E \rightarrow \mathds{N} \cup \{\infty\}$, where $card_{min}(i) \leq card_{max}$, where the comparison operator works same as in the extended real number system.
         \item Attributes have data types $datatype: S_a \rightarrow D$ where $D$ is a set of data types, usually specified by a IRI.
     \end{itemize}
 \end{definition}
 
-%why PIM has this specific form?
+The purpose of annotations is to bring additional information to the model that is not essential for the generation. As we stated in the previous chapter, there are various ontologies, and some of them may lack support of some construct. We have already mentioned that RDFS does not allow naming the reverse direction of an association. Some ontologies may not support cardinalities or inheritance (although most of them do). Similarly, some artifacts may not use all every information from PIM. For example, data transformations do not need title and description to work with.
 
-\smallskip
+We do not provide a complete list of all annotations as the intention is to let programmers use their own if necessary, either when creating a new generator or adding support for the new format of an ontology.
+
+\bigskip
+
+Because during the modeling process, CIM (specifically ontologies under different formats) is being copied to PIM, it would make sense to define the CIM in a way that is compatible with PIM.
+
+However, before the definition of CIM, we need one more annotation.
 
 \begin{definition}[interpretation]
     Let us have an anotation $interpretation: E \rightarrow \mathcal{C} \cup \{\emptyset\}$ from all entities to $\mathcal{C}$, set of all entities in CIM denoted by its IRI. We say that PIM entity $I$ is interpreted if and only if anotation $interpretation(I) \neq \emptyset$.
 \end{definition}
 
+\begin{definition}[CIM]
+    CIM $O$ is an ontology for which function \textbf{CIM adapter} $A$ exists, such that $A(O) = S$ is a valid PIM, where every entity $I$ is interpreted. The interpretation is unique, stable, and consistent.
+\end{definition}
+
+
+\noindent\rule{8cm}{0.4pt}
+%why PIM has this specific form?
+% Otazka, zda vychazet z ontologie, nebo z PIMu. Ontologie se da okopirovat z knihy, kde je popsano, jak vetsina ontologii vypada. Daji se tady take vyjmenovat a shrnout jejich vlastnosti. Na zaklade toho sestavit PIM.
+
+\smallskip
+
 Interpretation defines, whether the PIM entity represents an entity from CIM, that means that the entity is a copy from CIM and semantically represents the same thing. Non-interpreted entities on PIM level are those, that were added by a user manually usually to add missing thing that was not present in the CIM.
 
 \smallskip
 
-\begin{definition}[CIM]
-    CIM $O$ is an ontology for which function \textbf{CIM adapter} $A$ exists, such that $A(O) = S$ is a valid PIM, where every entity $I$ is interpreted, and the interpretation is unique, stable, and consistent.
-\end{definition}
+
 
 The definitions tell us that CIM is everything that can be translated to PIM and that process is stable over time. If one entity in CIM is changed, also the resulting PIM should have changed the corresponding entity. If CIM is stored according to LOD format, then the $interpretation$ would be the URI of the CIM entity that corresponds to the given PIM entity.
 
@@ -173,7 +199,7 @@ To demonstrate that the proposed solution may work, we show how some operations 
 % PSM specific attributes, jako XML namespace, který se již používá
 
 
-\newpage\subsection{OR and handling of hierarchy}
+%\newpage\subsection{OR and handling of hierarchy}
 
 
 
