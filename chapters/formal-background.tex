@@ -1,9 +1,11 @@
 \chapter{Formal background}
 \label{chapters:formal-background}
 
-This chapter proposes modifications to the framework layers introduced by previous tools \textit{xCase} and \textit{eXolutio} and formally describes them. As mentioned in the previous chapter, not everything has been implemented yet due to the complexity of the problem. Nevertheless, it is crucial to properly design and plan everything in advance to minimize the technical debt.
+This chapter proposes modifications to the framework layers introduced by previous tools \textit{xCase} and \textit{eXolutio} and formally describes them. Some problems are further analyzed as the reasoning depends on the framework structure and not just user requirements.
 
-\section{Framework layers}
+As mentioned in the previous chapter, not everything has been implemented yet due to the complexity of the problem. Nevertheless, it is crucial to properly design and plan everything in advance to minimize the technical debt.
+
+\section{Conceptual layers}
 
 In contrast with the approach introduced in \textit{XCase} and \textit{eXolutio} tools, the process of creating the domain ontology is moved from the application to the external tools. The application then only uses those ontologies if required.
 
@@ -48,74 +50,82 @@ We do not provide a complete list of all annotations as the intention is to let 
 
 Because during the modeling process, CIM (specifically ontologies under different formats) is being copied to PIM, it would make sense to define the CIM in a way that is compatible with PIM.
 
-However, before the definition of CIM, we need one more annotation.
+First, we need to define an interpretation that will be used to connect entities from PIM with those in CIM.
 
 \begin{definition}[interpretation]
-    Let us have an anotation $interpretation: E \rightarrow \mathcal{C} \cup \{\emptyset\}$ from all entities to $\mathcal{C}$, set of all entities in CIM denoted by its IRI. We say that PIM entity $I$ is interpreted if and only if anotation $interpretation(I) \neq \emptyset$.
+    Let us have an anotation $interpretation: E \rightarrow \mathcal{C} \cup \{\emptyset\}$ from all entities to $\mathcal{C}$, set of all IRI identifiers. We say that PIM entity $I$ is interpreted if and only if anotation $interpretation(I) \neq \emptyset$.
 \end{definition}
 
 \begin{definition}[CIM]
-    CIM $O$ is an ontology for which function \textbf{CIM adapter} $A$ exists, such that $A(O) = S$ is a valid PIM, where every entity $I$ is interpreted. The interpretation is unique, stable, and consistent.
+    CIM $O$ is an ontology for which function \textbf{CIM adapter} $A$ exists, such that $A(O) = S$ is a valid PIM, where every PIM entity has different defined interpretation which represents semantically corresponding CIM entity and that interpretation is stable over time. That means if CIM entity is changed, but represent semantically same thing, then the interpretation of the corresponding PIM entity shall stay same.
 \end{definition}
 
+The definition tells us that the CIM can be viewed as a PIM where the purpose of the interpretation is to point to the original thing in the ontology. In practice, it is the IRI of the entity in the ontology.
 
-\noindent\rule{8cm}{0.4pt}
-%why PIM has this specific form?
-% Otazka, zda vychazet z ontologie, nebo z PIMu. Ontologie se da okopirovat z knihy, kde je popsano, jak vetsina ontologii vypada. Daji se tady take vyjmenovat a shrnout jejich vlastnosti. Na zaklade toho sestavit PIM.
-
-\smallskip
-
-Interpretation defines, whether the PIM entity represents an entity from CIM, that means that the entity is a copy from CIM and semantically represents the same thing. Non-interpreted entities on PIM level are those, that were added by a user manually usually to add missing thing that was not present in the CIM.
-
-\smallskip
-
-
-
-The definitions tell us that CIM is everything that can be translated to PIM and that process is stable over time. If one entity in CIM is changed, also the resulting PIM should have changed the corresponding entity. If CIM is stored according to LOD format, then the $interpretation$ would be the URI of the CIM entity that corresponds to the given PIM entity.
+If the CIM changes, entities shall keep their original IRIs to stress that the given entity is semantically still the same. Only the representation may have changed. This will help us, for example, to detect changes and properly propagate them in the model.
 
 For simplification, in the rest of the thesis, we may omit that CIM \textit{needs to be translated} to PIM and suppose that it is already in PIM-like format.
 
-\bigskip
+\subsection{Changes in CIM}
 
-To analyze the relation between CIM and PIM
+So far, we have introduced PIM and CIM layers and only tackled how the framework would work. Before we move further, we will analyze how \autoref{requirement:evolution} and \ref{requirement:pim-editing} would impact the framework.
+
+Because the CIM is used only for building the PIM, the tool does not need to know that the ontology has changed as it works mostly only with PIM. However, to further expand the schema, the tool must fetch other parts of the ontology, which may collide with the PIM.
+
+Having PIM strictly as a copy of CIM may help in this process as we can compare the two levels and, based on the difference \textit{somehow} generate a sequence of operations that modifies the PIM. The modifications may be as simple as \textit{changing a class title}, or \textit{changing an association cardinality} to the complex ones such as \textit{join two attributes into one} or \textit{move an attribute to another class}. It is essential to have the changes that complex as they carry the information on how the schemas and their data should be modified, not just the final state. We will describe operations later.
+
+To formally describe the difference, we will introduce the concept of consistency.
+
+\begin{definition}[consistency]
+    We say that {annotation of interpreted PIM entity is consistent with CIM} if the corresponding CIM entity exists and the value is equal to the value in CIM or in the context of the annotation is a superset\footnote{Consider, for example, $extends$. As we want PIM to be a subset, we also allow $extends$ to be a subset of all classes that the given class extends.} of the value in CIM. We say that {interpreted PIM entity is consistent with CIM} if the CIM entity exists and all annotations are consistent with CIM. Finally, {PIM is consistent with CIM} if all entities are consistent.
+\end{definition}
+
+Based on the use case, most of the changes in the CIM that are worth propagating are simple and well-isolated. This may ease the process of inferring changes between PIM and CIM by finding those isolated sets of entities and then creating a sequence of changes based on a predefined set of rules.
+
+As mentioned, for complex changes, it would be easier to generate "delete and create" a set of operations, which should remove the entities from created schemas after propagating. This allows users to add new entities to the schemas that were cleaned from outdated entities.
+
+\medskip
+
+We will leave the problematics of making PIM consistent for the author's further work. So far, we will suppose that the CIM is constant and cannot be changed.
+
+\subsection{User modifications}
+
+Direct modification of PIM (see \autoref{requirement:pim-editing}) may break the previous approach because the mechanism that tells us what has changed would also try to revert all the changes made by the user.
+
+To be more specific, we are interested only in those entities that have interpretation - entities that are linked to CIM. All other non-interpreted entities are so far ignored.
+
+Formally, it may seem that changing an interpreted entity (and still keeping it interpreted) should not be allowed as the changed entity itself does not represent the ontology anymore. As this may be true, there are still some cases when the change is necessary, especially when the CIM does not give us all the information we need (such as missing cardinality or missing description), or there is an obvious error that needs to be fixed.
+
+\medskip
+
+Nevertheless, we expect only minimal changes to be made by the user because of the abovementioned reasons. Due to the same reasons, those user modifications shall be checked every time the PIM is being made consistent because the change in the ontology may fix the same problem as the user modification.
+
+Because of that, we allow editing of the PIM directly as this is the simplest option that will satisfy the requirements under the expected use case.
+
+Create and update operations are simple and are summarized below. To make modifications complete, we also need to delete the entities. As we say, the PIM is a subset of CIM, simply deleting the entity would not be enough, as we would not know whether the entity is deleted or just not discovered. Therefore we introduce a new annotation that marks the entity as deleted. Deletion is a purely cosmetic feature, as, without it, the sufficient approach would be to ignore the entity. It only forbids users to use it in the lower levels.
+
+\begin{definition}[deleted]
+    PIM annotation $deleted: I \rightarrow \{\textrm{false}, \textrm{true}\}$, where $I$ is a set of interpreted classes, associations, and attributes, denotes that the interpreted entity is deleted and must not be used in the lower levels.
+\end{definition}
+
+\medskip
+
+The introduced approach provides us with the following options for modifying the PIM:
+\begin{itemize}
+    \item We can create new entities by simply adding them to the PIM without interpretation.
+    \item Existing entities can be edited directly and keeping them interpreted. This, however, will collide with the evolution mechanism and must be explicitly excluded from it every time the evolution is performed.
+    \item To remove the interpreted entity, we must mark it as deleted. Non-interpreted entities can be removed directly.
+\end{itemize}
+
+
+%why PIM has this specific form?
+% Otazka, zda vychazet z ontologie, nebo z PIMu. Ontologie se da okopirovat z knihy, kde je popsano, jak vetsina ontologii vypada. Daji se tady take vyjmenovat a shrnout jejich vlastnosti. Na zaklade toho sestavit PIM.
 
 % cim neni lokalni, pim je vzdy up to date
 % nejake modifikace dovolime
 
 % dedicnost
 
-%\newpage\subsection{Hierarchy on the PIM level}
-
-
-
-
-\newpage\subsection{User modifications on the PIM level and evolution from CIM}
-
-This issue must be analyzed concurrently with the second point of requirement \ref{requirement:ontologies-on-the-web}, that the ontology may change. Ideally, the changes in CIM should be reflected in the resulting schemas; therefore we need a mechanism that tells us what has changed. Having PIM strictly as a copy of CIM may help in this process as we can compare the two levels and \textit{somehow} generate a sequence of operations that modifies PIM. The modifications may be as simple as \textit{changing a class title}, or \textit{changing an association cardinality} to the complex ones such as \textit{join two attributes into one} or \textit{move an attribute to another class}. It is essential to have the changes that complex as they carry the information on how the schemas and their data should be modified, not just the final state.
-
-Direct modification of PIM may break this approach because the mechanism that tells us what has changed would also try to revert all the changes made by the user. To be more specific, we are interested only in those entities that have interpretation - entities that are linked to CIM. All other non-interpreted entities can be just ignored as they were not created from the CIM.
-
-Formally, it may seem that changing an interpreted entity (and still keeping it interpreted) should not be allowed as the changed entity itself does not represent the ontology anymore. As this may be true, there are still some cases when the change is necessary, especially when the CIM does not give us all the information we need (such as missing cardinality or missing description) or there is an obvious error that needs to be fixed.
-
-We will keep the question of what changes are large enough to lose the entity's interpretation open for further discussion.
-
-This observation, together with the fact that we would have to anyway infer the operations from the difference between CIM and PIM, leads us to a simple solution of allowing a user to modify everything and then prompt him/her to apply only the changes that are relevant.
-
-In the context of other requirements and the framework used, this would also mean that:
-\begin{itemize}
-    \item PIM entity that is not consistent with CIM and we do not intend to make it consistent can be uninterpreted. This would stop proposing the user to evolute the schemas according to the newest CIM.
-    \item If CIM changes, the semi-automatic update can respect modifications and ask the user for changes that can not be performed automatically.
-\end{itemize}
-
-To make modifications complete, we also need to delete the entities. As we say, the PIM is a subset of CIM, simply deleting the entity would not be enough, as we would not know whether the entity is deleted or just not discovered. Therefore we introduce a new annotation that marks the entity as deleted. Deletion is a purely cosmetic feature, as, without it, the sufficient approach would be to ignore the entity. It only forbids users to use it in the lower levels.
-
-\begin{definition}[deleted]
-    PIM annotation $deleted: I \rightarrow \{\textrm{false}, \textrm{true}\}$, where $I$ is a set of interpreted classes, associations, and attributes, denotes that the interpreted entity is deleted and must not be used in the lower levels.
-\end{definition}
-
-%\smallskip
-
-%To make things complete,
 
 %As a solution, we expose $interpretation$ and new $overrides$ anotation of PIM in a following way:
 
@@ -155,43 +165,38 @@ To make modifications complete, we also need to delete the entities. As we say, 
 
 %\smallskip
 
-\begin{definition}[consistency]
-    We say that \textbf{annotation of interpreted PIM entity is consistent with CIM} if the CIM entity exists and the value is equal to the value in CIM or in the context of the annotation is a superset\footnote{Consider, for example, $extends$. As we want PIM to be a subset, we also allow $extends$ to be a subset of all classes that the given class exteds.} of the value in CIM. We say that \textbf{interpreted PIM entity is consistent with CIM} if the CIM entity exists and all annotations are consistent with CIM.
-\end{definition}
-
-From the descriptions above, the inconsistency may happen if the CIM changes or when user modifies the PIM. It is easy to detect it as we can compare entities in PIM with those in CIM. To support the second point from requirement \ref{requirement:ontologies-on-the-web}, we would need to create a set of atomic operations on the PIM level that make the PIM consistent again. These operations can be propagated up to schemas to apply the change from the ontology.
-
-\td{Chtěl bych ještě zmínit alternativní řešení nad kterýma jsem přemýšlel a zjistil jsem, že jsou z nějakého důvodu špatná.}
-
-\newpage\subsection{Evolution of interpreted and non-interpreted PIM entities}
-
-To demonstrate that the proposed solution may work, we show how some operations may be correctly executed on the PIM level. Suppose we have a sequence of operations that need to be executed on interpreted PIM entities to be consistent with CIM.
-
-\td{Dát sem kódy co se má provést na PIMu, pokud:\begin{itemize}
-    \item smaže se z CIMu entita. Předtím, než smažu třídu, tak musím smazat zbytek jejich atributů a asociací, ty určitě nejsou interpretovány, protože interpretované byly smazány.
-    \item změní se anotace entity v CIMu. Zeptej se uživatele, jestli ji chce změnit
-    \item vznikne nová entita v CIMu, pak by se hodilo otestovat, jestli už neexistuje lokálně.
-\end{itemize}}
-
-
-\newpage\subsection{Making PIM consistent with CIM}
-
-\td{Tady bych navrhl, jak by se mohl PIM zkonzistentnit. Asi by to bylo tak, že se pokusím vyrobit množinu nezávislých změn v PIMu (tady se změnila třída, tady se rozpadl atribut), kdy u každé změny si uživatel vybere, jestli ji provede, nebo ne. Samozřejmě že bych zatím implementoval jen ty jednoduché změny, u ostatních by to napsalo, že neví, co s tím. Otázkou tedy akorát zůstává, jestli tomuto směru aktuálně věnovat energii. (pokud je vůbec správně a nemám v tady nějakou myšlenkovou chybu)}
+%
+%\td{Chtěl bych ještě zmínit alternativní řešení nad kterýma jsem přemýšlel a zjistil jsem, že jsou z nějakého důvodu špatná.}
+%
+%\newpage\subsection{Evolution of interpreted and non-interpreted PIM entities}
+%
+%To demonstrate that the proposed solution may work, we show how some operations may be correctly executed on the PIM level. Suppose we have a sequence of operations that need to be executed on interpreted PIM entities to be consistent with CIM.
+%
+%\td{Dát sem kódy co se má provést na PIMu, pokud:\begin{itemize}
+%    \item smaže se z CIMu entita. Předtím, než smažu třídu, tak musím smazat zbytek jejich atributů a asociací, ty určitě nejsou interpretovány, protože interpretované byly smazány.
+%    \item změní se anotace entity v CIMu. Zeptej se uživatele, jestli ji chce změnit
+%    \item vznikne nová entita v CIMu, pak by se hodilo otestovat, jestli už neexistuje lokálně.
+%\end{itemize}}
+%
+%
+%\newpage\subsection{Making PIM consistent with CIM}
+%
+%\td{Tady bych navrhl, jak by se mohl PIM zkonzistentnit. Asi by to bylo tak, že se pokusím vyrobit množinu nezávislých změn v PIMu (tady se změnila třída, tady se rozpadl atribut), kdy u každé změny si uživatel vybere, jestli ji provede, nebo ne. Samozřejmě že bych zatím implementoval jen ty jednoduché změny, u ostatních by to napsalo, že neví, co s tím. Otázkou tedy akorát zůstává, jestli tomuto směru aktuálně věnovat energii. (pokud je vůbec správně a nemám v tady nějakou myšlenkovou chybu)}
+%
+%
 
 
-
-
-
-
-
-\newpage\section{PSM layer}
-
-\td{\begin{itemize}
-    \item General definition - most unique
-    \item analysis of basic constructs that may be used, OR and INCLUDE analysis
-    \item News compared to old version - reuse
-\end{itemize}}
-
+%
+%
+%
+%\newpage\section{PSM layer}
+%
+%\td{\begin{itemize}
+%    \item General definition - most unique
+%    \item analysis of basic constructs that may be used, OR and INCLUDE analysis
+%    \item News compared to old version - reuse
+%\end{itemize}}
+%
 % Pravidlo, že z venku se dá odkazovat pouze na kořen
 % Vevnitř můžeme odkazovat kdekoli
 % Zase pozor, abych nevymýšlel něco, co už udělal Nečaský.
@@ -203,14 +208,15 @@ To demonstrate that the proposed solution may work, we show how some operations 
 
 
 
-
-\newpage\section{Whole framework structure}
-
-\td{
-    \begin{itemize}
-        \item History of atomic operations is stored with the model because there is a requirement that we may have no access to everything + there is SOLID.
-        \item Everything belongs to schema.
-        \item Because of the first point in this list, the checks need to be performed differently, not during the evolution.
-        \item Operations are stored and can be re-recorded - this allow us to work separately on different parts of the model and then apply the changes by evolution.
-    \end{itemize}
-}
+%
+%\newpage\section{Whole framework structure}
+%
+%\td{
+%    \begin{itemize}
+%        \item History of atomic operations is stored with the model because there is a requirement that we may have no access to everything + there is SOLID.
+%        \item Everything belongs to schema.
+%        \item Because of the first point in this list, the checks need to be performed differently, not during the evolution.
+%        \item Operations are stored and can be re-recorded - this allow us to work separately on different parts of the model and then apply the changes by evolution.
+%    \end{itemize}
+%}
+%
