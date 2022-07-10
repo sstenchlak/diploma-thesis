@@ -24,19 +24,19 @@ This modification, brings several advantages:
 
 \bigskip
 
-We will start with definition of PIM, as the CIM depends on it.
+We will start with defining PIM, as the CIM depends on it.
 
-\begin{definition}[PIM] PIM is a triple $S=(S_c, S_a, S_r)$ of sets of classes, attributes and associations, respectively (we will call them as entities), with a set of anotation functions such that:
+\begin{definition}[PIM] PIM is a quadruple $S=(S_c, S_a, S_r, S_{re})$ of sets of classes, attributes, associations and association ends, respectively (we will call them as entities), with a set of annotation functions such that:
     \begin{itemize}
-        \item Attribute $A \in S_a$ belongs to class $C \in S_c$, which is denoted by anotation function ${class}: S_a \rightarrow S_c$ as ${class}(A)=S$.
-        \item Association $R \in S_r$ is a tuple of exactly two association ends $(E_1, E_2)$ that are associated with classes similarly as with attributes by annotation function ${class}: E \rightarrow S_c$.
+        \item Attribute $A \in S_a$ belongs to exactly one class $C \in S_c$, which is denoted by annotation function ${class}: S_a \rightarrow S_c$ as ${class}(A)=S$.
+        \item Association $R \in S_r$ has a tuple of two distinct associations ends denoted by ${end}: S_r \rightarrow S_{re}\times S_{re}$. Each association end belongs to exactly one association. Each association end has one class denoted by ${class}: S_{re} \rightarrow S_c$.
     \end{itemize}
 
     PIM entities then can be decorated by other various semantic and syntactic annotations. We do not require that an annotation must be defined for every entity if not stated otherwise.
 
     \begin{itemize}
-        \item Classes, attributes, associations, and association ends\footnote{Because two association ends belong to an association, we may annotate the association itself instead of their ends. However, to simplify things, we say that association ends may also have annotations.} may have title and description, or potentially other describing properties that are not directly used in schema generation. However, the title may be used to propose the naming of entities' labels at the PSM level. (For example $title(C)="\textrm{Tourist destination}"@en$)
-        \item Each class have a set of classes that they extends by anotation $extends: S_c \rightarrow \mathcal{P}(S_c)$. (see \autoref{requirement:inheritance})
+        \item Classes, attributes, associations, and association ends may have title and description, or potentially other describing properties that are not directly used in schema generation. However, the title may be used to propose the naming of entities' labels at the PSM level. (For example $title(C)="\textrm{Tourist destination}"@en$)
+        \item Each class have a set of classes that they extends by annotation $extends: S_c \rightarrow \mathcal{P}(S_c)$. (see \autoref{requirement:inheritance})
         \item Attributes and association ends have cardinalities $card_{min}: S_a \cup E \rightarrow \mathds{N}_0$ and $card_{max}: S_a \cup E \rightarrow \mathds{N} \cup \{\infty\}$, where $card_{min}(i) \leq card_{max}$, where the comparison operator works same as in the extended real number system.
         \item Attributes have data types $datatype: S_a \rightarrow D$ where $D$ is a set of data types, usually specified by a IRI.
     \end{itemize}
@@ -64,7 +64,7 @@ We do not provide a complete list of all annotations as the intention is to let 
 
     \end{tikzpicture}
 
-  \caption{Example of the PIM model shown as graph. Rectangles represent entities. Italic font either inside the rectangle or on the arrow represent the given anotation function with the given value. }
+  \caption{Example of the PIM model shown as graph. Rectangles represent entities. Italic font either inside the rectangle or on the arrow represent the given annotation function with the given value. }
 \end{figure}
 
 \bigskip
@@ -74,11 +74,11 @@ Because during the modeling process, CIM (specifically ontologies under differen
 First, we need to define an interpretation that will be used to connect entities from PIM with those in CIM.
 
 \begin{definition}[interpretation]
-    Let us have an anotation $interpretation: E \rightarrow \mathcal{C} \cup \{\emptyset\}$ from all entities to $\mathcal{C}$, set of all IRI identifiers. We say that PIM entity $I$ is interpreted if and only if anotation $interpretation(I) \neq \emptyset$.
+    Let us have an annotation $interpretation: E \rightarrow \mathcal{C} \cup \{\emptyset\}$ from all entities to $\mathcal{C}$, set of all IRI identifiers. We say that PIM entity $I$ is interpreted if and only if annotation $interpretation(I) \neq \emptyset$.
 \end{definition}
 
 \begin{definition}[CIM]
-    CIM $O$ is an ontology for which function \textbf{CIM adapter} $A$ exists, such that $A(O) = S$ is a valid PIM, where every PIM entity has different defined interpretation which represents semantically corresponding CIM entity and that interpretation is stable over time. That means if CIM entity is changed, but represent semantically same thing, then the interpretation of the corresponding PIM entity shall stay same.
+    CIM $O$ is an ontology for which function \textbf{CIM adapter} $A$ exists, such that $A(O) = S$ is a valid PIM, where every PIM class, attribute, and the association have different defined interpretation which represents semantically corresponding CIM entity and that interpretation is stable over time. That means if the CIM entity is changed, but represents the semantically same thing, then the interpretation of the corresponding PIM entity shall stay same.
 \end{definition}
 
 The definition tells us that the CIM can be viewed as a PIM where the purpose of the interpretation is to point to the original thing in the ontology. In practice, it is the IRI of the entity in the ontology.
@@ -135,109 +135,126 @@ The introduced approach provides us with the following options for modifying the
 \begin{itemize}
     \item We can create new entities by simply adding them to the PIM without interpretation.
     \item Existing entities can be edited directly and keeping them interpreted. This, however, will collide with the evolution mechanism and must be explicitly excluded from it every time the evolution is performed.
-    \item To remove the interpreted entity, we must mark it as deleted. Non-interpreted entities can be removed directly.
+    \item To remove an interpreted entity, we must mark it as deleted. Non-in\-ter\-pre\-ted entities can be removed directly.
 \end{itemize}
 
+\subsection{Ontology alignments}\label{sec:ontology-alignments}
 
-%why PIM has this specific form?
-% Otazka, zda vychazet z ontologie, nebo z PIMu. Ontologie se da okopirovat z knihy, kde je popsano, jak vetsina ontologii vypada. Daji se tady take vyjmenovat a shrnout jejich vlastnosti. Na zaklade toho sestavit PIM.
+To complete the walkthrough through requirements, we must analyze how \autoref{requirement:ontology-alignments} will impact the framework in the future.
 
-% cim neni lokalni, pim je vzdy up to date
-% nejake modifikace dovolime
+In general, because the alignments may be arbitrarily complex, we will use a new type of construct to represent those alignments. For example, the alignment from \autoref{figure:address-mapping} that maps addresses between different representations would be a single PIM entity that contains that information.
 
-% dedicnost
+Some readers may object that the annotation $extends$ used for the inheritance of classes is not consistent with this approach. In the previous chapter, we said that inheritance might be considered as a form of alignment. Nevertheless, unlike the other alignments, inheritance is important concept that is used in many places in the tool. Therefore we will keep this as an annotation for now and consider reimplementation of this concept in the future when implementing the support for other alignments.
 
+% todo image with alignments
 
-%As a solution, we expose $interpretation$ and new $overrides$ anotation of PIM in a following way:
+\section{Structural levels}
 
-% \begin{definition}[overrides]
-%     PIM anotation $overrides: i \mapsto j$, where $i$ is non-interpreted PIM entity, and $j$ is set of interpreted PIM entities denotes, that $j$-s are replaced by $i$. From the ontological point of view, $i$ then represents a subset of $j$. All entities from $j$ then must not be used in levels below.
-% \end{definition}
+Ontology is represented on conceptual levels in CIM and PIM. The constructed schemas then belong to the structural levels. During the analysis of \autoref{requirement:general-schema} we have already decided on the hierarchical structure of the general schema as our target schemas also have a hierarchical structure.
 
-% \begin{definition}[overrides]
-%     PIM anotation $overrides: (i, a) \mapsto j$, where $i$ is interpreted PIM entity, $a$ is anotation other than $overrides$, and $j \in D(a)$ belongs to the domain of $a$, denotes locally overwritten anotations for given entity.
-% \end{definition}
+We will introduce PSM (platform-specific) level to represent the schemas. PSM level is highly inspired by the PSM level from the previous tools, but we must take into account different serialization formats PSM level is generated into.
 
-% $overrides$ anotation is used to introduce changes in interpreted entities as they should not be changed by user to not interact with detection of inconsistency.
+\begin{definition}[PSM]
+    PSM is a tuple $S=(S_{\textrm{r}}, S_{\textrm{c}}, S_{\textrm{ref}}, S_{\textrm{or}}, S_{\textrm{attr}}, S_{\textrm{assoc}}, S_{\textrm{incl}})$ with a set of annotation functions such that:
+    \\(let $C:=S_{\textrm{c}}\cup S_{\textrm{ref}}\cup S_{\textrm{or}}$ be a set of objects and $P:=S_{\textrm{attr}}\cup S_{\textrm{assoc}}\cup S_{\textrm{incl}}$ set of properties)
+    \begin{itemize}
+        \item $S_{\textrm{r}} \neq \emptyset$, $S_{\textrm{r}} \in C^n$ is a tuple objects that are roots of schemas
+        \item $S_{\textrm{c}}$ is set of classes with annotation function $\textrm{parts}: S_{\textrm{c}} \rightarrow P^n$ that returns tuple of class properties
+        \item $S_{\textrm{ref}}$ is set of all references to other PSMs with annotation function $\textrm{ref}: S_{\textrm{ref}} \rightarrow S' \times S'_{\textrm{r}}$ that returns the referenced root of referenced PSM schema
+        \item $S_{\textrm{or}}$ is set of ORs with annotation function $\textrm{choices}: S_{\textrm{or}} \rightarrow \mathcal{P}(C)$ that returns the set of all possible choices of the OR
+        \item $S_{\textrm{attr}}$ is set of attributes with annotation function $\textrm{technicalLabel}: S_{\textrm{attr}} \rightarrow \textrm{string}$ that returns the label of the attribute
+        \item $S_{\textrm{assoc}}$ is set of association ends with annotation function $\textrm{technicalLabel}: S_{\textrm{assoc}} \rightarrow \textrm{string}$ that returns the label of the association and $\textrm{end}: S_{\textrm{assoc}} \rightarrow C$ that returns the pointed class
+        \item $S_{\textrm{incl}}$ is set of all includes with annotation function $\textrm{includes}: S_{\textrm{incl}} \rightarrow C$ that returns the included class
+    \end{itemize}
+\end{definition}
 
-% Overriding can not be stacked and is not applicable to non-interpreted entities. Its purpose is to only fix entities that cannot be fixed directly. Overrides does not replace extensibility and vice versa. Extensibility adds more specific classes, whether overrides replace them.
+General schema with root $R$ defined earlier in this thesis means PSM $S$ with a single root $S_{\textrm{c}} = (R)$ with all other entities that are part of the chain originating from the class. Although it may seem that the PSM is a forest, as it has a tuple of root classes that are considered as a schema root, the PSM is not DAG nor is connected. We have already discussed the include construct (see \autoref{fig:cartesian-product:include}) as it takes properties from another existing class, hence creating a diamond shape in the graph. Nevertheless, we also allow cycles. For example, a class may have an association end referencing the class itself. This allows us to design schemas for data structures containing serialized trees, as a tree can be arbitrarily deep.
 
-% \begin{definition}[deleted]
-%     PIM anotation $deleted: I \rightarrow \{\textrm{false}, \textrm{true}\}$, where $I$ is a set of interpreted classes, associations, and attributes, denotes that the interpreted entity is deleted and must not be used in the lower levels.
-% \end{definition}
+\subsection{Format-specific PSM constructs}
 
-% As we say the PIM is a subset of CIM, simply deleting the entity would not be enough, as we would not know whether the entity is deleted or just not discovered. Deletion is purely cosmetic feature. It only forbids user to use it in the lower levels.
+It is essential to mention that both PIM and PSM may be extended in the future by adding new entities. This was already indicated in \autoref{sec:ontology-alignments} that the alignment construct might be added to PIM.
 
-% \begin{notation}
-%     Interpreted PIM entities with their anotations represents subset of CIM and are not modified directly in order to change the ontology\footnote{Meaning that interpreted entities corresponds to CIM and are used to store the "latest snapshot" of CIM.}. To modify interpreted entity, use overrides and delete anotations. Non-interpreted PIM entities then new concepts to the ontology.
-% \end{notation}
+Whereas this is not causing issues in the PIM, as an additional construct may be simply ignored if not understood by the rest of the application, we must proceed with caution if we want to extend PSM. PSM schema must be understood completely to correctly generate artifacts from it. Hence even a small change may impact many other parts of the application and also possible third-party plugins, which are expected to read PSM.
 
-% The list below summarizes common operations regarding this problematics:
+This is an issue only if we intend to generate schemas in different formats from the PSM, as our goal is to have one schema for all formats. Therefore, it is advised that any format-specific option shall be used as an annotation, if possible.
 
-% \begin{itemize}
-%     \item Add attribute, association or class. - \textit{Create the corresponding PIM entitiy that has no interpretation. It may reference interpreted entities.}
-%     \item Remove attribute, association or class. - \textit{Set $deleted$ to true if the entity is interpreted, remove otherwise.}
-%     \item Modify label, description, cardinality and other properties - \textit{Modify the entity directly if is not interpreted. Otherwise, use overrides to set new values.}
-% \end{itemize}
+As an example, XML schema has \verb|<xs:sequence>| and \verb|<xs:all>| model groups that specify whether the elements are ordered or not. Although, on the XSD level, those are different properties, on the PSM level we may introduce $ordered: S_C \rightarrow \{\textrm{false}, \textrm{true}\}$ to achieve the same effect.\footnote{This is not entirely correct as XSD may specify that only some elements are ordered, whereas others may have random order. This is an example of a feature that is currently too complex to be handled by our general schema model.}
 
-% \bigskip
+On the other hand, one may want to add support for comments. Although comments are usually bound to a specific element, hence annotation might be enough, it is possible to introduce them as standalone entities. This would require reimplementing all generators as they need to understand the concept of this new entity.
 
-% There are alternative solutions to the proposed one. The first one is to create a new level between PIM and PSM with user modifications. Let's say User PIM, or UPIM shortly. UPIM would contain non interpreted entities and mapping to interpreted ones to PIM level. Removing an entity would then correspond to the missing mapping and overriding for the mapping with anotations. Although this solution may be cleaner from several aspects, it would introduce two levels with almost same functionality. Setting or unsetting an interptetation for the resouce would mean to move it between the levels and using ontology without modification would still require empty identities on UPIM level that are mapped to those in PIM.
+\begin{figure}[h]\centering
+    \begin{tikzpicture}[
+        squarednode/.style={rectangle, draw=blue!60, fill=blue!5, very thick, minimum size=5mm},
+    ]
+        %Nodes
+        \node[squarednode] (cim) at (-1,0) {$E$};
+        \node[squarednode] (pim1) at (-3,-1.5) {$E_1$};
+        \node[mapping] (pim2) at (-2,-1.5) {$A$};
+        \node[squarednode] (pim3) at (-1,-1.5) {$E_2$};
+        \node[squarednode] (pim4) at (1,-1.5) {$E_3$};
 
-%\smallskip
-
-%
-%\td{Chtěl bych ještě zmínit alternativní řešení nad kterýma jsem přemýšlel a zjistil jsem, že jsou z nějakého důvodu špatná.}
-%
-%\newpage\subsection{Evolution of interpreted and non-interpreted PIM entities}
-%
-%To demonstrate that the proposed solution may work, we show how some operations may be correctly executed on the PIM level. Suppose we have a sequence of operations that need to be executed on interpreted PIM entities to be consistent with CIM.
-%
-%\td{Dát sem kódy co se má provést na PIMu, pokud:\begin{itemize}
-%    \item smaže se z CIMu entita. Předtím, než smažu třídu, tak musím smazat zbytek jejich atributů a asociací, ty určitě nejsou interpretovány, protože interpretované byly smazány.
-%    \item změní se anotace entity v CIMu. Zeptej se uživatele, jestli ji chce změnit
-%    \item vznikne nová entita v CIMu, pak by se hodilo otestovat, jestli už neexistuje lokálně.
-%\end{itemize}}
-%
-%
-%\newpage\subsection{Making PIM consistent with CIM}
-%
-%\td{Tady bych navrhl, jak by se mohl PIM zkonzistentnit. Asi by to bylo tak, že se pokusím vyrobit množinu nezávislých změn v PIMu (tady se změnila třída, tady se rozpadl atribut), kdy u každé změny si uživatel vybere, jestli ji provede, nebo ne. Samozřejmě že bych zatím implementoval jen ty jednoduché změny, u ostatních by to napsalo, že neví, co s tím. Otázkou tedy akorát zůstává, jestli tomuto směru aktuálně věnovat energii. (pokud je vůbec správně a nemám v tady nějakou myšlenkovou chybu)}
-%
-%
+        \node[squarednode] (psm1) at (-3,-3) {$e_1$};
+        \node[squarednode] (psm2) at (-1,-3) {$e_2$};
+        \node[squarednode] (psm3) at (1,-3) {$e_3$};
 
 
-%
-%
-%
-%\newpage\section{PSM layer}
-%
-%\td{\begin{itemize}
-%    \item General definition - most unique
-%    \item analysis of basic constructs that may be used, OR and INCLUDE analysis
-%    \item News compared to old version - reuse
-%\end{itemize}}
-%
+        \node (psm_t)[text width=1cm,align=right] at (-5,0) {{CIM:}};
+        \node (pim_t)[text width=1cm,align=right] at (-5,-1.5) {{PIM:}};
+        \node (schema_t)[text width=1cm,align=right] at (-5,-3) {{PSM:}};
+
+        %Lines
+        \draw[-latex] (pim3) -- (cim);
+        \draw[-latex] (pim4) -- (cim);
+
+        \draw[-latex] (psm1) -- (pim1);
+        \draw[-latex] (psm2) -- (pim3);
+        \draw[-latex] (psm3) -- (pim4);
+
+        \draw[-] (pim2) -- (pim1);
+        \draw[-] (pim2) -- (pim3);
+
+        % separators
+        \foreach \x in {0,...,1}{
+            \draw [dotted] (-6,-0.75-1.5*\x) -- (2,-0.75-1.5*\x);
+        }
+
+        \node[anchor=north west, dashed, draw=black, minimum width=3.5cm, minimum height=1cm] at (-3.75,-1) {};
+        \node[anchor=north west, dashed, draw=black, minimum width=1.5cm, minimum height=1cm] at (0.25,-1) {};
+
+        \node[anchor=north west, dashed, draw=black, minimum width=1.5cm, minimum height=1cm] at (-3.75,-2.5) {};
+        \node[anchor=north west, dashed, draw=black, minimum width=1.5cm, minimum height=1cm] at (-1.75,-2.5) {};
+        \node[anchor=north west, dashed, draw=black, minimum width=1.5cm, minimum height=1cm] at (0.25,-2.5) {};
+
+
+        \draw [dotted] (0,-0.75-1.5*0) -- (0,-0.75-1.5*2);
+        \draw [dotted] (-2,-0.75-1.5*1) -- (-2,-0.75-1.5*2);
+    \end{tikzpicture}
+    \caption{Example of three different schemas having entities $e_1$, $e_2$, and $e_3$ respectively. First two schemas use the same PIM, whether the third uses different. Because $E_2$ and $E_3$ interprets the same entity $E$ (hence are semantically identicall), it is possible to map $e_2$ to $e_3$ as those entities interpret former ones. Although $E_1$ does not interpret $E$, there is an alignment $A$ which also allows to map $e_1$ to $e_2$ and hence to $e_3$.}
+\end{figure}
+
+\section{Changes on the framework levels}
+
+\autoref{requirement:evolution} on the evolution and \autoref{requirement:ontologies-on-the-web} on the ontology changes brought the necessity to synchronize the layers of the framework as changes on the upper level may impact the lower levels. This means that we can not change data on a given level simply by replacing them with new data, as it would be hard to perform the appropriate change on the other levels.
+
+To solve this problem, we allow modifying the levels (PIM and PSM) only through \textbf{operations}. Operations are pre-defined functions that modify data on the given level and are simple enough that they can be translated to the operation on the level below.
+
+As an example, suppose that an attribute is removed from an ontology. First, the tool compares CIM with PIM and generates a delete operation on the corresponding PIM attribute. Depending on the context, a user may be notified whether the tool may proceed. Then, the tool executes the operation on PIM (making PIM consistent) and transforms the operation into a set of delete operations on PSM that removes the attribute there.
+
+We will omit a complete list of operations in this thesis as they depend on the requirements that are not addressed yet.
+
+\medskip
+
+In \autoref{requirement:schemas-on-the-web} on schemas on the web, we have considered data specifications as an atomic unit that is always stored at once. This approach solves the problem with evolution, as the layers of the framework depend only on those in the same data specification. Hence, we can directly update them.
+
+Referencing other schemas is also without problem as the only thing that may change is the type of referenced class.
+
+\smallskip
+
+Nevertheless, there might be use cases where reusing layers from other data specifications would be useful. Consider a data specification that models a general schema for any format. This specification is published on the web. Someone else would like to use that schema to modify it slightly. For example, to add another attribute to the given class. Now, if the author of the original schema modifies anything, we would like to modify the derived schema as well. This, however, is not possible as the tool is not aware of the existence of the derived schema nor may not have a write access to it.
+
+This
+
 % Pravidlo, že z venku se dá odkazovat pouze na kořen
 % Vevnitř můžeme odkazovat kdekoli
-% Zase pozor, abych nevymýšlel něco, co už udělal Nečaský.
-% Příklady operací co máme, důkaz, že dokážeme s nimi udělat vše?
-% PSM specific attributes, jako XML namespace, který se již používá
 
-
-%\newpage\subsection{OR and handling of hierarchy}
-
-
-
-%
-%\newpage\section{Whole framework structure}
-%
-%\td{
-%    \begin{itemize}
-%        \item History of atomic operations is stored with the model because there is a requirement that we may have no access to everything + there is SOLID.
-%        \item Everything belongs to schema.
-%        \item Because of the first point in this list, the checks need to be performed differently, not during the evolution.
-%        \item Operations are stored and can be re-recorded - this allow us to work separately on different parts of the model and then apply the changes by evolution.
-%    \end{itemize}
-%}
-%
+% Everything belongs to schema.
