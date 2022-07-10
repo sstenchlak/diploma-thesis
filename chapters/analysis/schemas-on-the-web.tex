@@ -1,0 +1,18 @@
+\begin{requirement}
+    The tool shall support working with general schemas that are not directly stored in it but may be located in another instance, on the web, or in Solid Pods\footnote{Solid (\url{https://solidproject.org/}) is a specification for storing data in decentralized places called Pods. Users may create Pods in their own servers or use services that provide that option. It is an alternative to services like Facebook or Google that stores data on their servers only.}.
+    \label{requirement:schemas-on-the-web}
+\end{requirement}
+
+We have already discussed data on the web principle regarding ontology (see \autoref{requirement:ontologies-on-the-web}) as it is preferred to have data published on the web to be easily accessible by anyone. Although this can be achieved in other ways, the great benefit lies in the fact that those data are independent of the tool that created them. Data can be modified and accessed by other tools easily if the tool understands its structure.
+
+In a similar way, we would like to achieve this with all data that represent the state of the schema. Specifically, we mean the structure of the general schema, configuration of all artifacts, other configurations, and helper files. Instead of having an enclosed application that stores all data internally and only provides a way for exporting and importing them, we would like to have ways to read schemas from other sources similarly as they are local and modify them as well if the user is allowed to do so.
+
+This approach allows data modelers to create their own schemas that can be reused by anyone else on the internet. Because the schemas would be hosted by their infrastructure, there is no need for a centralized service that would need to deal with user accounts, GDPR, payments for schema hosting, integration of other tools, etc. Of course, this also means that there would be no repository with search functionality for the schemas.
+
+\medskip
+
+In most cases, storing data externally should not be a problem, as we need to read them from somewhere anyway. If the external storage is inaccessible, the application shall still provide most of its functionality and try to obtain the data later. For example, this may mean that it would not be possible to generate some artifacts, and part of the schema in the UI would not be visible. Because we have introduced data specifications as projects, the problem would only occur when referencing a subschema from a data specification that is stored in the problematic source.
+
+This approach may be problematic if we start changing the schemas. In the current state of the design, schemas can be referenced. If the referenced schema changes (either by evolution or directly by user), the reference may become broken, and referencing schema becomes invalid. In \autoref{subsection:type-coherency} and \ref{sec:type-coherency} we already tickled type coherency.
+
+This, together with the fact that schemas may be modified outside the tool, has major implications as some checks on schemas must be performed continuously and not just during the construction of the schema. Generally, that would mean that schemas may be invalid/broken at any time, and the tool shall still be able to work with them.
