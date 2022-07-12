@@ -1,14 +1,14 @@
 \begin{requirement}
-    It shall be possible to extend any existing general schema by adding or modifying some of its properties. The extended schema shall remain linked to the original one and allow propagation of changes if the original schema is modified.
+    It shall be possible to extend any existing general schema by adding or modifying some of its parts. The extended schema shall remain linked to the original one and allow propagation of changes if the original schema is modified.
     \label{requirement:schema-inheritance}
 \end{requirement}
 
 As an example, suppose someone designs and publishes a general schema (not the generated JSON or XML schemas, but the data specification itself).
 
 \begin{itemize}
-    \item The most common scenario is to work with data that conforms to the schema as is. For example, the author of the schema publishes the data in one of the formats, and we only need to process them. For this, we only need to generate schemas from the published schema.
+    \item The most common scenario is that we work with data that conforms to the schema as is. For example, the author of the schema publishes the data in one of the formats, and we only need to process them. For this, we only need to generate schemas from the published schema.
     \item An advanced scenario is that we need to wrap the data and send them elsewhere. Hence we need to create a new schema containing the original one. In this case, the schema reference is sufficient as we do not modify the content of the payload. (see \autoref{fig:schema-inheritance:json-data-unaltered})
-    \item This requirement addresses a scenario where the payload is somehow modified. For example, we may want to create a proxy server which removes personal information from the payload if the user is not logged in. (see \autoref{fig:schema-inheritance:json-data-censored}) Another examples are to add a timestamp directly to the payload, or add additional information to some parts of the data.
+    \item This requirement addresses a scenario where the payload is somehow modified. For example, we may want to create a proxy that removes personal information from the payload if the user is not logged in (see \autoref{fig:schema-inheritance:json-data-censored}). Other examples are to add a timestamp directly to the payload or add additional information to some parts of the data.
 \end{itemize}
 
 \begin{figure}[h!]\centering
@@ -44,7 +44,7 @@ As an example, suppose someone designs and publishes a general schema (not the g
 {\color{red!60}\{}
   {\color{red!60}"name": "John Doe",}
   {\color{red!60}"role": "customer",}
-  {\color{red!60}"e-mail": null}
+  {\color{red!60}"e-mail":} null
 {\color{red!60}\}}
     \end{Verbatim}
     \caption{JSON data of the payload with censored {\tt e-mail} as it is the personal information.}
@@ -52,4 +52,16 @@ As an example, suppose someone designs and publishes a general schema (not the g
     \end{subfigure}%
   \caption{Example of the second and third scenario from \autoref{requirement:schema-inheritance}.}
 \end{figure}
+
+Similar to reference in schemas (\autoref{analysis/requirement/schema-reference}), it shall be possible to extend any schema from any data specification in a similar way. Without the need for evolution (\autoref{requirement:evolution}), it is sufficient to simply copy the whole data specification and modify it directly. But in situations where the data depend on other data that conforms to the specification, it is better to have schemas linked to automatically propagate the changes.
+
+As in the previous requirements, we are interested only in minor changes, as for large changes it may be impossible to perform evolution, and if so, there would be many possible solutions, which would effectively undermine the whole purpose of the schema extension, which is to not create additional work for the data modeler.
+
+Below we show a sample set of operations for which, under some conditions, it should be simple to implement the evolution. The detailed analysis of the problem is left as a future work.
+
+\paragraph{Removal of a property} If the property is removed from the child schema, then any changes on that property are simply ignored. Change of order of properties on the parent class can be performed as well simply by applying the new order without the removed property. Nevertheless, if the entity is later used somewhere else (for example, in another class by including it), there can be two appropriate actions. Either not include it as it was removed or include it normally as it was meant to be removed from the parent's property list only.
+
+\paragraph{Addition of new property} Creating new entities does not bring any issues as those entities cannot collide with those from the child schema. If the entity is added to a list of properties, it is still possible to change the order in the parent schema as the added property, for example, can simply keep its absolute position.
+
+\paragraph{Changing the options} Restricting cardinalities, changing titles, and specifying names and descriptions should be possible. If the parent schema changes those values, the tool shall simply ask the user whether to accept the change or not.
 
