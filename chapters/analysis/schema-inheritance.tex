@@ -1,0 +1,55 @@
+\begin{requirement}
+    It shall be possible to extend any existing general schema by adding or modifying some of its properties. The extended schema shall remain linked to the original one and allow propagation of changes if the original schema is modified.
+    \label{requirement:schema-inheritance}
+\end{requirement}
+
+As an example, suppose someone designs and publishes a general schema (not the generated JSON or XML schemas, but the data specification itself).
+
+\begin{itemize}
+    \item The most common scenario is to work with data that conforms to the schema as is. For example, the author of the schema publishes the data in one of the formats, and we only need to process them. For this, we only need to generate schemas from the published schema.
+    \item An advanced scenario is that we need to wrap the data and send them elsewhere. Hence we need to create a new schema containing the original one. In this case, the schema reference is sufficient as we do not modify the content of the payload. (see \autoref{fig:schema-inheritance:json-data-unaltered})
+    \item This requirement addresses a scenario where the payload is somehow modified. For example, we may want to create a proxy server which removes personal information from the payload if the user is not logged in. (see \autoref{fig:schema-inheritance:json-data-censored}) Another examples are to add a timestamp directly to the payload, or add additional information to some parts of the data.
+\end{itemize}
+
+\begin{figure}[h!]\centering
+  \begin{subfigure}{\textwidth}
+  \begin{Verbatim}[commandchars=\\\{\}]
+{\color{red!60}\{}
+  {\color{red!60}"name": "John Doe",}
+  {\color{red!60}"role": "customer",}
+  {\color{red!60}"e-mail": "jd@example.com"}
+{\color{red!60}\}}
+    \end{Verbatim}
+    \caption{JSON data that conforms the original schema. (the payload)}
+  \end{subfigure}
+
+
+  \begin{subfigure}[b]{.45\textwidth}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+\{
+  "recipientPerson": {\color{red!60}\{}
+    {\color{red!60}"name": "John Doe",}
+    {\color{red!60}"role": "customer",}
+    {\color{red!60}"e-mail": "jd@example.com"}
+  {\color{red!60}\}},
+  "message": "Summer sale!"
+\}
+    \end{Verbatim}
+    \caption{JSON data that contains unaltered payload.}
+    \label{fig:schema-inheritance:json-data-unaltered}
+  \end{subfigure}\hfill%
+  \begin{subfigure}[b]{.45\textwidth}
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{red!60}\{}
+  {\color{red!60}"name": "John Doe",}
+  {\color{red!60}"role": "customer",}
+  {\color{red!60}"e-mail": null}
+{\color{red!60}\}}
+    \end{Verbatim}
+    \caption{JSON data of the payload with censored {\tt e-mail} as it is the personal information.}
+    \label{fig:schema-inheritance:json-data-censored}
+    \end{subfigure}%
+  \caption{Example of the second and third scenario from \autoref{requirement:schema-inheritance}.}
+\end{figure}
+
