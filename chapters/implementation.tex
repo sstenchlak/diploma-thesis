@@ -1,8 +1,69 @@
-\chapter{Implementation}
-\label{chapters:implementation}
+\chapter{Implementation}\label{chapters:implementation}
 
-\td{
-    \begin{itemize}
-        \item jak je to promitnute v tom toolu, nemusi tam byt vsechno
-    \end{itemize}
-}
+This chapter aims to provide implementation details of the fundamental concepts introduced during the analysis in \autoref{chapters:analysis} and formalized in \autoref{chapters:formal-background}, hence closing the reasoning process. Its purpose is not to replace complete technical documentation or provide a basic architectural structure.
+
+\bigskip
+
+The intent of the work is to build a solid foundation for an ecosystem of tools with the core framework for schema modeling. The key elements that shall be followed to achieve this goal are:
+\begin{enumerate}
+    \item All model data and configuration shall be stored in RDF - \textit{There is already an ecosystem of tools that can work with RDF. It is easily shareable and linkable.}
+    \item The core framework shall work on its own - \textit{It shall be possible to integrate into other applications. The tool is only a user-friendly interface to execute the framework.}
+    \item Generators shall work as plugins for the core framework - \textit{The idea is that anyone can design generators for their specific purpose.}
+    \item The model shall be robust and extensible
+\end{enumerate}
+
+Due to the current use case and state of development, our primary focus is to create a tool where is easy to design schemas and generate the required artifacts. Hence the goals above are not met yet, but some design decisions were made to fulfill them later easily.
+
+\section{Model representation}
+
+\subsection{Store}
+
+As model data are represented by entities that shall be serialized in RDF, we introduce a \textbf{schema store} as an abstraction layer. The schema store can read and write \textbf{resources}, where the resource is a document/object that contains arbitrary data. In the context of PIM and PSM, the entity is a resource. Resources are identified by their IRI, which is an IRI of the corresponding RDF resource.
+
+Entities can be read from the schema store, but writing is limited to \textbf{operations}. Operations that were executed are saved in the schema store to provide a history of the model at any given point in time. Schema store must contain exactly one \textbf{schema resource}. A schema resource is a resource that identifies all other entities in the schema store, formally creating a set of resources.
+
+Schema stores are managed in \textbf{stores}. The store is an interface for reading resources by their IRI and executing operations on a given schema resource. The store is asynchronous and represents a database of resources. For example, a store may be an interface on the SPARQL endpoint, a file system, a read-only dump on the internet, or just data in local memory.
+
+The current implementation of the tool uses stores that are synchronized with the server through a simple GET-POST API.\footnote{This de facto implicitly supports Solid Pods as a type of store.} Stores on the server are saved into individual files in the filesystem. Each store contains only one schema store for better granularity, as the file must be read and written atomically.
+
+\medskip
+
+The store also shall generate new IRIs that can be later assigned to entities. IRIs needs to be generated in advance to be part of the operation, so we can later identify which entities were created. Depending on the store, the IRIs may have different structures.
+
+The current implementation only supports a simple reading by IRI. This will be changed in the future for more advanced query operations, such as reverse lookup for the entity.
+
+\medskip
+
+Stores' interface allows creating of \textbf{federated stores}, hence allowing to have only a single interface for reading and writing any entity. This simplifies the application's design, as we may have a complex system of shared and reused data specifications from different sources.
+
+\medskip
+
+In previous chapters, we have considered PIM as both the layer in general (PIM layer) and the set of PIM entities we have formally defined (PIM schema). The latter one, the PIM schema, is represented by one specific schema store. Similarly, the PSM schema (possibly having multiple roots) is also represented by one schema store. To simplify the design, the schema resource that is necessary for every schema store will also represent the PIM or PSM schema. To make the previous sentence clear, suppose PSM schema $S$. The schema contains entities such as classes, ORs, etc. Those entities are represented by resources. But the schema itself, which contains, for example, a set of roots, also needs to be represented by a resource. And the resource will be the schema resource.
+
+This means that if a user creates a data specification with two schemas, three schema stores are created: one for the PIM schema and two for the PSM schemas. Hence three stores represented by three files are created as well.
+
+\subsection{Data specification}
+
+The resource that represents data specification contains, namely, (i) a set of reused data specifications' IRIs, (ii) a set of PIM schemas' IRIs, (iii) a list of PSM schemas' IRIs, (iv) a set of stores' IRIs where the appropriate schemas can be found and (v) an artifact configuration.
+
+\section{Layers for simplifying the model}
+
+Reading the model may be too complex, as the entities may not exist, reading them requires asynchronous access, and to obtain the value of all annotations, we usually need to go to the PIM layer. Letting individual generators access the model is, of course, necessary, but for most generators, this would mean implementing many helper functions for easier access. To reduce the burden on generators, we introduce conceptual and structural models whose purpose is to provide a more user-friendly interface for reading the model.
+
+\paragraph{Conceptual model} Conceptual model is fairly simple as it only simplifies access to PIM, which is simple by itself. Its structure is similar to PIM, but attributes and associations are referenced directly from the class as properties. The whole model is constructed in advance, hence we can check whether is correct, but mainly we can access everything synchronously.
+
+\paragraph{Structural model} Structural model employs a different approach to schema structure than PSM. As PSM is highly inspired by schemas, it also has a more schema-like structure. For example, include is valid class property, but from an object-oriented view, it has more semantic meaning. The structural model we use tends to be more object-oriented.
+
+Classes have properties as well, but the properties represent only attributes and associations. Include is translated to class inheritance, as it works almost precisely the same as inheriting properties from a parent class. The only difference is that the position of the include can not be preserved. This, however, for most generators, is not an issue.
+
+To simplify the work with disjunction, we exploit the fact that OR on one element is the same as the element without OR. Hence, all associations have an array of referred classes. This won't introduce new objects that need to be specially handled and allows domain-specific generators to ignore the concept at all if it is not required.
+
+\paragraph{Transformations} Both conceptual and structural models provide various transformations (do not confuse with data transformations from \autoref{req:transformations}) that simplify the model or obtain additional data.
+
+\begin{itemize}
+    \item It is possible to flatten the structural model by copying properties from parent to child classes. This transformation may simplify the work for developers of generators as they do not need to handle inheritance anymore. Of course, this would cause the artifact to grow as the entities are not reused but may be useful for an early stage of development as simplification.
+    \item As some information lies in PIM, such as naming, description, default cardinality, or datatype, there is a transformation that fetches this information to the structural model.
+    \item Associations marked as dematerialized may be "unpacked" to the parent class instead of the association itself.
+\end{itemize}
+
+\paragraph{Format-aware structural models} As there is usually a whole ecosystem of generators that work with a given technology, such as XML, it is important to let the designers extend or even transform the model on their own, making it format-aware. We already use this technique for XML to add namespace information to the entities. In general, the transformation may change the interface of the structural model to suit the needs of the generator better.
