@@ -4,50 +4,62 @@
 %% todo: ty protocols jsou rules a napojit to na ty ofnka
 % Priklad predelat jen na JSON, to XML tam nedava smysl. Vzpomen si na priklad se SISem
 
-During the software development process, we may come to a point where splitting a large codebase into smaller, well-defined chunks is necessary to maintain the growth of our software. Using existing systems and connecting them is also a viable approach to building software. In both cases, we end up with many applications and services working together.
+During the software development process, we may come to a point where splitting a large monolithic codebase into smaller, well-defined modules is necessary to maintain the growth of our software. Using existing systems and connecting them is also a viable approach to building software. \cite{newman_monolith_nodate} In both cases, we end up with many applications and services that work as one.
 
 This approach reduces complexity and demands on software developers as each part can be maintained, deployed, and tested separately. Each developer team must know only the portion they maintain and the immediate surrounding. The surrounding is then defined by a set of rules - an agreement specifying the data which flows between the systems.
 
-Those rules must be created, documented, and maintained, which can be a long, error-prone task. The result of the process is usually a set of data schemas and a documentation for developers. Especially the schemas need to be designed carefully to be, if possible, consistent in format and naming.
+Those rules must be created, documented, and kept up-to-date, which can be a long, error-prone task. The result of the process is usually a set of data schemas and documentation for developers. Especially the schemas need to be designed carefully to be, if possible, consistent in format and naming.
 
-\begin{showcase}
+Data schemas are computer-readable documents that define the format of the data. They specify how data are structured and how individual properties are named with their possible values. The schemas are used to validate data produced by the application to ensure its correct format and can be used by humans to understand the expected format.
 
-As an example, consider a company selling and distributing its own goods. The goods are stored in warehouses and then shipped to customers. For the shipping process, the warehouse workers need to know the properties of the items they need to send. Similarly, customers need to know the properties of items they are buying. This scenario is denoted in the following image. The nodes are individual systems in the company that communicate with each other.
+\medskip
 
-\bigskip
+As an example, consider a company selling and distributing its own goods. The goods are stored in warehouses and then shipped to customers. For the shipping process, the warehouse workers need to know the properties of the items they need to send. Similarly, customers need to know the properties of items they are buying. This scenario is denoted in \autoref{fig:company-schema}.
 
-\begin{center}
-    \begin{tikzpicture}[
-        squarednode/.style={rectangle, draw=purple!60, fill=purple!5, very thick, minimum size=5mm},
-    ]
-        %Nodes
-        \node[squarednode] (db) {Company's goods database};
-        \node[squarednode] (warehouse) [below=2cm of db, xshift=.5cm,anchor=north west] {Warehouse application};
-        \node[squarednode] (shop) [below=2cm of db, xshift=-.5cm,anchor=north east] {Online shop};
+\begin{figure}[h]\centering
+  \begin{tikzpicture}[
+    squarednode/.style={rectangle, draw=purple!60, fill=purple!5, very thick, minimum size=5mm,align=center},
+]
+    %Nodes
+    \node[squarednode] (db) {Goods\\management system};
+    \node[squarednode] (warehouse) at (4,-3) {Warehouse\\management\\system};
+    \node[squarednode] (shop) at (-4,-3) {Online\\shop};
 
-        %Lines
-        \draw[-latex] (db) -- node[text width=3cm,align=center,auto,anchor=west,midway]{order info with items to send} (warehouse);
-        \draw[-latex] (db) -- node[text width=3.5cm,align=center,auto,anchor=east,midway]{list of available items} (shop);
-    \end{tikzpicture}
-\end{center}
+    %Lines
+    \draw[-latex] (db) -- node[align=left,right=.5,pos=0.4]{list of goods\\with relevant info} (warehouse);
+    \draw[-latex] (db) -- node[align=right,left=.5,pos=0.4]{list of goods\\with relevant info} (shop);
+    \begin{scope}[transform canvas={yshift=.25em}]
+        \draw[-latex] (shop) -- node[above,align=center]{order information} (warehouse);
+    \end{scope}
+    \begin{scope}[transform canvas={yshift=-.25em}]
+        \draw[-latex] (warehouse) -- node[below,align=center]{number of items in stock} (shop);
+    \end{scope}
+  \end{tikzpicture}
+  \caption{Example of the company architecture. The nodes are individual systems that communicate with each other.}
+  \label{fig:company-schema}
+\end{figure}
 
-We need to made two "agreements": one for the warehouse and one for the online shop. Although both describe the item, the warehouse may require only the \textit{name} and \textit{weight} of the items, contrary to the online shop where the \textit{price} is also essential.
+To describe the data that are being sent between the goods management system and both the online shop and the warehouse, we need to make two "agreements." Although both describe goods, the warehouse may require different properties than the shop. The \textit{name} and \textit{weight} of the items is essential for both systems, but the shop also requires the \textit{price}, contrary to warehouse that needs \textit{storing requirements}.
 
-\end{showcase}
+Furthermore, these properties are also reflected in the database schema design of the individual modules. The goods management has a database of goods, whether warehouse management only stores the position of individual goods in the warehouse and the information of warehouses, which are sent to the shop.
 
-Our goal is to describe the schemas and all the rules formally. We want to specify which system sends which data and in which format. By doing this without any tool, we may find several obstacles during the process:
+\medskip
+
+Designing the schemas with supporting documentation by hand is a tedious task, and we may find several obstacles during the process, especially when the schema design is not made carefully:
 
 \begin{enumerate}
-    \item We may need to describe the same thing for every schema that uses it. Hence doing the \textbf{same work multiple times}. \textit{In the example the item is used in two different schemas.}
-    \item There is a high chance of \textbf{inconsistency}. We may name the semantically identical things differently, which may confuse software engineers who came in touch with multiple system parts. \textit{For example, the "name" of the item sold can be interchanged with "label" or "title".}
-    \item We \textbf{lack context} in the whole system where the entities are used. \textit{It is hard to tell which systems operate with things and what will be impacted if something changes.}
+    \item We need to describe the same thing for every schema that uses it. Hence doing the \textbf{same work multiple times}. \textit{From the example above, the name and weight of the item are used in two different schemas.}
+    \item There is a high chance of \textbf{inconsistency}. We may name the semantically identical things differently, which may confuse software engineers who came in touch with multiple system parts. \textit{For example, the "name" of the item sold can be interchanged with "label" or "title" in another schema.}
+    \item It is hard to introduce changes as we need to address all affected areas and modify them. If the change is made incrementally, we may lose the context of what is outdated and what is new.
 \end{enumerate}
 
 In addition to these obstacles, it is hard to provide supporting documentation, diagrams, and examples.
 
-\begin{showcase} %N Tohle by mělo být ještě rozvedeno, klidně jako Example 2, kde ukážete ty artefakty, které musejí být vytvořeny. tj. nějaké kousky dvou různých schémat (stačí schematicky/vizuálně), diagramů, dokumentačních textů, příkladů - jen naznačit. Ale ukázat a vysvětlit trochu detailněji. Toto je opravdu moc stručné a hodně od čtenáře předpokládáte. To dost snižuje readability.
-As an example, lets focus on the data between the database and the online shop. We use schemas to formally describe the data. In this case, the requirement may be to use JSON format.
+\bigskip
 
+JSON is an example of a popular format that is widely used to exchange data between the server and the web page as it is natively supported by the web browser. To specify the structure, we can use JSON schema (see \autoref{fig:json-schema}), a document written in JSON format.
+
+\begin{figure}[h]
 \begin{verbatim}
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -58,7 +70,9 @@ As an example, lets focus on the data between the database and the online shop. 
   "properties": {
     "name": {
       "type": "string",
-      "title": "Item name"
+      "title": "Item full name",
+      "description": "Descriptive, short text, usually provided
+                      by the manufacturer."
     },
     "price": {
       "type": "object",
@@ -68,15 +82,19 @@ As an example, lets focus on the data between the database and the online shop. 
   }
 }
 \end{verbatim}
+\caption{Example of JSON Schema that may describe the data being send between the Goods management system and the online shop.}
+\label{fig:json-schema}
+\end{figure}
 
-The \textbf{documentation} then would describe each property of the schema in more detail in human-readable form. For example, the \textit{name} of the item may not contain a category of the item, therefore it would be necessary to always include a photo, or the type of the item to get the context.
+\textbf{Diagrams} are images that visually explain the domain or data structure. \autoref{fig:json-schema} and \ref{figure:pim-example} can be considered as examples of diagrams that may help to better understand the structure. Diagrams are especially helpful in showing relations between different things that are used in schemas. For example, the order is made by a user, consisting of goods stored in warehouses.
 
-\textbf{Diagrams} may be handy to show the full structure of the data similarly as the diagram in the previous example. People who will work with the data may use the diagrams to understand the problematics easily.
+\textbf{Examples} can be provided on two levels. Programmers may appreciate sample data that are valid against the schema and can be used to test their applications. \autoref{analysis:inheritance:json-data} is an example, although it would be better to provide more than two items. Examples can be provided for individual things as well. Someone may not be sure how long the ideal description is or what is the naming convention of items.
 
-\textbf{Examples} of the data that may be send between the system are also valuable piece of information, as most of the domain logic is simple enough to infer it from the example. In our case, \textit{name} and \textit{price} are self-explanatory and we may be only interested in how to represent them to be valid.
-\end{showcase}
+The \textbf{documentation} would describe each property of the schema in more detail in human-readable form. For example, documentation may be a website with multiple pages where the schema, diagrams, and examples are included, and all properties are described in formatted text. Individual things may be interlinked to ease the discovery of related things.
 
-Future modifications to the system or changes in user requirements may enforce altering the schemas, which again may require changing the same thing multiple times and may cause inconsistency. Formally, we will denote changing of schemas as an \textbf{evolution}. The process of evolution is complex, as there can already be existing data that conform to the changed schemas. In that scenario, properly implementing a change in a user requirement requires modifying affected schemas, documentation, and all the data (in case the data are stored in the given format).
+\bigskip
+
+Future modifications to the system or changes in user requirements may enforce altering the schemas. Formally, the process of changing schemas is an \textbf{evolution}. The evolution is complex, as there can already be existing data that conform to the changed schemas. In that scenario, properly implementing a change in a user requirement requires modifying affected schemas, documentation, and all the data (in case the data are stored in the given format).
 
 \begin{showcase}
     As an example, suppose that the address provided by a customer to deliver the goods is represented in multiple parts as \textit{street}, \textit{city}, \textit{zip code}, etc. We may decide that it would be better to have everything in one field as some parts of the address may be missing or not granular enough. The evolution in this case would mean to change all the schemas, documentation and examples to reflect the new structure, and possibly create transformation scripts to convert old data to the new format.
@@ -86,22 +104,26 @@ Future modifications to the system or changes in user requirements may enforce a
 \addcontentsline{toc}{section}{Ontology}
 %N Nerozumím, co tady znamená to "tends us". Jako že nás příklad vede k nějakému formálnímu popisu? Moc tomu nerozumím. Ale řekl bych spíš, že ten příklad naznačuje, že problém návrhu interfaců v komplexním systému (tj. systému, který má více než jeden interface) je potřeba vnímat na dvou rovinách - technická rovina definice datových struktur a jejich popisu a konceptuální / ontologická rovina nad tím, která zachycuje věcnou podstatu bez technických detailů. A že tato rovina se obvykle vyjadřuje v podobě ontologie.
 
-The full process of designing of schemas need to be percieved on two levels. (i) On a technical level, where a user creates the schemas and describes the rules, (ii) and on conceptual level, where the things and the relations between them are defined. The later level is called an \textbf{ontology}.
+The full process of designing schemas needs to be perceived on two levels. (i) On a technical level, where a user creates the schemas and describes the rules, (ii) and on a conceptual level, where the things and the relations between them are defined. The later level is called an \textbf{ontology}.
 
 An ontology describes and names relations between the concepts from a real life without the technical details. Concepts are \textit{order}, \textit{customer}, or \textit{goods} in our case. Relations then specify, for example, that \textit{the order belongs to a customer} and \textit{consists of goods}.
 
-With the data on the web \cite{data-on-the-web} trend in the last few years, even ontologies are becoming accessible publicly. Popular formats include RDFS (or RDF Schema), OWL, UFO, schema.org, and Wikidata. For example, schema.org is a proprietary format describing useful data for search engines, such as events, organizations, or places.
+Having an ontology properly defined is a step in the right direction as it gives us a template for schema modeling. All constructs that we may need to use are defined in the ontology, which ensures consistency across schemas and helps to avoid mistakes.
+
+\medskip
+
+With the data on the web \cite{data-on-the-web} trend in the last few years, even ontologies are becoming accessible publicly. Popular formats include RDFS (or RDF Schema) \footnote{\url{https://www.w3.org/TR/rdf-schema/}}, OWL\footnote{\url{https://www.w3.org/OWL/}}, UFO \cite{ufo22}, schema.org, and Wikidata\footnote{\url{https://www.wikidata.org/}}. For example, schema.org is a proprietary format describing useful data for search engines, such as events, organizations, or places.
 
 Using pre-defined ontologies in a semi-automatic way of defining schemas is beneficiary because a schema designer may focus entirely on the schema structure and not on the domain semantics.
 
-\section*{Motivation}
-\addcontentsline{toc}{section}{Motivation}
+\section*{An alternative problem}
+\addcontentsline{toc}{section}{An alternative problem}
 
-% Není jasné, proč tato sekce. Jak se to váže k předchozímu? Není spíš lepší OFNky použít jako motivaci? Tj. pojmenovat tu sekci jako "Motivation" a říci, že výše uvedený příklad je jednoduchý umělý příklad, který demonstruje problém. A říci, že ale máme silnější motivaci a tou je reálný problém návrhu OFN - říci co je OFN, což jste udělal. Ale pak to lépe navázat na text a pojmy výše, to tam teď chybí.
+In the section above, we have introduced a problem behind data modeling during software development as it is hard and time-consuming to design schemas properly. Nevertheless, schema design may be used in a wider environment to create recommendations for publishing various data in a unified format.
 
-The example above is a simple demonstration of the problematics behind the data modelling. This chapter show stronger motivation for the same problem.
+This task is usually undertaken by the state administration to ensure interoperability between various state and private organizations. The European Union enforces this in the directive 2019/1024 of the European Parliament, that data of public institutions shall be published as open data on the Internet in all formats it was created and, if possible, in a machine-readable format.
 
-\smallskip
+\medskip
 
 \textbf{Open data} is a term for data published on the web without any restrictions on use. This means that anyone can use, modify and distribute the data for any reason, including commercial use.
 
@@ -114,49 +136,36 @@ The definition of open data is very loose but can be further specified by a 5-st
     \item [5 $\bigstar$] Data are linked to other data creating a network of data.
 \end{itemize}
 
-\smallskip
-
-According to the directive 2019/1024 of the European Parliament, data of public institutions shall be published as open data on the Internet in all formats it was created, and if possible, in a machine-readable format. This description corresponds to two stars in the schema above.
-
-%N Blbé je, že to není v angličtině. Lepší odkázat na úplně původní zdroj toho pojmu, což je EU legislativa - https://eur-lex.europa.eu/legal-content/en/TXT/?uri=CELEX%3A32019L1024 - tam Article 2, bod 15 . V angličtině je to navíc Formal Open Standard (FOS), takže v angl. textu používat toto. Překlad do češtiny vyplývá z české verze toho EU materiálu : https://eur-lex.europa.eu/legal-content/CS/TXT/HTML/?uri=CELEX:32019L1024&from=en
+\medskip
 
 The act then specifies \textbf{FOSes}\footnote{\url{https://eur-lex.europa.eu/legal-content/en/TXT/?uri=CELEX\%3A32019L1024}} \textit{(Formal Open Standard)} as recommendations for publishing selected categories of data, such as information about \textit{Tourist destinations} and \textit{Sports centers}. The purpose of these documents is to standardize how these data are published, usually by defining JSON and XML schemas along with textual documentation.
 
-Until recently, all those recommendations (OFNs) were created by hand without any tool.
-
-\smallskip
-
 The process of designing those recommendations is comparable to designing schemas for a software system mentioned above - the designer needs to create schemas and documentation for them with examples and images.
+
+Besides the different use cases, the process of designing the specification is slightly different, as we need to provide multiple formats, compared to the previous example, where a single format is sufficient. This brings us to several other challenges that are usually related to ease of the publications of the data:
+\begin{enumerate}
+  \item As there are multiple different formats, to not restrict the publishers, we need to design tools that can convert data between those formats. Because the conversion depends strictly on the schema, it is related directly to the schema modeling.
+  \item To ensure the publishers that data are published correctly, we shall provide them with a platform for testing. This is also significantly related to schema modeling, as the purpose of the platform is to visualize the provided data to show that everything works.
+\end{enumerate}
 
 \section*{Focus of the work}
 \addcontentsline{toc}{section}{Focus of the work}
 
-This thesis will analyze and extend\footnote{The author implemented the basis of the tool as his research project. This thesis, therefore, introduces advanced constructs and formalizes those already implemented.} a newly created tool, Dataspecer \cite{dataspecer}, and formally define and analyze its internal model, which follows previous research in the XML data modeling area and extends it to support new requirements.
+This thesis analyzes and extends a newly created tool, Dataspecer \cite{dataspecer}, and formally defines and analyzes its internal framework, which follows the previous research \cite{necasky2007xsem, necasky2012conceptual} in the XML data modeling area and extends it to support new requirements.
 
-Due to the complexity of the topic, this thesis does not attempt to cover and implement all details, as some of them will be analyzed by future work. The thesis only focuses on the current author's work and formalizes the basics.
+The purpose of the tool is to ease the process of creation and management of data specifications, such as XSD, JSON Schema, and CSV Schema, and the creation of supplementary documents. The tool shall help users model schemas by providing relations from the chosen ontology and automatically performing manual work.
 
-Dataspecer is a web tool for effortless creation and management of data specifications, such as XSD, JSON Schema, and CSV Schema, and the creation of supplementary documents. The tool helps the user model schemas by providing relations from the chosen ontology. Schemas are modeled in a graphical interface in the form of the tree, which is then converted to various schemas.
+Supplementary documents are automatically generated files from the modeled schemas, such as the documentation, examples, diagrams, transformation scripts, and others.
 
-Supplementary documents are automatically generated files from the modeled schemas, such as:
+\medskip
 
-\begin{itemize}
-    \item \textbf{documentation} - Human-readable description of entities from the ontology, that are used in the schema as well as description of the schema.
-    \item \textbf{data transformations} - Scripts that can convert data from one schema to another, even between different technologies, such as JSON and XML.
-    \item \textbf{examples} - Small datasets that can be used instead of the documentation to understand the schema.
-    \item \textbf{example application} - Depending on the context of modeled schema, if the schema describes web-accessible data, it is possible to generate a web application that uses those data as a proof that the workflow works.
-\end{itemize}
+The tool is part of the larger ecosystem of tools, libraries, and frameworks for data modeling, which is being developed by the same authors.
 
-The tool is already in use for creating new schemas for the public sector of the Czech Republic, including the OFNs.
+Due to the complexity of the topic, this thesis does not attempt to cover and implement all features, as some of them will be kept for the authors' future work.
+
+The purpose of this thesis is to provide basic formalisms and findings for the next work in this area.
 
 \bigskip
 
-\noindent The rest of the thesis is organized as follows.
-
-\begin{itemize}
-    \item The following chapter \ref{chapters:related-work} analyzes related work and introduces the previous works as the common ground this work will follow - precisely the model-driven approach for data modeling and evolution of XML documents.
-    \item Chapter \ref{chapters:analysis} briefly analyzes new requirements for the software as many requirements were already studied in the related work. The chapter focuses on support for schemas other than XML and the data on the web \cite{data-on-the-web} approach to ontology and the modeled schemas.
-    It also defines the internal model to represent schemas and changes from the related work where it was first introduced. Changes are also analyzed concerning the new requirements.
-    \item The next chapter \ref{chapters:implementation} then briefly describes how this model is integrated into the Dataspecer tool.
-    \item The last chapter \ref{chapters:future-work} introduces and briefly analyzes topics for future work, such as the change propagation (evolution) in schemas.
-\end{itemize}
+The rest of the thesis is organized as follows. The following \autoref{chapters:related-work} analyzes related work and introduces the previous works as the common ground this work will follow - precisely the model-driven approach for data modeling and evolution of XML documents. The succeeding \autoref{chapters:analysis} analyzes new requirements for the tool and proposes a solution to some of them. The rest is only briefly analyzed to set a direction for future development. The next \autoref{chapters:implementation} identifies key implementation decisions and describes them. The last \autoref{chapters:evaluation} evaluates the tool in the context of use in modeling FOSes for the Czech Republic.
 
