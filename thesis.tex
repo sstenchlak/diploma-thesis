@@ -46,7 +46,7 @@
 \usepackage{bm}             % boldface symbols (\bm)
 \usepackage{graphicx}       % embedding of pictures
 \usepackage{fancyvrb}       % improved verbatim environment
-\usepackage{natbib}         % citation style AUTHOR (YEAR), or AUTHOR [NUMBER]
+\usepackage[sort&compress]{natbib}         % citation style AUTHOR (YEAR), or AUTHOR [NUMBER]
 \usepackage[nottoc]{tocbibind} % makes sure that bibliography and the lists
 			    % of figures/tables are included in the table
 			    % of contents
@@ -114,6 +114,7 @@
       {]}{{{\color{delim}{]}}}}{1},
 }
 \usepackage{tikz}
+\usepackage[multiple]{footmisc}
 \usetikzlibrary{positioning}
 \usetikzlibrary{shadows}
 \usetikzlibrary{shapes.geometric,shapes.misc}
@@ -166,6 +167,8 @@
 %\geometry{marginparwidth=75pt}
 \usepackage[super]{nth}
 
+\usepackage{afterpage}
+\usepackage{pdflscape}
 \usepackage{dsfont}
 \usepackage{xhfill}
 \usepackage[skins]{tcolorbox}
@@ -272,10 +275,11 @@ Abstract.
 
 %%% Each chapter is kept in a separate file
 \include{chapters/introduction}
-\include{chapters/related-work}
+\include{chapters/previous-research}
 \include{chapters/analysis}
 \include{chapters/formal-background}
 \include{chapters/implementation}
+\include{chapters/related-work}
 \include{chapters/evaluation}
 \include{chapters/epilog}
 

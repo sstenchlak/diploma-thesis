@@ -5,7 +5,7 @@
     \label{req:transformations}
 \end{requirement}
 
-Data transformations were also introduced at the beginning of this thesis. Generally speaking, \textbf{data transformations} are used to convert data (not schemas, but data that conform to given schemas) from one schema to another without changing its meaning.
+Data transformations were also introduced at the beginning of this thesis. In general, \textbf{data transformations} are used to convert data (not schemas, but data that conform to given schemas) from one schema to another without changing its meaning.
 
 One example may be to convert CSV to a JSON array of objects, where each object represents a row in the CSV. There are plenty of online tools to do this, but they do not understand the context of the data. Because both schemas were designed in the tool, we may exploit the knowledge of the mapping to the original ontology and correctly map columns from CSV to the fields in a JSON object.
 
@@ -16,8 +16,8 @@ In the context of this tool, transformation means both (i) transformation betwee
 Regarding the transformation process, there are plenty of ways to transform the data:
 \begin{enumerate}
     \item Data engineers use \textbf{Python} with support for many formats using libraries. In this case, the transformation would mean a generated Python script with a predefined interface that takes data from one format and outputs in another. Depending on the use case, the script may be configurable (besides the possibility to configure the generation of transformation itself).
-    \item There is \textbf{XSLT} (Extensible Stylesheet Language Transformations) language to transform between XML documents or from XML to XML-like, plain-text, or CSV documents. XSLT is an XML document that can be executed with an input document by an XSLT processor, producing the resulting document. One disadvantage is that the input document must be in XML format; hence, it cannot be used alone for bidirectional JSON and CSV transformation.
-    \item There are mapping tools, such as RML \cite{dimou2014rml} (RDF Mapping Language) designed explicitly for mapping purposes. RML maps common serialization frameworks, such as XML, CSV, and JSON, to RDF from a set of rules written in RDF. The translation mechanism is similar to the XSLT.
+    \item There is \textbf{XSLT} (Extensible Stylesheet Language Transformations) language to transform between XML documents or from XML to XML-like, plain-text, or CSV documents. XSLT is an XML document that can be executed with an input document by an XSLT processor, producing the resulting document. A disadvantage is that the input document must be in XML format; hence, it cannot be used alone for bidirectional JSON and CSV transformation.
+    \item There are mapping tools and languages, such as \textbf{RML} \cite{dimou2014rml} (RDF Mapping Language) designed explicitly for mapping purposes. RML maps common serialization frameworks, such as XML, CSV, and JSON, to RDF from a set of rules written in RDF. The translation mechanism is similar to the XSLT. Specifically for JSON, there is \textbf{JSON-LD} with simple rules to set mapping to RDF. Conversion tools are available in multiple programming languages.
 \end{enumerate}
 
 Although RML is a ready-to-use solution with support for all three technologies, it requires its own transformation toolchain. On the contrary, XSLT is a well-known technology among people working with XML and is widely supported. Our primary goal is to have transformations that are easy for stakeholders to use in their systems. Therefore, we will implement XSLT for XML while keeping RML for later.

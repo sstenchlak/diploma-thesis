@@ -123,9 +123,8 @@ In the section above, we have introduced a problem behind data modeling during s
 
 This task is usually undertaken by the state administration to ensure interoperability between various state and private organizations. The European Union enforces this in the directive 2019/1024 of the European Parliament, that data of public institutions shall be published as open data on the Internet in all formats it was created and, if possible, in a machine-readable format.
 
-\medskip
 
-\textbf{Open data} is a term for data published on the web without any restrictions on use. This means that anyone can use, modify and distribute the data for any reason, including commercial use.
+\paragraph{Open data} Open data is a term for data published on the web without any restrictions on use. This means that anyone can use, modify and distribute the data for any reason, including commercial use.
 
 The definition of open data is very loose but can be further specified by a 5-star scheme designed by Sir Tim Berners-Lee. Each star adds a restriction up until the fifth star describing the Linked Open Data.
 \begin{itemize}[noitemsep,leftmargin=2cm]
@@ -136,7 +135,7 @@ The definition of open data is very loose but can be further specified by a 5-st
     \item [5 $\bigstar$] Data are linked to other data creating a network of data.
 \end{itemize}
 
-\medskip
+\bigskip
 
 The act then specifies \textbf{FOSes}\footnote{\url{https://eur-lex.europa.eu/legal-content/en/TXT/?uri=CELEX\%3A32019L1024}} \textit{(Formal Open Standard)} as recommendations for publishing selected categories of data, such as information about \textit{Tourist destinations} and \textit{Sports centers}. The purpose of these documents is to standardize how these data are published, usually by defining JSON and XML schemas along with textual documentation.
 
@@ -151,7 +150,7 @@ Besides the different use cases, the process of designing the specification is s
 \section*{Focus of the work}
 \addcontentsline{toc}{section}{Focus of the work}
 
-This thesis analyzes and extends a newly created tool, Dataspecer \cite{dataspecer}, and formally defines and analyzes its internal framework, which follows the previous research \cite{necasky2007xsem, necasky2012conceptual} in the XML data modeling area and extends it to support new requirements.
+This thesis analyzes and extends a newly created tool, Dataspecer \cite{dataspecer}, and formally defines and analyzes its internal framework, which follows the previous research \cite{necasky2007xsem, necasky2012conceptual, nevcasky2012evolution, xcase, exolutio} in the XML data modeling area and extends it to support new requirements.
 
 The purpose of the tool is to ease the process of creation and management of data specifications, such as XSD, JSON Schema, and CSV Schema, and the creation of supplementary documents. The tool shall help users model schemas by providing relations from the chosen ontology and automatically performing manual work.
 
@@ -167,5 +166,4 @@ The purpose of this thesis is to provide basic formalisms and findings for the n
 
 \bigskip
 
-The rest of the thesis is organized as follows. The following \autoref{chapters:related-work} analyzes related work and introduces the previous works as the common ground this work will follow - precisely the model-driven approach for data modeling and evolution of XML documents. The succeeding \autoref{chapters:analysis} analyzes new requirements for the tool and proposes a solution to some of them. The rest is only briefly analyzed to set a direction for future development. The next \autoref{chapters:implementation} identifies key implementation decisions and describes them. The last \autoref{chapters:evaluation} evaluates the tool in the context of use in modeling FOSes for the Czech Republic.
-
+The rest of the thesis is organized as follows. The following \autoref{chapters:previous-research} introduces the previous research as the common ground this work will follow - precisely the model-driven approach for data modeling and evolution of XML documents. The succeeding \autoref{chapters:analysis} analyzes new requirements for the tool and proposes a solution to some of them. The rest is only briefly analyzed to set a direction for future development. The next \autoref{chapters:implementation} identifies key implementation decisions and describes them. Then \autoref{chapters:related-work} analyzes related work in the area of data modeling. The last \autoref{chapters:evaluation} evaluates the tool in the context of use in modeling FOSes for the Czech Republic.
