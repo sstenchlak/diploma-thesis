@@ -1,11 +1,19 @@
 \chapter{Related work}
 \label{chapters:related-work}
 
+\section{Enterprise Architect}
+
+Sparx Systems Enterprise Architect is a tool for visual modeling and design based on OMG's UML. It supports software engineers during the whole development processby providing constructs for modeling business logic, diagrams, the architecture of software, use case diagrams and others. It has a proprietary license and the product is paid.
+
+EA supports the basics of MDA, which was introduced in \autoref{chapters:previous-research}. Users can create PIM directly in the tool by modeling the relations between the classes (creating a UML class diagram) and then the tool transforms PIM into PSM representation. Transformation is, however, very simple and it seems that is not possible to choose which part of PIM shall be transformed into PSM and does not provide the variety of options as we are planning. PSM can represent XML only by default, but there is support for plugins that can extend this functionality. EA focuses more on the programming languages as, besides the XML, PSM may represent C\#, C++, Java, PHP and NUnit elements.
+
+Although it should be possible to implement most of the desired functionality directly into EA, the proprietary license and the fact that the tool is too general for our use case makes it not unusable.
+
 \section{OSLO}
 
 OSLO\footnote{\url{https://joinup.ec.europa.eu/collection/oslo-open-standards-linked-organisations-0/about}} - Open Standards for Linked Organisations is an initiative that originated in Flanders, Dutch-speaking northern portion of Belgium, to promote the use of technical standards for the data exchange between various organizations, government, and a local government. The goal of OSLO is to maintain and create the standards through the open process (hence everyone can intervene), keep the rules respected, provide a publication platform and support the adoption of the standards. So far, OSLO contains over 18 different domains consisting of definitions from 107 organizations.
 
-The initiative developed a toolchain to ease the process of publication of the standards. The standards are modeled in \textit{Enterprise Architect UML} software and then converted into an RDF representation with their tool\footnote{\url{https://github.com/Informatievlaanderen/OSLO-EA-to-RDF}}. The next tool then generates artifacts (resulting files) that are automatically published on one centralized server \url{https://data.vlaanderen.be/ns}. The artifacts contain HTML documentation, RDF vocabulary, SHACL\footnote{\url{https://www.w3.org/TR/shacl/}} templates for validation of RDF, and a JSON-LD\footnote{\url{https://json-ld.org/}} context for developers that prefer JSON formats. Their toolchain uses the GitHub platform for storing their standards and triggering the rest of the toolchain. They also provide tools for organizations to validate their data against the standards to check that data are machine-readable without errors.
+The initiative developed a toolchain to ease the process of publication of the standards. The standards are modeled in \textit{Enterprise Architect UML} software and then converted into an RDF representation with their tool\footnote{\url{https://github.com/Informatievlaanderen/OSLO-EA-to-RDF}}. The next tool then generates artifacts (resulting files) that are automatically published on one centralized server \url{https://data.vlaanderen.be/ns}. The artifacts contain HTML documentation, RDF vocabulary, SHACL\footnote{\url{https://www.w3.org/TR/shacl/}} templates for validation of RDF, and a JSON-LD context for developers that prefer JSON formats. Their toolchain uses the GitHub platform for storing their standards and triggering the rest of the toolchain. They also provide tools for organizations to validate their data against the standards to check that data are machine-readable without errors.
 
 OSLO also focuses on the interoperability of services that provide those data so that every service has a generic hyper-media-driven API.
 
@@ -29,9 +37,6 @@ classes:
       full_name:
         required: true
         description: name of the person
-      aliases:
-        multivalued: true
-        description: other names for the person
       phone:
         pattern: "^[\textbackslash{}\textbackslash{}d\textbackslash{}\textbackslash{}(\textbackslash{}\textbackslash{})\textbackslash{}\textbackslash{}-]+$"
       age:
@@ -41,6 +46,11 @@ classes:
     \end{Verbatim}
     \caption{Example of part of the YAML configuration file for LinkML.}
 \end{figure}
+
+%      aliases:
+%multivalued: true
+%description: other names for the person
+
 
 The core concepts in their model are classes with properties. Classes then support inheritance and the model in general supports many options for the data types, cardinalities, regular expression patterns, and others.
 
@@ -56,7 +66,7 @@ Based on how the framework is used, we suppose, that it targets the former use-c
   Custom schema structure & yes   & no             & no                    & yes               & yes               \\
   Schema extension        & ?     & n/a            & n/a                   & no                & planned           \\
   Evolution               & ?     & no             & no                    & yes               & planned           \\
-  Custom artifacts        & no     & by plugin      & in their DSL          & no                & planned by plugin \\
+  Custom artifacts        & no     & by plugin      & in their DSL          & no               & by plugin \\
   User interface          & graph & YAML           & graph                 & graph             & tree              \\\bottomrule
   \end{tabular}
   \caption{Comparison of the the tools.}

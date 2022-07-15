@@ -38,7 +38,7 @@ In the previous chapter, we defined data specification as a project containing m
         \node[squarednode] (psma) at (-4.25,-3) {Schema A};
         \node[squarednode] (psmb) at (-1.75,-3) {Schema B};
 
-        \node[squarednode] (psmc) at (1.75,-4) {Schema C};
+        \node[squarednode] (psmc) at (1.75,-3) {Schema C};
         \node[squarednode] (psmd) at (4.25,-3) {Schema D};
 
         \node (psm_t)[text width=1cm,align=right] at (-6.5,0) {{CIM:}};
@@ -53,10 +53,10 @@ In the previous chapter, we defined data specification as a project containing m
         \draw[-latex] (pim1) -- (cim);
         \draw[-latex] (pimn) -- (cim);
 
-        \path(psmc) edge [-latex,out=135, in=315]  (psmb);
+        %\path(psmc) edge [-latex,out=135, in=315]  (psmb);
 
         \node[dashed, draw=black, minimum width=5cm, minimum height=2.5cm] at (-3,-2.25) {};
-        \node[dashed, draw=black, minimum width=5cm, minimum height=3.5cm] at (3,-2.75) {};
+        \node[dashed, draw=black, minimum width=5cm, minimum height=2.5cm] at (3,-2.25) {};
 
 
         % separators
@@ -64,7 +64,7 @@ In the previous chapter, we defined data specification as a project containing m
             \draw [dotted] (-7,-0.75-1.5*\x) -- (5,-0.75-1.5*\x);
         }
     \end{tikzpicture}
-    \caption{Schema of the new framework structure (without the lower levels containing artifacts). The topmost level represents the ontology, then different PIMs serve as copies of the ontology for different data specifications that are represented by dashed rectangles. The third level represents the general schemas. Schema C shows a proposition for schema extending and is described later in the thesis.}
+    \caption{Schema of the new framework structure (without the lower levels containing artifacts). The topmost level represents the ontology, then different PIMs serve as copies of the ontology for different data specifications that are represented by dashed rectangles. The third level represents the general schemas.} % Schema C shows a proposition for schema extending and is described later in the thesis.
 \end{figure}
 
 \section{Conceptual levels}
@@ -87,7 +87,7 @@ We will start by defining PIM, as the definition of CIM depends on it.
     \end{itemize}
 \end{definition}
 
-The purpose of annotations is to bring additional information to the model that is not essential for the generation. As we stated in the previous chapter, there are various ontologies, and some of them may lack support of some construct. We have already mentioned that RDFS does not allow naming the reverse direction of an association. Some ontologies may not support cardinalities or inheritance (although most of them do). Similarly, some artifacts may not use all every information from PIM. For example, data transformations do not need title and description to work with.
+The purpose of annotations is to bring additional information to the model that is not essential for the generation. As we stated in the previous chapter, there are various ontologies, and some of them may lack the support of some construct. We have already mentioned that RDFS does not allow naming the reverse direction of an association. Some ontologies may not support cardinalities or inheritance (although most of them do). Similarly, some artifacts may not use all the information from PIM. For example, data transformations do not need a title and description to work with.
 
 We do not provide a complete list of all annotations as the intention is to let programmers use their own if necessary, either when creating a new generator or adding support for the new format of an ontology.
 
@@ -197,7 +197,7 @@ It is essential to mention that both PIM and PSM may be extended in the future b
 
 Whereas this is not causing issues in the PIM, as an additional construct may be simply ignored if not understood by the rest of the application, we must proceed with caution if we want to extend PSM. PSM schema must be understood completely to correctly generate artifacts from it. Hence even a small change may impact many other parts of the application and also possible third-party plugins, which are expected to read PSM.
 
-This is an issue only if we intend to generate schemas in different formats from the PSM. If the use-case is to use PSM to generate a single format, such as XML schema, then tere is no problem to use XML-specific constructs that may break the generation of JSON and CSV schemas. Nevertheless, it is advised that any format-specific option shall be used as an annotation, if possible.
+This is an issue only if we intend to generate schemas in different formats from the PSM. If the use-case is to use PSM to generate a single format, such as XML schema, then there is no problem to use XML-specific constructs that may break the generation of JSON and CSV schemas. Nevertheless, it is advised that any format-specific option shall be used as an annotation, if possible.
 
 As an example, XML schema has \verb|<xs:sequence>| and \verb|<xs:all>| model groups that specify whether the elements are ordered or not. Although, on the XSD level, those are different things, on the PSM level we may introduce association $\textrm{ordered}: S_C \rightarrow \{\textrm{false}, \textrm{true}\}$ to achieve the same effect.\footnote{This is not entirely correct as XSD may specify that only some elements are ordered, whereas others may have random order. This is an example of a feature that is currently too complex to be handled by our general schema model.}
 
@@ -232,7 +232,7 @@ To formally describe the difference, we will introduce the concept of consistenc
 
 Based on the use case, most of the changes in the CIM that are worth propagating are simple and well-isolated. This may ease the process of inferring changes between PIM and CIM by finding those isolated sets of entities and then creating a sequence of changes based on a predefined set of rules.
 
-As mentioned in the analysis, for complex changes, it would be easier to generate delete-and-create set of operations instead of trying to figure out what has changed. This would remove affected entities entirely from created schemas after propagating, and a user simply adds new entities back to desired places in the schema structure.
+As mentioned in the analysis, for complex changes, it would be easier to generate a delete-and-create set of operations instead of trying to figure out what has changed. This would remove affected entities entirely from created schemas after propagating, and a user simply adds new entities back to desired places in the schema structure.
 
 \medskip
 
@@ -337,7 +337,7 @@ We will omit a complete list of operations in this thesis as they depend on the 
 
 We do not require that the set of operations must be minimal, and no operation can not be composed of others. This will reduce the computational difficulty as some actions from the user may lead to hundreds of operations on the model \cite{nevcasky2012evolution}.
 
-For example, \textit{wrap PSM object with OR} may be valid operation used for purposes of inheritace (see \autoref{requirement:inheritance}). An alternative consisting of more atomic operations may be as follows:
+For example, \textit{wrap PSM object with OR} may be valid operation used for purposes of inheritance (see \autoref{requirement:inheritance}). An alternative consisting of more atomic operations may be as follows:
 \begin{enumerate*}[label={(\arabic*)}]
     \item create a standalone OR
     \item connect the target object to OR
@@ -352,13 +352,59 @@ Referencing other schemas is also without problem as the only thing that may cha
 
 \section{Inheriting schemas}
 
-\td{delam na requirementu}
+Nevertheless, there might be use cases described in \autoref{requirement:schema-inheritance} where reusing layers from other data specifications would be useful. Consider a data specification that models a general schema for any format. This specification is published on the web. Someone else would like to use that schema to modify it slightly. For example, to add another attribute to the given class. Now, if the author of the original schema modifies anything, we would like to modify the derived schema as well. This, however, is not possible as the tool is not aware of the existence of the derived schema nor may not have write access to it.
 
-Nevertheless, there might be use cases where reusing layers from other data specifications would be useful. Consider a data specification that models a general schema for any format. This specification is published on the web. Someone else would like to use that schema to modify it slightly. For example, to add another attribute to the given class. Now, if the author of the original schema modifies anything, we would like to modify the derived schema as well. This, however, is not possible as the tool is not aware of the existence of the derived schema nor may not have a write access to it.
+For this particular scenario, we would need to keep a list of executed operations on given schemas. The reused schema would then remember the last executed operation on the parent, which should be sufficient to recreate the steps that were performed on the parent schema in the derived schema. We have already proposed in \autoref{requirement:schema-inheritance} how the evolution could work for some simple tasks.
 
-This
+There is one prominent solution that would nicely work with the already introduced concept of annotation.
 
-% Pravidlo, že z venku se dá odkazovat pouze na kořen
-% Vevnitř můžeme odkazovat kdekoli
+We can copy the whole PSM, where each entity gets a new IRI, with all the references between them properly updated and with an interpretation annotation set to the original entity (not PIM). This may work, but we also need our own PIM as we cannot update theirs. But having two PIMs may cause problems, as we stated that the interpretation on the PIM level must be unique, hence only one entity can represent a given thing in CIM.
+A possible fix may be to introduce a new annotation \textbf{inheritsFrom} on both PIM and PSM which would point to the original entity. Both PIM and PSM would be copied with new IRIs and the interpretation would work as right now, the copied PSM would interpret the copied PIM. This would preserve backward compatibility (as by ignoring the annotation this is ordinary PIM and PSM) and enables us to perform evolution through the inheritsFrom annotation.
 
-% Everything belongs to schema.
+The key finding here is that supporting this requirement should not require any breaking changes to the framework.
+
+\begin{figure}[h]\centering
+    \begin{tikzpicture}[
+        squarednode/.style={rectangle, draw=blue!60, fill=blue!5, very thick, minimum size=5mm,align=center},
+    ]
+        %Nodes
+        \node[squarednode] (cim) at (0,0) {Concept in\\an ontology};
+        \node[squarednode] (pim1) at (-3,-2) {Original\\PIM entity};
+        \node[squarednode] (pimn) at (3,-2) {Copied\\PIM entity};
+
+        \node[squarednode] (psma) at (-3,-4) {Original\\PSM entity};
+        \node[squarednode] (psmb) at (3,-4) {Copied\\PSM entity};
+
+        \node (psm_t)[text width=1cm,align=right] at (-5.5,0) {{CIM:}};
+        \node (pim_t)[text width=1cm,align=right] at (-5.5,-2) {{PIM:}};
+        \node (schema_t)[text width=1cm,align=right] at (-5.5,-4) {{PSM:}};
+
+        %Lines
+        \draw[-latex] (psma) -- (pim1);
+        \draw[-latex] (psmb) -- (pimn);
+        \draw[-latex] (pim1) -- (cim);
+        \draw[-latex] (pimn) -- (cim);
+
+        \draw[-latex] (pimn) -- node[above]{inheritsFrom} (pim1);
+        \draw[-latex] (psmb) -- node[above]{inheritsFrom} (psma);
+
+
+        \path(cim) edge [-latex,out=180+20, in=90-40,orange,shorten >=1em, shorten <=1em, very thick]  (pim1);
+        \path(cim) edge [-latex,out=-20, in=90+40,orange,shorten >=1em, shorten <=1em, very thick]  (pimn);
+
+        \path(pim1) edge [-latex,out=-10, in=180+10,orange,shorten >=1em, shorten <=1em, very thick]  (pimn);
+        \path(psma) edge [-latex,out=-10, in=180+10,orange,shorten >=1em, shorten <=1em, very thick]  (psmb);
+
+        \path(pim1) edge [-latex,out=270-20, in=90+20,orange,shorten >=.2em, shorten <=.2em, very thick]  (psma);
+        \path(pimn) edge [-latex,out=270+20, in=90-20,orange,shorten >=.2em, shorten <=.2em, very thick]  (psmb);
+
+        \node[dashed, draw=black, minimum width=3cm, minimum height=3.8cm] at (-3,-3) {};
+        \node[dashed, draw=black, minimum width=3cm, minimum height=3.8cm] at (3,-3) {};
+
+        % separators
+        \foreach \x in {0,...,1}{
+            \draw [dotted] (-6,-1-2*\x) -- (4.5,-1-2*\x);
+        }
+    \end{tikzpicture}
+    \caption{Proposition on how to handle schema inheritance. PSM with PIM is copied and the links are preserved through inheritsFrom annotation. Possible evolution paths are denoted by orange arrows.} % Schema C shows a proposition for schema extending and is described later in the thesis.
+\end{figure}
