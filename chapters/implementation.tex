@@ -1,6 +1,6 @@
 \chapter{Implementation}\label{chapters:implementation}
 
-This chapter aims to provide implementation details of the fundamental concepts introduced during the analysis in \autoref{chapters:analysis} and formalized in \autoref{chapters:formal-background}, hence closing the reasoning process. Its purpose is not to replace complete technical documentation or provide a basic architectural structure.
+This chapter aims to provide implementation details of the fundamental concepts introduced during the analysis in \autoref{chapters:analysis} and formalized in \autoref{chapters:formal-background}, hence closing the reasoning process. Its purpose is not to replace complete technical documentation, which can be found in a project repository (see the end of this thesis for more information).
 
 \bigskip
 
@@ -13,6 +13,98 @@ The intent of the work is to build a solid foundation for an ecosystem of tools 
 \end{enumerate}
 
 Due to the current use case and state of development, our primary focus is to create a tool where is easy to design schemas and generate the required artifacts. Hence the goals above are not met yet, but some design decisions were made to fulfill them later easily.
+
+\afterpage{%
+\begin{figure}\centering
+    \begin{tikzpicture}
+        \node[alice,human,shirt=violet] (dm) at (0,0) {Data modeler};
+        \node[bob,human] (sd) at (0,-2.5) {Schema designer};
+
+        \node[squarednode] (oe) at (6,0) {Ontology\\editor};
+        \node[squarednode, database] (od) at (11,0) {Ontology\\database};
+        \node[squarednode, database] (od2) at (11,-2.5) {Another\\ontology\\database};
+
+        \node[schema] (ds) at (6,-2.5) {Instance of\\Dataspecer};
+
+        \node[squarednode, dashed] (ds2) at (6,-5) {Another instance\\of Dataspecer};
+
+
+        \draw[-latex] (dm) -- node[above,align=center]{Uses external tool\\to create an ontology} (oe);
+        \draw[-latex] (oe) -- node[above,align=center]{Modifies the\\ontology} (od);
+        \draw[-latex] (sd) -- node[above,align=center]{Uses the tool\\to create schemas} (ds);
+        \draw[-latex] (ds) --  (od);
+        \draw[-latex] (ds) -- node[above,align=center,pos=.6]{Reads\\ontologies} (od2);
+        \draw[-latex,dashed] (ds) -- node[left,align=right]{Reuses specifications\\or inherits schemas} (ds2);
+    \end{tikzpicture}
+    \caption{Context of the tool with other systems. Dataspecer only reads the ontology, which must be modelled in other tools. Dashed line shows the intent to make the tools interoperable across the Internet.}
+\end{figure}
+\def\h{1.3cm}\def\sp{0.5cm}
+\begin{figure}\centering
+    \begin{tikzpicture}[
+        every node/.style={anchor=north west},scale=.85, transform shape
+    ]
+        \node[squarednode,minimum width=1.5cm,minimum height=\h] (react) at (0,0) {React\\libs.};
+        \node[squarednode,minimum width=2.5cm,minimum height=\h] (op) at (2,0) {Operation\\executor};
+        \node[squarednode,minimum width=3cm,minimum height=\h] (com) at (5,0) {Complex op.\\executor};
+        \node[squarednode,minimum width=5cm,minimum height=\h] (cim) at (8.5,0) {CIM\\adapter};
+
+        \node[squarednode,database,minimum width=2cm,minimum height=\h,anchor=north] (ontology1) at (9.5,{1.2*(\h+\sp)}) {Ontology\\database};
+        \node[anchor=center] at (11,{1.2*(\h+\sp)-\h/2}) {...};
+        \node[squarednode,database,minimum width=2cm,minimum height=\h,anchor=north] (ontologyN) at (12.5,{1.2*(\h+\sp)}) {Ontology\\database};
+
+        \node[squarednode,minimum width=13.5cm,minimum height=\h] (fed) at (0,{-1*(\h+\sp)}) {Federated store};
+
+        \node[squarednode,minimum width=2cm,minimum height=\h] (ss1) at (0,{-2*(\h+\sp)}) {Schema\\store 1};
+        \node[anchor=center] at (2.5,{-2*(\h+\sp)-\h/2}) {...};
+        \node[squarednode,minimum width=2cm,minimum height=\h] (ssn) at (3,{-2*(\h+\sp)}) {Schema\\store N};
+
+        \node[squarednode,minimum width=2cm,minimum height=\h] (ss21) at (8.5+0,{-2*(\h+\sp)}) {Schema\\store 1};
+        \node[anchor=center] at (11,{-2*(\h+\sp)-\h/2}) {...};
+        \node[squarednode,minimum width=2cm,minimum height=\h] (ss2n) at (8.5+3,{-2*(\h+\sp)}) {Schema\\store N};
+
+        \node[squarednode,minimum width=5cm,minimum height=\h] (s1) at (0,{-3*(\h+\sp)}) {Store};
+        \node[squarednode,minimum width=5cm,minimum height=\h] (sn) at (8.5,{-3*(\h+\sp)}) {Store};
+
+        \node[squarednode,database,minimum height=\h,anchor=north] (sd1) at (2.5,{-4*(\h+\sp)}) {Schema\\database 1};
+        \node[anchor=center] at (6.75,{-4*(\h+\sp)-\h/2}) {...};
+        \node[squarednode,database,minimum height=\h,anchor=north] (sdn) at (11,{-4*(\h+\sp)}) {Schema\\database N};
+
+        \draw [decorate,decoration = {brace, mirror}] (14,{-2*(\h+\sp)-\h}) --  (14,{-2*(\h+\sp)});
+
+        \node[squarednode,minimum width=\h,minimum height={\h*3+\sp*2}] (configuration) at (15,{-0*(\h+\sp)}) {\rotatebox{90}{Configuration}};
+
+        \draw[-latex] (s1) -- (sd1);
+        \draw[-latex] (sn) -- (sdn);
+
+        \draw[-latex] (ss1) -- ([xshift=-1.5cm]s1.north);
+        \draw[-latex] (ssn) -- ([xshift=1.5cm]s1.north);
+        \draw[-latex] (ss21) -- ([xshift=-1.5cm]sn.north);
+        \draw[-latex] (ss2n) -- ([xshift=1.5cm]sn.north);
+
+        \draw[-latex] ([xshift=-5.75cm]fed.south) -- (ss1);
+        \draw[-latex] ([xshift=-2.75cm]fed.south) -- (ssn);
+        \draw[-latex] ([xshift=2.75cm]fed.south) -- (ss21);
+        \draw[-latex] ([xshift=5.75cm]fed.south) -- (ss2n);
+
+        \draw[-latex] (com) -- (cim);
+        \draw[-latex] (com) -- (op);
+
+        \draw[-latex] (react) -- ([xshift={0.75cm-13.5cm/2}]fed.north);
+
+        \draw[-latex] (com) -- ([xshift={3cm/2+5cm-13.5cm/2}]fed.north);
+        \draw[-latex] (op) -- ([xshift={2.5cm/2+2cm-13.5cm/2}]fed.north);
+
+        \draw[-latex] ([xshift={8.5cm+2cm/2-11cm}]cim.north) -- (ontology1);
+        \draw[-latex] ([xshift={11.5cm+2cm/2-11cm}]cim.north) -- (ontologyN);
+
+        \draw[latex-] ([yshift={(\h*3+\sp*2)/2-\h/2}]configuration.west) -- (cim);
+        \draw[latex-] ([yshift={(\h*3+\sp*2)/2-2*(\h+\sp)-\h+\h/2}]configuration.west) -- (14.1,{-2*(\h+\sp)-\h/2});
+
+    \end{tikzpicture}
+    \caption{Schematic structure of the core framework and the tool. Below, there are various schema databases. Currently, there is only Dataspecer's backend, but others are planned, such as Solid Pods or Triplestores. Each database is read by store, which formally consists of schema stores, containing exactly one PIM or PSM schema with all entities. All stores are merged for easier manipulation, such as executing operations. We have also implemented React library to integrate the store into React ecosystem. Configuration, based on the data specification, select the stores that should be loaded.  } % Schema C shows a proposition for schema extending and is described later in the thesis.
+\end{figure}
+\clearpage
+}
 
 \section{Model representation}
 

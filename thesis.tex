@@ -115,15 +115,16 @@
 }
 \usepackage{tikz}
 \usepackage[multiple]{footmisc}
+\usepackage{tikzpeople}
 \usetikzlibrary{positioning}
 \usetikzlibrary{shadows}
-\usetikzlibrary{shapes.geometric,shapes.misc}
+\usetikzlibrary{shapes.geometric,shapes.misc,decorations.pathreplacing,calligraphy}
 \tikzset{%
   squarednode/.style={rectangle, draw=CadetBlue!60, fill=CadetBlue!5, very thick, minimum size=5mm,align=center},
   %
   module/.style={rectangle, draw=CadetBlue!60, fill=CadetBlue!5, very thick, minimum size=5mm,align=center},% as application
   dataSpecification/.style={rectangle, draw=Fuchsia!60, fill=Fuchsia!5, very thick, minimum size=5mm},% our new concept
-  schema/.style={rectangle, draw=MidnightBlue!60, fill=MidnightBlue!5, very thick, minimum size=5mm},% artifact, but is schema
+  schema/.style={rectangle, draw=MidnightBlue!60, fill=MidnightBlue!5, very thick, minimum size=5mm,align=center},% artifact, but is schema
   artefact/.style={rectangle, draw=Periwinkle!60, fill=Periwinkle!5, very thick, minimum size=5mm},% general artifact
   document/.style={rectangle, draw=Periwinkle!60, fill=Periwinkle!5, very thick, minimum size=5mm},% general artifact
   mapping/.style={rectangle, draw=Black!60, fill=Black!5, very thick, minimum size=5mm},
@@ -151,6 +152,16 @@
   psmOrGroup/.style={circle, draw=Thistle!60, fill=Thistle!5, very thick, minimum size=5mm,align=center},
   psmIncludes/.style={chamfered rectangle, draw=Magenta!60, fill=Magenta!5, very thick},
   %
+  human/.style={,minimum size=.8cm},
+  database/.style={
+      cylinder,
+      cylinder uses custom fill,
+      cylinder body fill=yellow!50,
+      cylinder end fill=yellow!50,
+      shape border rotate=90,
+      aspect=0.25,
+      draw
+   },
   %
   cascaded/.style = {%
     general shadow = {%
