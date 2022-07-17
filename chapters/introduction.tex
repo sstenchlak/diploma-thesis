@@ -6,15 +6,15 @@
 
 During the software development process, we may come to a point where splitting a large monolithic codebase into smaller, well-defined modules is necessary to maintain the growth of our software. Using existing systems and connecting them is also a viable approach to building software. \cite{newman_monolith_nodate} In both cases, we end up with many applications and services that work as one.
 
-This approach reduces complexity and demands on software developers as each part can be maintained, deployed, and tested separately. Each developer team must know only the portion they maintain and the immediate surrounding. The surrounding is then defined by a set of rules - an agreement specifying the data which flows between the systems.
+This approach reduces complexity and demands on software developers as each part can be maintained, deployed, and tested separately. Each developer team must know only the portion they maintain and the nearest surrounding. The surrounding is then defined by a set of rules - an agreement specifying the data which flows between the systems.
 
 Those rules must be created, documented, and kept up-to-date, which can be a long, error-prone task. The result of the process is usually a set of data schemas and documentation for developers. Especially the schemas need to be designed carefully to be, if possible, consistent in format and naming.
 
-Data schemas are computer-readable documents that define the format of the data. They specify how data are structured and how individual properties are named with their possible values. The schemas are used to validate data produced by the application to ensure its correct format and can be used by humans to understand the expected format.
+Data schemas are computer-readable documents that define the format of the data. They specify how data are structured and how individual properties are named with their possible values. The schemas are used to validate data produced by the application to ensure its correct format and can be used by humans to understand the desired format.
 
 \medskip
 
-As an example, consider a company selling and distributing its own goods. The goods are stored in warehouses and then shipped to customers. For the shipping process, the warehouse workers need to know the properties of the items they need to send. Similarly, customers need to know the properties of items they are buying. This scenario is denoted in \autoref{fig:company-schema}.
+As an example, consider a company selling and distributing its own goods. The goods are stored in warehouses and then shipped to customers. For the shipping process, the warehouse workers need to know the properties of the items they require to send. Similarly, customers need to know the properties of items they are buying. This scenario is denoted in \autoref{fig:company-schema}.
 
 \begin{figure}[h]\centering
   \begin{tikzpicture}
@@ -37,13 +37,13 @@ As an example, consider a company selling and distributing its own goods. The go
   \label{fig:company-schema}
 \end{figure}
 
-To describe the data that are being sent between the goods management system and both the online shop and the warehouse, we need to make two "agreements." Although both describe goods, the warehouse may require different properties than the shop. The \textit{name} and \textit{weight} of the items is essential for both systems, but the shop also requires the \textit{price}, contrary to warehouse that needs \textit{storing requirements}.
+To describe the data that are being sent between the goods management system and both the online shop and the warehouse, we need to make two "agreements." Although both describe goods, the warehouse may require different properties than the shop. The \textit{name} and \textit{weight} of the items are essential for both systems, but the shop also requires the \textit{price}, contrary to the warehouse, which needs \textit{storing requirements}.
 
-Furthermore, these properties are also reflected in the database schema design of the individual modules. The goods management has a database of goods, whether warehouse management only stores the position of individual goods in the warehouse and the information of warehouses, which are sent to the shop.
+Furthermore, these properties are also reflected in a database schema design of the individual modules. The goods management has a database of goods, whether warehouse management only stores the position of individual goods in the warehouse and the information of warehouses, which are sent to the shop.
 
 \medskip
 
-Designing the schemas with supporting documentation by hand is a tedious task, and we may find several obstacles during the process, especially when the schema design is not made carefully:
+Designing the schemas together with supporting documentation by hand is a tedious task, and we may find several obstacles during the process, especially when the schema design is not made carefully:
 
 \begin{enumerate}
     \item We need to describe the same thing for every schema that uses it. Hence doing the \textbf{same work multiple times}. \textit{From the example above, the name and weight of the item are used in two different schemas.}
@@ -84,33 +84,33 @@ JSON is an example of a popular format that is widely used to exchange data betw
 \label{fig:json-schema}
 \end{figure}
 
-\textbf{Diagrams} are images that visually explain the domain or data structure. \autoref{fig:json-schema} and \ref{figure:pim-example} can be considered as examples of diagrams that may help to better understand the structure. Diagrams are especially helpful in showing relations between different things that are used in schemas. For example, the order is made by a user, consisting of goods stored in warehouses.
+\textbf{Diagrams} are images that visually explain the domain or the data structure. Figures \ref{fig:json-schema} and \ref{figure:pim-example} can be considered as examples of diagrams that may help to better understand the structure. Diagrams are especially helpful in showing relations between various things that are used in schemas. For example, the order is made by a user, consisting of goods stored in warehouses.
 
 \textbf{Examples} can be provided on two levels. Programmers may appreciate sample data that are valid against the schema and can be used to test their applications. \autoref{analysis:inheritance:json-data} is an example, although it would be better to provide more than two items. Examples can be provided for individual things as well. Someone may not be sure how long the ideal description is or what is the naming convention of items.
 
-The \textbf{documentation} would describe each property of the schema in more detail in human-readable form. For example, documentation may be a website with multiple pages where the schema, diagrams, and examples are included, and all properties are described in formatted text. Individual things may be interlinked to ease the discovery of related things.
+The \textbf{documentation} would describe each property of the schema in more detail in human-readable form. For instance, documentation may be a website with multiple pages where the schema, diagrams, and examples are included, and all properties are described in formatted text. Individual things may be interlinked to ease the discovery of related things.
 
 \bigskip
 
-Future modifications to the system or changes in user requirements may enforce altering the schemas. Formally, the process of changing schemas is an \textbf{evolution}. The evolution is complex, as there can already be existing data that conform to the changed schemas. In that scenario, properly implementing a change in a user requirement requires modifying affected schemas, documentation, and all the data (in case the data are stored in the given format).
+Future modifications to the system or changes in user requirements may enforce altering the schemas. Formally, the process of changing schemas is called \textbf{evolution}. The evolution is complex, as there can already be existing data that conform to the changed schemas. In that scenario, properly implementing a change in a user requirement requires modifying affected schemas, documentation, and all the data (in case the data are stored in the given format).
 
 \begin{showcase}
-    As an example, suppose that the address provided by a customer to deliver the goods is represented in multiple parts as \textit{street}, \textit{city}, \textit{zip code}, etc. We may decide that it would be better to have everything in one field as some parts of the address may be missing or not granular enough. The evolution in this case would mean to change all the schemas, documentation and examples to reflect the new structure, and possibly create transformation scripts to convert old data to the new format.
+    As an example, suppose that the address provided by a customer to deliver the goods is represented in multiple parts such as \textit{street}, \textit{city}, \textit{zip code}, etc. We may decide that it would be more reasonable to have everything in one field as some parts of the address may be missing or not granular enough. In this case, the evolution would mean changing all the schemas, documentation, and examples to reflect the new structure and possibly creating transformation scripts to convert old data to the new format.
 \end{showcase}
 
 \section*{Ontology}
 \addcontentsline{toc}{section}{Ontology}
 %N Nerozumím, co tady znamená to "tends us". Jako že nás příklad vede k nějakému formálnímu popisu? Moc tomu nerozumím. Ale řekl bych spíš, že ten příklad naznačuje, že problém návrhu interfaců v komplexním systému (tj. systému, který má více než jeden interface) je potřeba vnímat na dvou rovinách - technická rovina definice datových struktur a jejich popisu a konceptuální / ontologická rovina nad tím, která zachycuje věcnou podstatu bez technických detailů. A že tato rovina se obvykle vyjadřuje v podobě ontologie.
 
-The full process of designing schemas needs to be perceived on two levels. (i) On a technical level, where a user creates the schemas and describes the rules, (ii) and on a conceptual level, where the things and the relations between them are defined. The later level is called an \textbf{ontology}.
+The whole process of designing schemas needs to be perceived on two levels. (i) On a technical level, where a user creates the schemas and describes the rules, (ii) and on a conceptual level, where the things and the relations between them are defined. The latter is called an \textbf{ontology}.
 
-An ontology describes and names relations between the concepts from a real life without the technical details. Concepts are \textit{order}, \textit{customer}, or \textit{goods} in our case. Relations then specify, for example, that \textit{the order belongs to a customer} and \textit{consists of goods}.
+An ontology describes and names relations between the concepts from real life without the technical details. Concepts are, for example, \textit{order}, \textit{customer}, or \textit{goods} in our case. Relations then specify, for example, that \textit{the order belongs to a customer} and \textit{consists of goods}.
 
-Having an ontology properly defined is a step in the right direction as it gives us a template for schema modeling. All constructs that we may need to use are defined in the ontology, which ensures consistency across schemas and helps to avoid mistakes.
+Having an ontology properly defined is a step in the right direction as it gives us a template for schema modeling. All things we may need to employ are described in the ontology, ensuring consistency across schemas and helping to avoid mistakes.
 
 \medskip
 
-With the data on the web \cite{data-on-the-web} trend in the last few years, even ontologies are becoming accessible publicly. Popular formats include RDFS (or RDF Schema) \footnote{\url{https://www.w3.org/TR/rdf-schema/}}, OWL\footnote{\url{https://www.w3.org/OWL/}}, UFO \cite{ufo22}, schema.org, and Wikidata\footnote{\url{https://www.wikidata.org/}}. For example, schema.org is a proprietary format describing useful data for search engines, such as events, organizations, or places.
+With the data on the web \cite{data-on-the-web} trend in the last few years, even ontologies are becoming accessible publicly. Popular formats include RDFS (or RDF Schema) \footnote{\url{https://www.w3.org/TR/rdf-schema/}}, OWL\footnote{\url{https://www.w3.org/OWL/}}, UFO \cite{ufo22}, schema.org, and Wikidata\footnote{\url{https://www.wikidata.org/}}. For example, schema.org is a proprietary format describing valuable data for search engines, such as events, organizations, or places.
 
 Using pre-defined ontologies in a semi-automatic way of defining schemas is beneficiary because a schema designer may focus entirely on the schema structure and not on the domain semantics.
 
