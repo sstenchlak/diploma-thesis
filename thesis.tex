@@ -3,7 +3,7 @@
 %% Settings for single-side (simplex) printing
 % Margins: left 40mm, right 25mm, top and bottom 25mm
 % (but beware, LaTeX adds 1in implicitly)
-\documentclass[12pt,a4paper]{report}
+\documentclass[12pt,a4paper,dvipsnames]{report}
 \setlength\textwidth{145mm}
 \setlength\textheight{247mm}
 \setlength\oddsidemargin{15mm}
@@ -119,20 +119,39 @@
 \usetikzlibrary{shadows}
 \usetikzlibrary{shapes.geometric,shapes.misc}
 \tikzset{%
-  data-specification/.style={rectangle, draw=blue!60, fill=blue!5, very thick, minimum size=5mm},
-  general-schema/.style={rectangle, draw=blue!60, fill=blue!5, very thick, minimum size=5mm},
-  schema/.style={rectangle, draw=yellow!60, fill=yellow!5, very thick, minimum size=5mm},
-  ontology/.style={rectangle, draw=purple!60, fill=purple!5, very thick, minimum size=5mm},
-  artefact/.style={rectangle, draw=black!60, fill=black!5, very thick, minimum size=5mm},
-  mapping/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
-%
-  typeor/.style={diamond, draw=orange!60, fill=orange!5, very thick},
-  typeincludes/.style={chamfered rectangle, draw=brown!60, fill=brown!5, very thick},
-  typeclass/.style={rectangle, draw=violet!60, fill=violet!5, very thick, minimum size=5mm,align=center},
-  typeattribute/.style={rectangle, draw=teal!60, fill=teal!5, very thick, minimum size=5mm,align=center},
-  typeassociation/.style={rectangle, draw=purple!60, fill=purple!5, very thick, minimum size=5mm,align=center},
-  typeassociationend/.style={rectangle, draw=pink!60, fill=pink!5, very thick, minimum size=5mm,align=center},
-  typeor-group/.style={circle, draw=orange!60, fill=orange!5, very thick, minimum size=5mm,align=center},
+  squarednode/.style={rectangle, draw=CadetBlue!60, fill=CadetBlue!5, very thick, minimum size=5mm,align=center},
+  %
+  module/.style={rectangle, draw=CadetBlue!60, fill=CadetBlue!5, very thick, minimum size=5mm,align=center},% as application
+  dataSpecification/.style={rectangle, draw=Fuchsia!60, fill=Fuchsia!5, very thick, minimum size=5mm},% our new concept
+  schema/.style={rectangle, draw=MidnightBlue!60, fill=MidnightBlue!5, very thick, minimum size=5mm},% artifact, but is schema
+  artefact/.style={rectangle, draw=Periwinkle!60, fill=Periwinkle!5, very thick, minimum size=5mm},% general artifact
+  document/.style={rectangle, draw=Periwinkle!60, fill=Periwinkle!5, very thick, minimum size=5mm},% general artifact
+  mapping/.style={rectangle, draw=Black!60, fill=Black!5, very thick, minimum size=5mm},
+  % ---
+  % CIM
+  % ---
+  ontology/.style={rectangle, draw=RedViolet!60, fill=RedViolet!5, very thick, minimum size=5mm},% ontology or CIM
+  %
+  ontologyClass/.style={shape=rectangle, draw=violet!60, fill=violet!5, very thick, minimum size=5mm,align=center},
+  % ----------------------------------
+  % PIM entities used only to show PIM
+  % ----------------------------------
+  pimClass/.style={rectangle, draw=violet!60, fill=violet!5, very thick, minimum size=5mm,align=center},
+  pimAttribute/.style={rectangle, draw=teal!60, fill=teal!5, very thick, minimum size=5mm,align=center},
+  pimAssociation/.style={rectangle, draw=purple!60, fill=purple!5, very thick, minimum size=5mm,align=center},
+  pimAssociationend/.style={rectangle, draw=pink!60, fill=pink!5, very thick, minimum size=5mm,align=center},
+  % -----------------------------
+  % PSM entities to show only PSM
+  % -----------------------------
+  generalSchema/.style={rectangle, draw=blue!60, fill=blue!5, very thick, minimum size=5mm},% equivalent to PSM
+  %
+  psmClass/.style={rectangle, draw=Orchid!60, fill=Orchid!5, very thick},
+  psmAttribute/.style={rectangle, draw=OliveGreen!60, fill=OliveGreen!5, very thick,align=center},
+  psmOr/.style={diamond, draw=Thistle!60, fill=Thistle!5, very thick},
+  psmOrGroup/.style={circle, draw=Thistle!60, fill=Thistle!5, very thick, minimum size=5mm,align=center},
+  psmIncludes/.style={chamfered rectangle, draw=Magenta!60, fill=Magenta!5, very thick},
+  %
+  %
   cascaded/.style = {%
     general shadow = {%
       shadow scale = 1,
@@ -243,17 +262,25 @@
 % An optional dedication: you can thank whomever you wish (your supervisor,
 % consultant, a person who lent the software, etc.)
 \def\Dedication{%
-Dedication.
+This thesis was made possible thanks to numerous people who helped me or motivated me during the journey.
+
+On the one side, I would like to thank my family for the financial support and for encouraging me to continue educating myself. Thanks to my girlfriend Kateřina for all the emotional support despite the long nights spent on this project.
+
+I want to express my gratitude to my supervisor, doc. Mgr. Martin Nečaský, Ph.D., for guiding me through this and other projects during my study and helping me find the right branch of informatics I enjoy exploring. I also value the help from my consultants Mgr. Petr Škoda, Ph.D. and RNDr. Jakub Klímek, Ph.D.
+
+Finally, I want to thank my friend Jáchym Bártík for the long-lasting friendly rivalry, which will continue in our Ph.D. study.
 }
 
 % Abstract (recommended length around 80-200 words; this is not a copy of your thesis assignment!)
 \def\Abstract{%
-Abstract.
+This work analyzes, formalizes, and implements a framework for multi-level conceptual modeling of various serialization formats based on Model-Driven Architecture and previously developed tools XCase and eXolutio. It enables users to model their schema from a conceptual model in one general form from which multiple schema formats can be derived alongside documentation and transformation scripts. The thesis introduces base formalisms and findings and analyzes advanced requirements for the following work in this area, such as evolution and inheritance of schemas.
+
+The primary use case of the tool is modeling formal open standards for publishing open data for the Czech government and public institutions. Nevertheless, the intent is to make the tool for general schema modeling.
 }
 
 % 3 to 5 keywords (recommended), each enclosed in curly braces
 \def\Keywords{%
-{schema definition} {data modeling} {ontologies}
+{schema definition} {data modeling} {ontologies} {Model-Driven Architecture}
 }
 
 %% The hyperref package for clickable links in PDF and also for storing

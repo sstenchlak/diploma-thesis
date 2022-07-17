@@ -18,12 +18,11 @@ The user can then decide whether he/she wants to use the first or the second gro
 \begin{figure}[h!]\centering
   \centering
   \begin{tikzpicture}[
-    class/.style={shape=rectangle, draw=orange!60, fill=orange!5, very thick, minimum size=5mm,align=center},
     attribute/.style={align=center},
   ]
-    \node[class] (ci) at (0,0) {<<class>>\\\textbf{Contact information 1}};
+    \node[ontologyClass] (ci) at (0,0) {<<class>>\\\textbf{Contact information 1}};
 
-    \node[class] (ci2) at (6,0) {<<class>>\\\textbf{Contact information 2}};
+    \node[ontologyClass] (ci2) at (6,0) {<<class>>\\\textbf{Contact information 2}};
 
     \node[attribute] (a1) at (0,1.5) {<<attr>>\\address};
     \node[attribute] (a2) at (4.5,1.5) {<<attr>>\\street};
@@ -35,7 +34,7 @@ The user can then decide whether he/she wants to use the first or the second gro
     \draw (ci2) -- (a3);
     \draw (ci2) -- (a4);
 
-    \node[mapping,align=center] (map) at (3,4) {<<alignment>>\\\{address\}=\{street\}, \{number\}\textbackslash n\{city\}};
+    \node[mapping,align=center] (map) at (3,3.5) {<<alignment>>\\\{address\}=\{street\}, \{number\}\textbackslash n\{city\}};
 
     \draw[-latex] (map) -- (a1);
     \draw[-latex] (map) -- (a2);

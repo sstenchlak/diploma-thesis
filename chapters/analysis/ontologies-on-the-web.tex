@@ -43,11 +43,10 @@ As some formats specify the ontology in a more complex way, the application may 
 \begin{figure}[h!]\centering
   \centering
   \begin{tikzpicture}[
-    class/.style={shape=rectangle, draw=orange!60, fill=orange!5, very thick, minimum size=5mm,align=center},
     attribute/.style={align=center},
   ]
-    \node[class] (good) at (0,0) {<<class>>\\\textbf{Good}};
-    \node[class] (variant) at (9,0) {<<class>>\\\textbf{Good variant}};
+    \node[ontologyClass] (good) at (0,0) {<<class>>\\\textbf{Good}};
+    \node[ontologyClass] (variant) at (9,0) {<<class>>\\\textbf{Good variant}};
 
     \node[attribute] (a11) at (-.75,1.5) {<<attr>>\\id};
     \node[attribute] (a12) at (.75,1.5) {<<attr>>\\title};

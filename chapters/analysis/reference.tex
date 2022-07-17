@@ -11,12 +11,12 @@ To avoid problems with tracking references and knowing which data specification 
 
 \begin{figure}[h!]\centering
   \begin{tikzpicture}
-      \node[data-specification,align=center] (ds1) at (-3,0) {Data specification 1};
-      \node[data-specification,align=center] (ds2) at (3,0) {Data specification 2};
+      \node[dataSpecification,align=center] (ds1) at (-3,0) {Data specification 1};
+      \node[dataSpecification,align=center] (ds2) at (3,0) {Data specification 2};
 
-      \node[general-schema,align=center] (s11) at (-4.5,-1.5) {General\\schema};
-      \node[general-schema,align=center] (s12) at (-1.5,-1.5) {General\\schema};
-      \node[general-schema,align=center] (s21) at (3,-1.5) {General\\schema};
+      \node[generalSchema,align=center] (s11) at (-4.5,-1.5) {General\\schema};
+      \node[generalSchema,align=center] (s12) at (-1.5,-1.5) {General\\schema};
+      \node[generalSchema,align=center] (s21) at (3,-1.5) {General\\schema};
 
       \draw[-latex] (ds1) -- (s11);
       \draw[-latex] (ds1) -- (s12);

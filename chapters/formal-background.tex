@@ -27,19 +27,17 @@ PSM, as a second level from the five-level framework, then represents the genera
 In the previous chapter, we defined data specification as a project containing multiple schemas, configurations for generators, and metadata, such as a list of reused specifications. This would mean that individual PSMs belong to a concrete data specification. To simplify things, we say that exactly one PIM is part of the specification as well.
 
 \begin{figure}[h]\centering
-    \begin{tikzpicture}[
-        squarednode/.style={rectangle, draw=blue!60, fill=blue!5, very thick, minimum size=5mm},
-    ]
+    \begin{tikzpicture}
         %Nodes
-        \node[squarednode] (cim) at (0,0) {Ontology};
-        \node[squarednode] (pim1) at (-3,-1.5) {PIM 1};
-        \node[squarednode] (pimn) at (3,-1.5) {PIM 2};
+        \node[ontology] (cim) at (0,0) {Ontology};
+        \node[generalSchema] (pim1) at (-3,-1.5) {PIM 1};
+        \node[generalSchema] (pimn) at (3,-1.5) {PIM 2};
 
-        \node[squarednode] (psma) at (-4.25,-3) {Schema A};
-        \node[squarednode] (psmb) at (-1.75,-3) {Schema B};
+        \node[schema] (psma) at (-4.25,-3) {Schema A};
+        \node[schema] (psmb) at (-1.75,-3) {Schema B};
 
-        \node[squarednode] (psmc) at (1.75,-3) {Schema C};
-        \node[squarednode] (psmd) at (4.25,-3) {Schema D};
+        \node[schema] (psmc) at (1.75,-3) {Schema C};
+        \node[schema] (psmd) at (4.25,-3) {Schema D};
 
         \node (psm_t)[text width=1cm,align=right] at (-6.5,0) {{CIM:}};
         \node (pim_t)[text width=1cm,align=right] at (-6.5,-1.5) {{PIM:}};
@@ -96,20 +94,20 @@ The purpose of PIM entities should be clear as we have described all important c
 \begin{figure}[h!]\centering
 \centering
 \begin{tikzpicture}[]
-    \node[typeclass] (goods) {\textbf{class}\\$title$: Goods\\$description$: Represents goods\\that can be bought.};
-    \node[typeattribute] (title) at (6,0) {\textbf{attribute}\\$title$: title\\$type$: xs:string\\$cardinality$: 1..1};
+    \node[pimClass] (goods) {\textbf{class}\\$title$: Goods\\$description$: Represents goods\\that can be bought.};
+    \node[pimAttribute] (title) at (6,0) {\textbf{attribute}\\$title$: title\\$type$: xs:string\\$cardinality$: 1..1};
 
-    \node[typeclass] (variantc) at (0,-7.5) {\textbf{class}\\$title$: Goods variant\\$description$: Variant of good, such\\as color or material.};
+    \node[pimClass] (variantc) at (0,-7.5) {\textbf{class}\\$title$: Goods variant\\$description$: Variant of good, such\\as color or material.};
 
-    \node[typeclass] (food) at (-3,-4-0.125+1) {\textbf{class}\\$title$: Food\\$description$: Goods\\that are edible.};
+    \node[pimClass] (food) at (-3,-4-0.125+1) {\textbf{class}\\$title$: Food\\$description$: Goods\\that are edible.};
 
     \draw[-latex] (title) -- node[below]{$class$} (goods);
     \draw[-latex] (food) -- node[right]{$extends$} (goods);
 
     \begin{scope}[transform canvas={xshift=1.5cm}]
-        \node[typeassociation] (variant) at (5,-4-0.125) {\textbf{association}};
-        \node[typeassociationend] (varianta) at (0,-3.25) {\textbf{association end}\\$title$: is variant of\\$card_{min}$: 1\\$card_{max}$: 1};
-        \node[typeassociationend] (variantb) at (0,-5) {\textbf{association end}\\$title$: has variant};
+        \node[pimAssociation] (variant) at (5,-4-0.125) {\textbf{association}};
+        \node[pimAssociationend] (varianta) at (0,-3.25) {\textbf{association end}\\$title$: is variant of\\$card_{min}$: 1\\$card_{max}$: 1};
+        \node[pimAssociationend] (variantb) at (0,-5) {\textbf{association end}\\$title$: has variant};
 
         \draw[-latex] (varianta) -- node[right]{$class$} (goods);
         \draw[-latex] (variantb) -- node[right]{$class$} (variantc);
@@ -276,9 +274,7 @@ In general, because the alignments may be arbitrarily complex, we will use a new
 Some readers may object that the annotation $extends$ used for the inheritance of classes is not consistent with this approach. In the previous chapter, we said that inheritance might be considered as a form of alignment. Nevertheless, unlike the other alignments, inheritance is an important concept that is used in many places in the tool. Therefore we will keep this as an annotation for now and consider reimplementation of this concept in the future when implementing the support for other alignments.
 
 \begin{figure}[h]\centering
-    \begin{tikzpicture}[
-        squarednode/.style={rectangle, draw=blue!60, fill=blue!5, very thick, minimum size=5mm},
-    ]
+    \begin{tikzpicture}
         %Nodes
         \node[squarednode] (cim) at (-1,0) {$E$};
         \node[squarednode] (pim1) at (-3,-1.5) {$E_1$};
@@ -364,9 +360,7 @@ A possible fix may be to introduce a new annotation \textbf{inheritsFrom} on bot
 The key finding here is that supporting this requirement should not require any breaking changes to the framework.
 
 \begin{figure}[h]\centering
-    \begin{tikzpicture}[
-        squarednode/.style={rectangle, draw=blue!60, fill=blue!5, very thick, minimum size=5mm,align=center},
-    ]
+    \begin{tikzpicture}
         %Nodes
         \node[squarednode] (cim) at (0,0) {Concept in\\an ontology};
         \node[squarednode] (pim1) at (-3,-2) {Original\\PIM entity};
@@ -389,14 +383,14 @@ The key finding here is that supporting this requirement should not require any 
         \draw[-latex] (psmb) -- node[above]{inheritsFrom} (psma);
 
 
-        \path(cim) edge [-latex,out=180+20, in=90-40,orange,shorten >=1em, shorten <=1em, very thick]  (pim1);
-        \path(cim) edge [-latex,out=-20, in=90+40,orange,shorten >=1em, shorten <=1em, very thick]  (pimn);
+        \path(cim) edge [-latex,out=180+20, in=90-40,Lavender,shorten >=1em, shorten <=1em, very thick]  (pim1);
+        \path(cim) edge [-latex,out=-20, in=90+40,Lavender,shorten >=1em, shorten <=1em, very thick]  (pimn);
 
-        \path(pim1) edge [-latex,out=-10, in=180+10,orange,shorten >=1em, shorten <=1em, very thick]  (pimn);
-        \path(psma) edge [-latex,out=-10, in=180+10,orange,shorten >=1em, shorten <=1em, very thick]  (psmb);
+        \path(pim1) edge [-latex,out=-10, in=180+10,Lavender,shorten >=1em, shorten <=1em, very thick]  (pimn);
+        \path(psma) edge [-latex,out=-10, in=180+10,Lavender,shorten >=1em, shorten <=1em, very thick]  (psmb);
 
-        \path(pim1) edge [-latex,out=270-20, in=90+20,orange,shorten >=.2em, shorten <=.2em, very thick]  (psma);
-        \path(pimn) edge [-latex,out=270+20, in=90-20,orange,shorten >=.2em, shorten <=.2em, very thick]  (psmb);
+        \path(pim1) edge [-latex,out=270-20, in=90+20,Lavender,shorten >=.2em, shorten <=.2em, very thick]  (psma);
+        \path(pimn) edge [-latex,out=270+20, in=90-20,Lavender,shorten >=.2em, shorten <=.2em, very thick]  (psmb);
 
         \node[dashed, draw=black, minimum width=3cm, minimum height=3.8cm] at (-3,-3) {};
         \node[dashed, draw=black, minimum width=3cm, minimum height=3.8cm] at (3,-3) {};
@@ -406,5 +400,5 @@ The key finding here is that supporting this requirement should not require any 
             \draw [dotted] (-6,-1-2*\x) -- (4.5,-1-2*\x);
         }
     \end{tikzpicture}
-    \caption{Proposition on how to handle schema inheritance. PSM with PIM is copied and the links are preserved through inheritsFrom annotation. Possible evolution paths are denoted by orange arrows.} % Schema C shows a proposition for schema extending and is described later in the thesis.
+    \caption{Proposition on how to handle schema inheritance. PSM with PIM is copied and the links are preserved through inheritsFrom annotation. Possible evolution paths are denoted by pink arrows.} % Schema C shows a proposition for schema extending and is described later in the thesis.
 \end{figure}

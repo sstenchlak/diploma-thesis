@@ -17,13 +17,11 @@ Data schemas are computer-readable documents that define the format of the data.
 As an example, consider a company selling and distributing its own goods. The goods are stored in warehouses and then shipped to customers. For the shipping process, the warehouse workers need to know the properties of the items they need to send. Similarly, customers need to know the properties of items they are buying. This scenario is denoted in \autoref{fig:company-schema}.
 
 \begin{figure}[h]\centering
-  \begin{tikzpicture}[
-    squarednode/.style={rectangle, draw=purple!60, fill=purple!5, very thick, minimum size=5mm,align=center},
-]
+  \begin{tikzpicture}
     %Nodes
-    \node[squarednode] (db) {Goods\\management system};
-    \node[squarednode] (warehouse) at (4,-3) {Warehouse\\management\\system};
-    \node[squarednode] (shop) at (-4,-3) {Online\\shop};
+    \node[module] (db) {Goods\\management system};
+    \node[module] (warehouse) at (4,-3) {Warehouse\\management\\system};
+    \node[module] (shop) at (-4,-3) {Online\\shop};
 
     %Lines
     \draw[-latex] (db) -- node[align=left,right=.5,pos=0.4]{list of goods\\with relevant info} (warehouse);

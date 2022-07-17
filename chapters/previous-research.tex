@@ -18,26 +18,24 @@ The key concept is a transformation as the process of mapping the upper layer to
 XRG used PIM and PSM in their architecture. PIM represented the domain ontology in UML-like notation\footnote{Formal definition of PIM and PSM levels is in chapter \ref{chapters:formal-background}.}, as it is independent of the platform as XML. PSM\footnote{Compared to the definition above, XRG's PSM is more like the mapping between the PIM and PSM from the MDA. Final XML Schema would then corresponds to PSM.} then represented the given schema in their own designed grammar, which was translated into a final schema, such as XSD.
 
 \begin{figure}[h]\centering
-    \begin{tikzpicture}[
-        squarednode/.style={rectangle, draw=blue!60, fill=blue!5, very thick, minimum size=5mm},
-    ]
+    \begin{tikzpicture}
         %Nodes
-        \node[squarednode] (pim) at (0,0) {PIM schema};
-        \node[squarednode] (psm1) at (-2.5,-1.5) {PSM schema 1};
+        \node[ontology] (pim) at (0,0) {PIM schema};
+        \node[generalSchema] (psm1) at (-2.5,-1.5) {PSM schema 1};
         \node (psmDot) at (0,-1.5) {...};
-        \node[squarednode] (psmN) at (2.5,-1.5) {PSM schema N};
+        \node[generalSchema] (psmN) at (2.5,-1.5) {PSM schema N};
 
-        \node[squarednode] (schema1) at (-2.5,-3) {XML schema 1};
+        \node[schema] (schema1) at (-2.5,-3) {XML schema 1};
         \node (psmDot) at (0,-3) {...};
-        \node[squarednode] (schemaN) at (2.5,-3) {XML schema N};
+        \node[schema] (schemaN) at (2.5,-3) {XML schema N};
 
-        \node[squarednode,cascaded] (q1) at (-1.5,-4.5) {XML queries};
+        \node[document,cascaded] (q1) at (-1.5,-4.5) {XML queries};
         \node (psmDot) at (1,-4.5) {...};
-        \node[squarednode,cascaded] (qN) at (3.5,-4.5) {XML queries};
+        \node[document,cascaded] (qN) at (3.5,-4.5) {XML queries};
 
-        \node[squarednode,cascaded] (document1) at (-2.5,-6) {XML documents};
+        \node[document,cascaded] (document1) at (-2.5,-6) {XML documents};
         \node (psmDot) at (0,-6) {...};
-        \node[squarednode,cascaded] (documentN) at (2.5,-6) {XML documents};
+        \node[document,cascaded] (documentN) at (2.5,-6) {XML documents};
 
         \node (psm_t)[text width=4cm,align=right] at (-7,0) {{Platform-specific level:}};
         \node (pim_t)[text width=4cm,align=right] at (-7,-1.5) {{Platform-independent level:}};

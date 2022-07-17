@@ -33,15 +33,15 @@ We categorize two types of transformation, lifting and lowering. Lifting is a pr
         %Nodes
         \node[ontology] (ontology) at (0,0) {Ontology};
 
-        \node[artefact,align=center] (rdf) at (3,-1.5) {RDF documents};
+        \node[document,align=center] (rdf) at (3,-1.5) {RDF documents};
 
-        \node[general-schema,align=center] (schema1) at (-3,-1.5) {General\\schema};
+        \node[generalSchema,align=center] (schema1) at (-3,-1.5) {General\\schema};
 
         \node[schema,align=center] (xml1) at (-4,-3) {XML\\schema};
         \node[schema,align=center] (json1) at (-2,-3) {JSON\\schema};
 
-        \node[artefact,align=center] (xml_document) at (1.5,-3.5) {XML\\document};
-        \node[artefact,align=center] (json_document) at (4.5,-3.5) {JSON\\document};
+        \node[document,align=center] (xml_document) at (1.5,-3.5) {XML\\document};
+        \node[document,align=center] (json_document) at (4.5,-3.5) {JSON\\document};
 
         \draw[-latex] (rdf) -- node[above,anchor=south west,align=left] {conforms} (ontology);
 

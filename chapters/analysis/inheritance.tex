@@ -86,25 +86,22 @@ There are two ways to implement the OR operator in our proposed hierarchical mod
   \begin{subfigure}[b]{.5\textwidth}
     \centering
     \begin{tikzpicture}[
-      type-or/.style={diamond, draw=orange!60, fill=orange!5, very thick},
-      type-class/.style={rectangle, draw=red!60, fill=red!5, very thick},
-      type-attribute/.style={rectangle, draw=blue!60, fill=blue!5, very thick},
       level 1/.style = {sibling distance = 3.5cm, level distance = 1cm},
       level 2/.style = {sibling distance = 1cm, level distance = 1cm},
       every child/.style={-latex}
     ]
-      \node[type-or] (root) {or}
+      \node[psmOr] (root) {or}
         child {
-          node[type-class] {$C^1$}
+          node[psmClass] {$C^1$}
             child {node {...}}
-            child {node[type-attribute] {$A_1$}}
+            child {node[psmAttribute] {$A_1$}}
             child {node {...}}
         }
         child {
-          node[type-class] {$C^2$}
+          node[psmClass] {$C^2$}
             child {node {...}}
-            child {node[type-attribute] {$A_2$}}
-            child {node[type-attribute] {$A_3$}}
+            child {node[psmAttribute] {$A_2$}}
+            child {node[psmAttribute] {$A_3$}}
             child {node {...}}
         };
       \draw[-latex] (0,1) -- (root);
@@ -114,23 +111,19 @@ There are two ways to implement the OR operator in our proposed hierarchical mod
     \begin{subfigure}[b]{.5\textwidth}
     \centering
     \begin{tikzpicture}[
-      type-or/.style={diamond, draw=orange!60, fill=orange!5, very thick},
-      type-class/.style={rectangle, draw=red!60, fill=red!5, very thick},
-      type-attribute/.style={rectangle, draw=blue!60, fill=blue!5, very thick},
-      type-or-group/.style={circle, draw=orange!60, fill=orange!5, very thick},
       level 1/.style = {sibling distance = 1.5cm, level distance = 1.125cm},
       level 2/.style = {sibling distance = 2cm, level distance = .5cm},
       level 3/.style = {sibling distance = 1cm, level distance = 0.75cm},
       every child/.style={-latex}
     ]
-      \node[type-class] (root) {$C$}
+      \node[psmClass] (root) {$C$}
         child {node {...}}
         child {
-          node[type-or] {or}
-            child {node[type-or-group]{} child{node[type-attribute] {$A_1$}}}
-            child {node[type-or-group]{}
-                child {node[type-attribute] {$A_2$}}
-                child {node[type-attribute] {$A_3$}}
+          node[psmOr] {or}
+            child {node[psmOrGroup]{} child{node[psmAttribute] {$A_1$}}}
+            child {node[psmOrGroup]{}
+                child {node[psmAttribute] {$A_2$}}
+                child {node[psmAttribute] {$A_3$}}
             }
         }
         child {node {...}};
@@ -149,33 +142,30 @@ The model using a property-level OR can not use the disjunction in the root of t
   \begin{subfigure}[b]{.6\textwidth}
     \centering
     \begin{tikzpicture}[
-      type-or/.style={diamond, draw=orange!60, fill=orange!5, very thick},
-      type-class/.style={rectangle, draw=red!60, fill=red!5, very thick},
-      type-attribute/.style={rectangle, draw=blue!60, fill=blue!5, very thick},
       level 1/.style = {sibling distance = 2.2cm, level distance = 1cm},
       level 2/.style = {sibling distance = 1cm, level distance = 1cm},
       every child/.style={-latex}
     ]
-      \node[type-or] (root) {or}
+      \node[psmOr] (root) {or}
         child {
-          node[type-class] {$C^1$}
-            child {node[type-attribute] {$A_{11}^1$}}
-            child {node[type-attribute] {$A_{21}^1$}}
+          node[psmClass] {$C^1$}
+            child {node[psmAttribute] {$A_{11}^1$}}
+            child {node[psmAttribute] {$A_{21}^1$}}
         }
         child {
-          node[type-class] {$C^2$}
-            child {node[type-attribute] {$A_{11}^2$}}
-            child {node[type-attribute] {$A_{22}^2$}}
+          node[psmClass] {$C^2$}
+            child {node[psmAttribute] {$A_{11}^2$}}
+            child {node[psmAttribute] {$A_{22}^2$}}
         }
         child {
-          node[type-class] {$C^3$}
-            child {node[type-attribute] {$A_{12}^3$}}
-            child {node[type-attribute] {$A_{21}^3$}}
+          node[psmClass] {$C^3$}
+            child {node[psmAttribute] {$A_{12}^3$}}
+            child {node[psmAttribute] {$A_{21}^3$}}
         }
         child {
-          node[type-class] {$C^4$}
-            child {node[type-attribute] {$A_{12}^4$}}
-            child {node[type-attribute] {$A_{22}^4$}}
+          node[psmClass] {$C^4$}
+            child {node[psmAttribute] {$A_{12}^4$}}
+            child {node[psmAttribute] {$A_{22}^4$}}
         }
         ;
       \draw[-latex] (0,1) -- (root);
@@ -185,25 +175,21 @@ The model using a property-level OR can not use the disjunction in the root of t
     \begin{subfigure}[b]{.4\textwidth}
     \centering
     \begin{tikzpicture}[
-      type-or/.style={diamond, draw=orange!60, fill=orange!5, very thick},
-      type-class/.style={rectangle, draw=red!60, fill=red!5, very thick},
-      type-attribute/.style={rectangle, draw=blue!60, fill=blue!5, very thick},
-      type-or-group/.style={circle, draw=orange!60, fill=orange!5, very thick},
       level 1/.style = {sibling distance = 2.2cm, level distance = 1.125cm},
       level 2/.style = {sibling distance = 1cm, level distance = .5cm},
       level 3/.style = {level distance = 0.75cm},
       every child/.style={-latex}
     ]
-      \node[type-class] (root) {$C$}
+      \node[psmClass] (root) {$C$}
         child {
-          node[type-or] {or}
-            child {node[type-or-group]{} child{node[type-attribute] {$A_{11}$}}}
-            child {node[type-or-group]{} child{node[type-attribute] {$A_{12}$}}}
+          node[psmOr] {or}
+            child {node[psmOrGroup]{} child{node[psmAttribute] {$A_{11}$}}}
+            child {node[psmOrGroup]{} child{node[psmAttribute] {$A_{12}$}}}
         }
         child {
-          node[type-or] {or}
-            child {node[type-or-group]{} child{node[type-attribute] {$A_{21}$}}}
-            child {node[type-or-group]{} child{node[type-attribute] {$A_{22}$}}}
+          node[psmOr] {or}
+            child {node[psmOrGroup]{} child{node[psmAttribute] {$A_{21}$}}}
+            child {node[psmOrGroup]{} child{node[psmAttribute] {$A_{22}$}}}
         };
       \draw[-latex] (0,1) -- (root);
     \end{tikzpicture}
@@ -232,19 +218,18 @@ All classes that participate in the inheritance are internally under the same OR
         level 3/.style = {level distance = 0.75cm},
         every child/.style={-latex}
       ]
-        \node[typeor] (root) {or}
+        \node[psmOr] (root) {or}
           child {
-              node[typeclass] (good) {Good}
-              child { node[typeattribute] {name} }
-              child { node[typeattribute] {price} }
+              node[psmClass] (good) {Good}
+              child { node[psmAttribute] {name} }
+              child { node[psmAttribute] {price} }
           }
           child {
-              node[typeclass] {Food}
-              child { node[typeincludes] (includes) {includes} }
-              child { node[typeattribute] {exp.\\date} }
-              child { node[typeattribute] {storing\\temp.} }
-          }
-        ;
+              node[psmClass] {Food}
+              child { node[psmIncludes] (includes) {includes} }
+              child { node[psmAttribute] {exp.\\date} }
+              child { node[psmAttribute] {storing\\temp.} }
+          };
 
         \draw[-latex] (0,1) -- (root);
          \path[every node/.style={font=\sffamily\small}]
@@ -262,41 +247,37 @@ Having the include construct allows us to overcome the problem of the cartesian 
 \begin{figure}[h!]\centering
   \centering
   \begin{tikzpicture}[
-    type-or/.style={diamond, draw=orange!60, fill=orange!5, very thick},
-    type-class/.style={rectangle, draw=red!60, fill=red!5, very thick},
-    type-attribute/.style={rectangle, draw=blue!60, fill=blue!5, very thick},
-    type-or-group/.style={circle, draw=orange!60, fill=orange!5, very thick},
     level 1/.style = {sibling distance = 4cm, level distance = 1cm},
     level 2/.style = {sibling distance = 1.5cm, level distance = 1.25cm},
     level 3/.style = {sibling distance = 1.5cm, level distance = 1cm},
     every child/.style={-latex}
     ]
-      \node[type-class] (root) {$C$}
+      \node[psmClass] (root) {$C$}
         child {
-          node[typeincludes] {include}
+          node[psmIncludes] {include}
             child {
-                node[type-or]{or}
+                node[psmOr]{or}
                 child{
-                    node[type-class] {$C$}
-                        child {node[type-attribute] {$A_{11}$}}
+                    node[psmClass] {$C$}
+                        child {node[psmAttribute] {$A_{11}$}}
                 }
                 child{
-                    node[type-class] {$C$}
-                        child {node[type-attribute] {$A_{12}$}}
+                    node[psmClass] {$C$}
+                        child {node[psmAttribute] {$A_{12}$}}
                 }
             }
         }
         child {
-          node[typeincludes] {include}
+          node[psmIncludes] {include}
             child {
-                node[type-or]{or}
+                node[psmOr]{or}
                 child{
-                    node[type-class] {$C$}
-                        child {node[type-attribute] {$A_{21}$}}
+                    node[psmClass] {$C$}
+                        child {node[psmAttribute] {$A_{21}$}}
                 }
                 child{
-                    node[type-class] {$C$}
-                        child {node[type-attribute] {$A_{22}$}}
+                    node[psmClass] {$C$}
+                        child {node[psmAttribute] {$A_{22}$}}
                 }
             }
         };

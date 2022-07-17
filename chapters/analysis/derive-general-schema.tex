@@ -12,9 +12,9 @@ The basic idea behind this requirement was already explained in the Introduction
       %Nodes
       \node[ontology] (ontology) at (0,0) {Ontology};
 
-      \node[general-schema] (schema1) at (-3.5,-1.5) {General schema 1};
+      \node[generalSchema] (schema1) at (-3.5,-1.5) {General schema 1};
       \node (psmDot) at (0,-1.5) {...};
-      \node[general-schema] (schemaN) at (3.5,-1.5) {General schema N};
+      \node[generalSchema] (schemaN) at (3.5,-1.5) {General schema N};
 
       \node[schema,align=center] (xml1) at (-5.5,-3) {XML\\schema};
       \node[schema,align=center] (json1) at (-3.5,-3) {JSON\\schema};
@@ -191,16 +191,14 @@ The latter approach is easier to understand, as the final product is a schema fo
 \begin{figure}[h!]\centering
   \begin{subfigure}{.5\textwidth}
       \centering
-      \begin{tikzpicture}[
-          squarednode/.style={rectangle, draw=blue!60, fill=blue!5, very thick, minimum size=5mm},
-      ]
+      \begin{tikzpicture}
           %Nodes
-          \node[ontology] (root) at (0,0) {root class};
+          \node[pimClass] (root) at (0,0) {root class};
 
-          \node[squarednode] (a1) at (-1.5,-1.5) {association 1};
-          \node[squarednode] (a2) at (1.5,-1.5) {association 2};
+          \node[pimAssociation] (a1) at (-1.5,-1.5) {association 1};
+          \node[pimAssociation] (a2) at (1.5,-1.5) {association 2};
 
-          \node[ontology] (ref) at (0,-3) {referenced class};
+          \node[pimClass] (ref) at (0,-3) {referenced class};
 
           %Lines
           \draw[-latex] (root) -- (a1);
