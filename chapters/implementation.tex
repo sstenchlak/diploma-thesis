@@ -37,6 +37,7 @@ Due to the current use case and state of development, our primary focus is to cr
         \draw[-latex,dashed] (ds) -- node[left,align=right]{Reuses specifications\\or inherits schemas} (ds2);
     \end{tikzpicture}
     \caption{Context of the tool with other systems. Dataspecer only reads the ontology, which must be modelled in other tools. Dashed line shows the intent to make the tools interoperable across the Internet.}
+    \label{fig:context-of-the-tool}
 \end{figure}
 \def\h{1.3cm}\def\sp{0.5cm}
 \begin{figure}\centering
@@ -101,10 +102,24 @@ Due to the current use case and state of development, our primary focus is to cr
         \draw[latex-] ([yshift={(\h*3+\sp*2)/2-2*(\h+\sp)-\h+\h/2}]configuration.west) -- (14.1,{-2*(\h+\sp)-\h/2});
 
     \end{tikzpicture}
-    \caption{Schematic structure of the core framework and the tool. Below, there are various schema databases. Currently, there is only Dataspecer's backend, but others are planned, such as Solid Pods or Triplestores. Each database is read by store, which formally consists of schema stores, containing exactly one PIM or PSM schema with all entities. All stores are merged for easier manipulation, such as executing operations. We have also implemented React library to integrate the store into React ecosystem. Configuration, based on the data specification, select the stores that should be loaded.  } % Schema C shows a proposition for schema extending and is described later in the thesis.
+    \caption{Schematic structure of the core framework and the tool. Below, there are various schema databases. Currently, there is only Dataspecer's backend, but others are planned, such as Solid Pods or Triplestores. Each database is read by store, which formally consists of schema stores, containing exactly one PIM or PSM schema with all entities. All stores are merged for easier manipulation, such as executing operations. We have also implemented React library to integrate the store into React ecosystem. Configuration, based on the data specification, select the stores that should be loaded.  } \label{fig:schematic}
 \end{figure}
 \clearpage
 }
+
+\bigskip
+
+\autoref{fig:context-of-the-tool} depicts the most zoomed-out view of the tool's architecture, where the tool is shown in the context of other applications. As we have noted several times, we are focusing only on schema modeling, whereas conceptual modeling is done elsewhere. We also plan that multiple instances of the tool may exist, each using its database, yet still be able to provide all the functionality, such as schema reference and evolution.
+
+\paragraph{Container structure}Currently, the tool consist of a \textbf{backend}, \textbf{manager}, \textbf{editor} and a \textbf{CLI service}.
+
+The backend is a Node.js server that provides functionality for some generators, such as a documentation generator that requires a Python module to build the resulting HTML file. The backend also serves as the storage for modeled schemas. (see the bottommost layer of \autoref{fig:schematic}) We have plans to use also other types of storage, such as personal Solid Pods, triplestores in general or read-only documents stored on the internet.
+
+The manager is a simple React application that can manage schemas stored in the backend and execute generators. It then opens an editor under a given configuration which is another React application purely designed for schema editing. A CLI service is a simple command line tool that is used for semi-automated testing of generated schemas and transformations.
+
+\paragraph{Framework structure} The operation execution with schema generation is bundled into the tools, as it is just a TypeScript library. Hence the tools do all the work and the backend serves as a simple database. This is a sufficient solution for now, (and necessary for most backends, such as triplestore or Solid Pods) but the structure of operations and the whole framework allows us to execute the operations remotely on the server. This may be especially useful for large schemas during the evolution process when the difficult part can be performed safely by the server and the client only updates the local copy.
+
+Part of the framework from \autoref{fig:schematic} has already been described.
 
 \section{Model representation}
 

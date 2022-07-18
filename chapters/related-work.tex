@@ -62,13 +62,22 @@ Based on how the framework is used, we suppose, that it targets the former use-c
   \begin{table}\centering
   \begin{tabular}{l|ccccc}\toprule
     & \textbf{OSLO} & \textbf{LinkML} & \textbf{\begin{tabular}[c]{@{}l@{}}Enterprise\\ Architect\end{tabular}} & \textbf{\begin{tabular}[c]{@{}l@{}}XCase \&\\ eXolutio\end{tabular}} & \textbf{Dataspecer} \\\midrule
-  Shared ontology         & yes   & with toolchain & no                    & no                & yes               \\
-  Custom schema structure & yes   & no             & no                    & yes               & yes               \\
-  Schema extension        & ?     & n/a            & n/a                   & no                & planned           \\
-  Evolution               & ?     & no             & no                    & yes               & planned           \\
-  Custom artifacts        & no     & by plugin      & in their DSL          & no               & by plugin \\
-  User interface          & graph & YAML           & graph                 & graph             & tree              \\\bottomrule
+  \textbf{Shared ontology        } & yes   & with toolchain & no                    & no                & yes               \\
+  \textbf{Custom schema structure} & yes   & no             & no                    & yes               & yes               \\
+  \textbf{Schema extension       } & ?     & n/a            & n/a                   & no                & planned           \\
+  \textbf{Evolution              } & ?     & no             & no                    & yes               & planned           \\
+  \textbf{Custom artifacts       } & no     & by plugin      & in their DSL          & no               & by plugin \\
+  \textbf{User interface         } & graph & YAML           & graph                 & graph             & tree              \\\bottomrule
   \end{tabular}
-  \caption{Comparison of the the tools.}
+  \caption[Comparison table]{Comparison of the the introduced tools with both the previous tools and the current tool \textit{Dataspecer}. The compared aspects are those those, that are important for this tool either by the use case or the requirements to the tool.
+
+  \bigskip
+
+  \textbf{Shared ontology} - Whether the tool is capable of using a pre-defined ontology that is shared on the Web. The tools that do not support this requirement usually require the user to download it manually or create it directly in the tool.\\
+  \textbf{Custom schema structure} - If it is possible to define your own structure of schema and not have to have it generated automatically from the conceptual model.\\
+  \textbf{Schema extension} - Whether the tool supports using already defined schemas and modifying them but keeping the semantic linking between them.\\
+  \textbf{Custom artifacts} - If it is possible to extend the functionality of the tool so custom artifacts can be generated. For example domain-specific documentation or schemas.\\
+  \textbf{User interface} - How the schema is being modeled and with which part of the application the user spends most of the time. \textit{graph} means visual graph representation of the structure whether \textit{tree} is for the bullet-list representation.
+  }
   \end{table}
 \end{landscape}}
