@@ -346,7 +346,7 @@ In \autoref{requirement:schemas-on-the-web} on schemas on the web, we have consi
 
 Referencing other schemas is also without problem as the only thing that may change is the type of referenced class.
 
-\section{Inheriting schemas}
+\section{Inheriting schemas}\label{section:inheriting-schemas}
 
 Nevertheless, there might be use cases described in \autoref{requirement:schema-inheritance} where reusing layers from other data specifications would be useful. Consider a data specification that models a general schema for any format. This specification is published on the web. Someone else would like to use that schema to modify it slightly. For example, to add another attribute to the given class. Now, if the author of the original schema modifies anything, we would like to modify the derived schema as well. This, however, is not possible as the tool is not aware of the existence of the derived schema nor may not have write access to it.
 

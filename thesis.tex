@@ -123,15 +123,16 @@
   squarednode/.style={rectangle, draw=CadetBlue!60, fill=CadetBlue!5, very thick, minimum size=5mm,align=center},
   %
   module/.style={rectangle, draw=CadetBlue!60, fill=CadetBlue!5, very thick, minimum size=5mm,align=center},% as application
-  dataSpecification/.style={rectangle, draw=Fuchsia!60, fill=Fuchsia!5, very thick, minimum size=5mm},% our new concept
+  dataSpecification/.style={rectangle, draw=Fuchsia!60, fill=Fuchsia!5, very thick, minimum size=5mm,align=center},% our new concept
   schema/.style={rectangle, draw=MidnightBlue!60, fill=MidnightBlue!5, very thick, minimum size=5mm,align=center},% artifact, but is schema
-  artefact/.style={rectangle, draw=Periwinkle!60, fill=Periwinkle!5, very thick, minimum size=5mm},% general artifact
-  document/.style={rectangle, draw=Periwinkle!60, fill=Periwinkle!5, very thick, minimum size=5mm},% general artifact
-  mapping/.style={rectangle, draw=Black!60, fill=Black!5, very thick, minimum size=5mm},
+  artefact/.style={rectangle, draw=Periwinkle!60, fill=Periwinkle!5, very thick, minimum size=5mm,align=center},% general artifact
+  document/.style={rectangle, draw=Periwinkle!60, fill=Periwinkle!5, very thick, minimum size=5mm,align=center},% general artifact
+  mapping/.style={rectangle, draw=Black!60, fill=Black!5, very thick, minimum size=5mm,align=center},
+  seda/.style={rectangle, draw=Gray!60, fill=Gray!5, very thick, minimum size=5mm,align=center},
   % ---
   % CIM
   % ---
-  ontology/.style={rectangle, draw=RedViolet!60, fill=RedViolet!5, very thick, minimum size=5mm},% ontology or CIM
+  ontology/.style={rectangle, draw=RedViolet!60, fill=RedViolet!5, very thick, minimum size=5mm,align=center},% ontology or CIM
   %
   ontologyClass/.style={shape=rectangle, draw=violet!60, fill=violet!5, very thick, minimum size=5mm,align=center},
   % ----------------------------------
@@ -144,13 +145,13 @@
   % -----------------------------
   % PSM entities to show only PSM
   % -----------------------------
-  generalSchema/.style={rectangle, draw=blue!60, fill=blue!5, very thick, minimum size=5mm},% equivalent to PSM
+  generalSchema/.style={rectangle, draw=blue!60, fill=blue!5, very thick, minimum size=5mm,align=center},% equivalent to PSM
   %
-  psmClass/.style={rectangle, draw=Orchid!60, fill=Orchid!5, very thick},
+  psmClass/.style={rectangle, draw=Orchid!60, fill=Orchid!5, very thick,align=center},
   psmAttribute/.style={rectangle, draw=OliveGreen!60, fill=OliveGreen!5, very thick,align=center},
-  psmOr/.style={diamond, draw=Thistle!60, fill=Thistle!5, very thick},
+  psmOr/.style={diamond, draw=Thistle!60, fill=Thistle!5, very thick,align=center},
   psmOrGroup/.style={circle, draw=Thistle!60, fill=Thistle!5, very thick, minimum size=5mm,align=center},
-  psmIncludes/.style={chamfered rectangle, draw=Magenta!60, fill=Magenta!5, very thick},
+  psmIncludes/.style={chamfered rectangle, draw=Magenta!60, fill=Magenta!5, very thick,align=center},
   %
   human/.style={,minimum size=.8cm},
   database/.style={

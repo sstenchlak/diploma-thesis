@@ -43,35 +43,35 @@ Due to the current use case and state of development, our primary focus is to cr
     \begin{tikzpicture}[
         every node/.style={anchor=north west},scale=.85, transform shape
     ]
-        \node[squarednode,minimum width=1.5cm,minimum height=\h] (react) at (0,0) {React\\libs.};
-        \node[squarednode,minimum width=2.5cm,minimum height=\h] (op) at (2,0) {Operation\\executor};
-        \node[squarednode,minimum width=3cm,minimum height=\h] (com) at (5,0) {Complex op.\\executor};
-        \node[squarednode,minimum width=5cm,minimum height=\h] (cim) at (8.5,0) {CIM\\adapter};
+        \node[mapping,minimum width=1.5cm,minimum height=\h] (react) at (0,0) {React\\libs.};
+        \node[pimAssociationend,minimum width=2.5cm,minimum height=\h] (op) at (2,0) {Operation\\executor};
+        \node[pimAssociationend,minimum width=3cm,minimum height=\h] (com) at (5,0) {Complex op.\\executor};
+        \node[ontology,minimum width=5cm,minimum height=\h] (cim) at (8.5,0) {CIM\\adapter};
 
-        \node[squarednode,database,minimum width=2cm,minimum height=\h,anchor=north] (ontology1) at (9.5,{1.2*(\h+\sp)}) {Ontology\\database};
+        \node[ontology,database,minimum width=2cm,minimum height=\h,anchor=north] (ontology1) at (9.5,{1.2*(\h+\sp)}) {Ontology\\database};
         \node[anchor=center] at (11,{1.2*(\h+\sp)-\h/2}) {...};
-        \node[squarednode,database,minimum width=2cm,minimum height=\h,anchor=north] (ontologyN) at (12.5,{1.2*(\h+\sp)}) {Ontology\\database};
+        \node[ontology,database,minimum width=2cm,minimum height=\h,anchor=north] (ontologyN) at (12.5,{1.2*(\h+\sp)}) {Ontology\\database};
 
         \node[squarednode,minimum width=13.5cm,minimum height=\h] (fed) at (0,{-1*(\h+\sp)}) {Federated store};
 
-        \node[squarednode,minimum width=2cm,minimum height=\h] (ss1) at (0,{-2*(\h+\sp)}) {Schema\\store 1};
+        \node[schema,minimum width=2cm,minimum height=\h] (ss1) at (0,{-2*(\h+\sp)}) {Schema\\store 1};
         \node[anchor=center] at (2.5,{-2*(\h+\sp)-\h/2}) {...};
-        \node[squarednode,minimum width=2cm,minimum height=\h] (ssn) at (3,{-2*(\h+\sp)}) {Schema\\store N};
+        \node[schema,minimum width=2cm,minimum height=\h] (ssn) at (3,{-2*(\h+\sp)}) {Schema\\store N};
 
-        \node[squarednode,minimum width=2cm,minimum height=\h] (ss21) at (8.5+0,{-2*(\h+\sp)}) {Schema\\store 1};
+        \node[schema,minimum width=2cm,minimum height=\h] (ss21) at (8.5+0,{-2*(\h+\sp)}) {Schema\\store 1};
         \node[anchor=center] at (11,{-2*(\h+\sp)-\h/2}) {...};
-        \node[squarednode,minimum width=2cm,minimum height=\h] (ss2n) at (8.5+3,{-2*(\h+\sp)}) {Schema\\store N};
+        \node[schema,minimum width=2cm,minimum height=\h] (ss2n) at (8.5+3,{-2*(\h+\sp)}) {Schema\\store N};
 
         \node[squarednode,minimum width=5cm,minimum height=\h] (s1) at (0,{-3*(\h+\sp)}) {Store};
         \node[squarednode,minimum width=5cm,minimum height=\h] (sn) at (8.5,{-3*(\h+\sp)}) {Store};
 
-        \node[squarednode,database,minimum height=\h,anchor=north] (sd1) at (2.5,{-4*(\h+\sp)}) {Schema\\database 1};
+        \node[schema,database,minimum height=\h,anchor=north] (sd1) at (2.5,{-4*(\h+\sp)}) {Schema\\database 1};
         \node[anchor=center] at (6.75,{-4*(\h+\sp)-\h/2}) {...};
-        \node[squarednode,database,minimum height=\h,anchor=north] (sdn) at (11,{-4*(\h+\sp)}) {Schema\\database N};
+        \node[schema,database,minimum height=\h,anchor=north] (sdn) at (11,{-4*(\h+\sp)}) {Schema\\database N};
 
         \draw [decorate,decoration = {brace, mirror}] (14,{-2*(\h+\sp)-\h}) --  (14,{-2*(\h+\sp)});
 
-        \node[squarednode,minimum width=\h,minimum height={\h*3+\sp*2}] (configuration) at (15,{-0*(\h+\sp)}) {\rotatebox{90}{Configuration}};
+        \node[seda,minimum width=\h,minimum height={\h*3+\sp*2}] (configuration) at (15,{-0*(\h+\sp)}) {\rotatebox{90}{Configuration}};
 
         \draw[-latex] (s1) -- (sd1);
         \draw[-latex] (sn) -- (sdn);
