@@ -1,25 +1,22 @@
 \begin{requirement}
-  The list of supported schemas, transformations, documents, and other files generated from the general schema shall be easily expandable so that the application can be adapted to different use cases.
+  The list of supported schemas, transformations, documents, and other files generated from the general schema shall be easily expandable to adapt the tool to different use cases.
 \end{requirement}
 
-Generation of schemas is robust enough to be used in every common scenario, therefore we do not expect that user may want to intervene the process besides the standard configuration, such as indentation, using of comments, or a default language.
+The generation of schemas is robust enough to be used in every common scenario. Therefore for most users, we do not expect they may want to intervene in the process besides the standard configuration, such as indentation, using of comments, or a default language.
 
-On the other hand, documentation is a very vague concept that neither we have properly specified. Sometimes a simple Markdown documentation may be sufficient, while elsewhere the user may require a strict format of multiple documents in HTML.
+On the other hand, documentation is a very vague concept that neither we have adequately specified. Sometimes simple Markdown documentation may be sufficient, while elsewhere, the user may require a strict format of multiple documents in HTML.
 
-Transformations have similar issues. There are multiple ways and technologies that transform data between different schemas. We have already mentioned transformation through the RDF format, either by RML, or custom scripts, such as XSLT for XML. For the more demanding user, it is even possible to create transformation scripts between pairs of technology, such as between XML and CSV.
+Transformations have similar issues. There are multiple ways and technologies that transform data between different schemas. We have already mentioned transformation through the RDF format, either by RML or custom scripts, such as XSLT for XML. For the more demanding user, it is even possible to create transformation scripts between pairs of different serialization formats, such as between XML and CSV.
 
-We will expose a way the user can register his/her own generator that can create a set of files in a filesystem from the given schema.
+We will expose a way the user can register their own generator that can create a set of files in a filesystem from the given schema.
 
-Generators may use others to modify their results, further expand them, or just link them.
-% Pozadavek na OFN?
+To support the linking of generated files, generators may use others to modify their results, further expand them, or create a link to them. This is specifically useful for documentation, as it should contain links and possibly a copy of generated schema.
 
 \subsection{Artifacts}
 
 There is little difference between generated schemas, data transformations, documentation, and other output files. Based on the general schema and provided configuration, if any, the application shall create a set of files that can either be published on the Web or stored in the file system. All generated files will be denoted as \textbf{artifacts} and created by \textbf{generators}.
 
-We will distinguish two types of artifacts. (i) \textbf{Specification artifacts} do not depend on a concrete schema but use the whole specification. Documentation may be an example of a specification artifact because it generates a single document concerning all schemas. Of course, this still depends on user requirements, and scheme-specific documentation is possible. (ii) The \textbf{schema artifacts} are bound to a concrete general schema and are used to generate transformations or schema documents.
-
-Artifacts may refer to other artifacts. For example, documentation may be the front page of the whole structure, having links to other documents, schemas, images, etc.
+We will distinguish two types of artifacts. (i) \textbf{Specification artifacts} do not depend on a concrete schema but use the whole specification. Documentation may be an example of a specification artifact because it generates a single document concerning all schemas. Of course, schema-specific documentation is possible, and it purely depends on user requirements. (ii) The \textbf{schema artifacts} are bound to a concrete general schema and are used to generate transformations or schema documents.
 
 \begin{figure}[h!]\centering
   \begin{tikzpicture}
@@ -40,5 +37,5 @@ Artifacts may refer to other artifacts. For example, documentation may be the fr
       \draw[-latex] (s11) -- (sa11);
       \draw[-latex] (s12) -- (sa12);
   \end{tikzpicture}
-  \caption{Schemas, documentation, and other generated files are artefacts. Artefact are either schema-specific, that are generated for every schema, or specification-specific for a given data specification.}
+  \caption{Schemas, documentation, and other generated files are artifacts. Artifacts are either schema-specific, generated for every schema, or specification-specific for a given data specification.}
 \end{figure}

@@ -4,9 +4,9 @@ This chapter summarizes the expectations for the application in the form of requ
 
 \bigskip
 
-As \textbf{stakeholders} we would consider data analysts, programmers, or at least people interested in the area of data modeling, since the typical use case of the application is (i) to design schemas for a large system of interconnected subsystems or modules, or (ii) to design a recommendation for publishing data. Both these use cases were described in the introduction of this chapter.
+As \textbf{stakeholders}, we would consider data analysts, programmers, or at least individuals interested in the area of data modeling, since the typical use case of the application is (i) to design schemas for a large system of interconnected subsystems or modules or (ii) to design a recommendation for publishing data. Both these use cases are described in the introduction of this chapter.
 
-Because of the stakeholders' knowledge in the area of data modeling, we may keep the UI of the application more technical as the intent of all operations may be intuitive for them. Nevertheless, the basic functionality does not require advanced knowledge in the mentioned fields, so we propose an "expert mode." The user will be asked whether he or she feels to be an expert in the area, which would make available more advanced features of the application while keeping the UI simple for those interested in the basics of data modeling.
+Because of the stakeholders' knowledge in the area of data modeling, we may keep the UI of the application more technical as the intent of all operations may be intuitive for them. Nevertheless, the basic functionality does not require advanced knowledge in the abovementioned fields, so we propose an "expert mode." The user will be asked whether they feel like an expert in the area, which would make available more advanced application features while keeping the UI simple for those interested in the basics of data modeling.
 
 \bigskip
 
@@ -24,7 +24,7 @@ Because of the stakeholders' knowledge in the area of data modeling, we may keep
 
 \section{Data specification}
 
-The following requirements force us to group similar general schemas into a project that we call a \textbf{data specification}. Schemas in the data specification may share some configuration or depend on each other, as we specify later. Each schema belongs to exactly one data specification. We will not determine in this thesis which schemas should share a data specification and which should not because there are currently no limitations that would state otherwise. However, this may change in the future as new requirements arise.
+The following requirements urge us to group similar general schemas into a project that we call a \textbf{data specification}. Schemas in the data specification may share some configuration or depend on each other, as we specify later. Each schema belongs to exactly one data specification. We will not determine in this thesis which schemas should share a data specification and which should not because there are currently no limitations that would state otherwise. However, this may change in the future as new requirements arise.
 
 \input{chapters/analysis/reference}
 
@@ -32,16 +32,21 @@ The following requirements force us to group similar general schemas into a proj
 
 \input{chapters/analysis/inheritance}
 
-\section{Future requirements}\label{chapters:future-requirements}
+\chapter{Future requirements}\label{chapters:future-requirements}
 
 The following requirements in this section are analyzed because they may affect the final model that will be discussed in the next chapter. But due to its complexity, full implementation and analysis will be kept as authors' future work and this thesis covers only the necessity to not introduce a technical debt. The requirements follow the authors' intention of creating a whole ecosystem that supports advanced features of sharing and managing schemas.
 
+\section{Ontology modifications}
 \input{chapters/analysis/ontology-modification}
 
+\section{Ontology alignments}
 \input{chapters/analysis/ontology-alignments}
 
+\section{Evolution}
 \input{chapters/analysis/evolution}
 
+\section{Interoperability}
 \input{chapters/analysis/schemas-on-the-web}
 
+\section{Schema inheritance}
 \input{chapters/analysis/schema-inheritance}

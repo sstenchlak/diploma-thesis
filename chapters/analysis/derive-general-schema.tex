@@ -5,7 +5,7 @@ A user shall be able to easily derive a \textbf{general schema} structure from t
 \label{requirement:general-schema}
 \end{requirement}
 
-The basic idea behind this requirement was already explained in the Introduction. From an ontology, which specifies the relations between things from a real world, it should be possible to easily select relations and things that will describe a schema. The schema then describes a structure of data that represents those things.
+The basic idea behind this requirement was already explained in the Introduction. From an ontology specifying the relations between things from a real world, it should be easily possible to select things and relations between them that describe a schema. The schema then defines a structure of data that represents those things from an ontology.
 
 \begin{figure}[h!]\centering
   \begin{tikzpicture}
@@ -38,28 +38,27 @@ The basic idea behind this requirement was already explained in the Introduction
       \draw[-latex] (schemaN) -- (jsonN);
       \draw[-latex] (schemaN) -- (csvN);
   \end{tikzpicture}
-  \caption{Diagram showing the core workflow behind the data modeling from an ontology. User can create general schemas (blue rectangles) from the ontology. From those schemas the tool creates data schemas in known formats, such as XSD, CSV Schema or JSON schema.}
+  \caption{Diagram showing the core workflow behind the data modeling from an ontology. Users can create general schemas (blue rectangles) from the ontology. From those schemas, the tool creates data schemas in known formats, such as XSD, CSV Schema, or JSON schema.}
 \end{figure}
 
 \smallskip
 
-We aim to design a model for a general schema that can describe most of the serialization data formats. This model will be used as a mapping from the ontology to the desired schema. The model must be robust enough to support different formats, as we want to use the same for all of them.
+We aim to design a model for a \textbf{general schema} that can describe most of the serialization data formats. This model will be used as a mapping from the ontology to the desired schema. The model must be robust enough to support different formats, as we want to use the same general schema for all of them, which corresponds to MDD as an abstraction layer.
 
 \medskip
 
-There are many formats for data exchange, the most famous being JSON, XML, CSV/TSV, and RDF. Formats can be categorized into the following categories based on the structure model:
+There are many formats for data exchange, the most famous being JSON, XML, CSV/TSV, and RDF. Data formats can be categorized into the following categories based on the structure model:
 \begin{itemize}
-    \item \textbf{Hiearchical model} stores data in a tree-like structure, having one root class with properties that may recursively contain other classes. It was one of the most common models for data serialization in the past few decades, as it is easy to understand and interpret. XML and JSON are examples of formats that use this model.
-    \item \textbf{Relational model} uses a set of tables to store data. Each table represents a sequence of similar things, each on one row with columns as properties. Rows may point to rows in other tables to link data. The relational model is also famous for its simplicity in CSV and TSV files, which can be easily parsed.
+    \item The \textbf{hierarchical model} stores data in a tree-like structure, having one root class with properties that may recursively contain other classes. It has been one of the most common models for data serialization in the past few decades, as it is easy to understand and interpret and is suitable for most types of data. XML and JSON are examples of formats that use this model.
+    \item \textbf{Relational model} uses a set of tables to store data. Each table represents a sequence of similar things, each on one row with columns as properties. Rows may point to rows in other tables to link data. The relational model is also famous for its simplicity in CSV and TSV files, which can be easily parsed. The relational model is also used in relational databases (the databases that use SQL query language).
     \item \textbf{Graph model} represents data in a general graph structure with nodes and edges. RDF (Resource Description Framework) became a popular format using the graph model, where nodes usually represent things or literal values, and edges connect them as properties.
 \end{itemize}
 
-As our primary intent is to support JSON and XML, we will use the first type of model to represent the data in our general format. The translation from that format to individual schemas in the hiearchical model would be implicit (and will be described later in the text).
+As our primary intent is to support JSON and XML, we will use the first type of model to represent the data in our general format. The translation from that format to individual schemas in the hierarchical model would be implicit (and will be described later in the text).
 
 Supporting translation from the general schema, which is in the hierarchical model, to the formats in the relational and graph models should be possible in a limited way\footnote{That means we may not be able to reverse translation from specific schema to the general schema or it may not be possible to use the full power of the given specific schema. However, this is not important to us, as our target is the support of basic use cases.}, which is sufficient and follows the requirement to have one general schema.
 
 The graph model is not even necessary to generate as we use the ontology that is already in the graph model; hence, we can use the ontology directly as the schema to validate our data.
-
 
 %==============================================================================%
 \subsection{Analysis of the formats}
@@ -127,22 +126,22 @@ JSON Schema is a JSON document that describes the data structure we can expect f
 
 Suppose that we have chosen a structure very similar to JSON Schema to be our general structure format. We are interested only in how it describes the document's structure, not its representation. Because JSON is simpler than XML, we can use our model to describe only simple XML documents, as we are missing constructs that would describe advanced XML features.
 
-For example, the object property {\tt x} with primitive value {\tt y} would represent an XML tag {\tt <x>y</x>}; if {\tt y} is an object, we will apply this rule recursively.
-The object property {\tt x} with an array of {\tt y\textsubscript{i}}  would represent multiple XML tags {\tt<x>y\textsubscript{1}</x><x>\nobreak\hfil\penalty0 \hfilneg y\textsubscript{2}</x>...<x>y\textsubscript{n}</x>}.
+For example, the object property \textit{x} with primitive value \textit{y} would represent an XML tag {\tt <x>y</x>}; if {\tt y} is an object, we will apply this rule recursively.
+The object property \textit{x} with an array of \textit{y\textsubscript{i}}  would represent multiple XML tags {\tt<x>y\textsubscript{1}</x><x>y\textsubscript{2}</x>...<x>y\textsubscript{n}</x>}.
 Finally, we will start with the root tag, which was {\tt <Good>} in our case.
 
 To describe and distinguish between more advanced XML features, we would need to add XML-specific options to our model, such as:
 \begin{enumerate}
-  \item For every object property with a primitive value, there should be an option that the given property become an attribute of the parent tag. For example, the \verb|id| property of the chair may be either the attribute \verb|id="3758"| of the parent, or the full tag \verb|<id>3758</id>| inside the parent.
-  \item For every array property, there should be an option that the given list of tags will be wrapped.
+  \item For every object property with a primitive value, there should be an option that the given property becomes an attribute of the parent tag. For example, the \verb|id| property of the chair may be either the attribute \verb|id="3758"| of the parent or the full tag \verb|<id>3758</id>| inside the parent.
+  \item For every array property, there should be an option that the given list of tags will be wrapped.\footnote{This may not be necessary as we can add the wrapper class to the general schema by ourselves. This, however, is not the correct solution as the meaning of the wrapper class is not semantical, but rather syntactical and only specific for XML.}
   \item XML, compared to JSON, recognizes the order of the elements in the document. This means that we may decide whether we want to enforce the specific order or not, which can also be fixed by another option in the parent.
 \end{enumerate}
 
-Comparing structure of JSON and XML once again, we can let a user use the JSON Schema-like structure with optional annotations for advanced XML features. This allows us to have a simple model which is easy to understand and use and can be annotated by other options for specific languages, as we have shown for XML.
+Comparing the structure of JSON and XML once again, we can let a user use the JSON Schema-like structure with optional annotations for advanced XML features. This allows us to have a simple model which is easy to understand and operate and can be annotated by other options for specific languages, as we have shown for XML.
 
 \smallskip
 
-\textbf{CSV (Comma-Separated Values)} or TSV stores the data in tables. Unfortunately, this means that the structure is completely different from the case of JSON and XML. Because having a separate schema would cause complications against other requirements, we will analyze whether it is possible to translate our general structure format from a hierarchical model to a relational one.
+\textbf{CSV (Comma-Separated Values)} or TSV stores the data in tables. Unfortunately, this means that the structure is entirely different from the case of JSON and XML. Because having a separate schema would cause complications against other requirements, we will analyze whether it is possible to translate our general structure format from a hierarchical model to a relational one.
 
 In the general case, there are existing approaches \cite{10.1145/304181.304220, 10.1007/3-540-45271-0_10} to map the hierarchical model to relational. Therefore, we will only show a brief example. Suppose that our general structure format contains objects, properties, and arrays. From each object type, we will create a table with columns as properties. Each table must have a primary key so that the tables can be linked together. If the schema contains an array, we will link children to the parent table; thus, the array properties will not have a column.
 
@@ -162,31 +161,31 @@ In the general case, there are existing approaches \cite{10.1145/304181.304220, 
       3758 & White & 200 & white \\ \bottomrule
     \end{tabular}
   \end{subfigure}
-  \caption{Document of two CSV tables representing the same data as in the \autoref{analysis/xml-json}. Left table contains the root.}
+  \caption{Document of two CSV tables representing the same data as in \autoref{analysis/xml-json}. The left table contains the root.}
   \label{analysis/csv}
 \end{figure}
 
-Because all tables represent arrays, we cannot formally convert the schema with an object in the root. We have suppressed this in \autoref{analysis/csv} simply by wrapping the schema root into the array.
+Because all tables represent arrays, we cannot formally convert the schema with an object in the root. We simply suppressed this in \autoref{analysis/csv} by wrapping the schema root into the array.
 
-To support CSV documents containing unrelated data, specifically CSV tables, that do not reference each other, we may need to have a schema with multiple roots. Multiple root schemas may be helpful in some advanced data-modeling problems. We will keep the question behind this open as there are not enough use cases right now.
+To support CSV documents containing unrelated data (and possibly other unrelated data in the relational model), specifically CSV tables, that do not reference each other, we may need to have a schema with multiple roots. Multiple root schemas may be helpful in some advanced data-modeling problems. We will keep the question behind this open as there are not enough use cases right now.
 
 Although we have not dealt with advanced cases, the model is robust enough for most use cases.
 
 \subsection{Designing the model}
 
-So far, we have shown that a JSON Schema-like model with format-specific annotations is sufficient for describing the structure of JSON, XML, and CSV documents. In general, we cannot have too strict requirements on the model, as some other formats may not require all the information or may be too simple. This pushes us to define the schema in the most elementary way.
+So far, we have shown that a JSON Schema-like model with format-specific annotations is sufficient for describing the structure of JSON, XML, and CSV documents. In general, we cannot have too strict requirements on the model, as some other formats may not require all the information or might be too simple. This pushes us to define the schema in the most elementary way.
 
 \medskip
 
 We will allow only classes to be a root of schemas and instead add an option that the root can be an array. This simplifies the work with the model, as we may always expect a class.
 
-Classes then have an ordered list of properties. This is different from JSON, where properties have no order. A property may be an attribute or association. An attribute has a primitive type, such as a string or a number. Association is a property with another class. Because we have forbidden the use of arrays in the root, we omit them entirely as an array of primitive values and classes can be achieved by the cardinality of attributes and associations, respectively. Cardinality is an interval specifying how many values a property can have. $1..1$ is for required properties, $0..1$ for optional, and $0..*$ for arrays.
+Classes then have an ordered list of properties. This is different from JSON, where properties have no order. A property may be an attribute or association. An attribute has a primitive type, such as a string or a number. Association is a property with another class. Because we have forbidden using arrays in the root, we omit them entirely as an array of primitive values and classes can be achieved by the cardinality of attributes and associations, respectively. Cardinality is an interval specifying how many values a property can have. $1..1$ is for required properties, $0..1$ for optional, and $0..*$ for arrays.
 
-\smallskip
+\medskip
 
 We can use two different approaches to visualize the model's hierarchical structure. The previous tools \textit{XCase} and \textit{eXolutio} used graph visualization, where nodes were used to show classes and edges to show associations. An alternative approach is to use a textual "bullet-list" representation, as the model is \textit{usually} a tree.
 
-The latter approach is easier to understand, as the final product is a schema for documents that has a similar "structure" as the representation. It is easier to implement, more compact in size on the screen, and easier to work with on smaller devices. Also, the order of the properties is more intuitive, and we can use more styling options for advanced constructs.\footnote{So far, we have described only a basic schema structure. See other requirements for advanced constructs.} However, in the general case, users may benefit from the graph view if the schema refers to another schema (see \autoref{analysis/requirement/schema-reference}) multiple times because this can be easily denoted in the graphical interface (see \autoref{analysis/difference-between-graphical-and-hiearchical}).
+The latter approach is easier to understand, as the final product is a schema for documents that has a similar "structure" as the representation. It is easier to implement, more compact in size on the screen, and easier to work with on smaller devices. Also, the order of the properties is more intuitive, and we can use more styling options for advanced constructs.\footnote{So far, we have described only a basic schema structure. See other requirements for advanced constructs.} However, in the general case, users may benefit from the graph view if the schema refers to another schema (see \autoref{analysis/requirement/schema-reference}) multiple times or contains cycles because this can be easily denoted in the graphical interface (see \autoref{analysis/difference-between-graphical-and-hiearchical}).
 
 \begin{figure}[h!]\centering
   \begin{subfigure}{.5\textwidth}
@@ -219,15 +218,15 @@ The latter approach is easier to understand, as the final product is a schema fo
       \caption{Hiearchical representation}
     \end{subfigure}
 
-  \caption{Figure showing a schema referencing the same subschema twice, essencially creating a cycle in unoriented graph. Two different representations are shown - graph and hiearchical.  The former one shows that both associations refer the same subschema, which later representation can not show.}
+  \caption{Figure showing a schema referencing the same subschema twice, essentially creating a cycle in an unoriented graph. Two different representations are shown - graph and hierarchical. The former shows that both associations refer to the same subschema, which later representation can not show explicitly.}
   \label{analysis/difference-between-graphical-and-hiearchical}
 \end{figure}
 
-Because the main use case is to generate simple or moderately advanced schemas, the textual approach is preferred. Nevertheless, the graph view might be implemented in the future.
+Because the primary use case is to generate simple or moderately advanced schemas, the textual approach is preferred. Nevertheless, the graph view might be implemented in the future.
 
 \medskip
 
-As shown in \autoref{analysis/difference-between-graphical-and-hiearchical}, the schema may be represented as a "bullet list" where each class, association, or attribute is on a separate line. Classes have a list of properties under the class name. Associations point directly to other classes, and, therefore, they can be merged with the class name on a single line. Other attributes, including format-specific, will be on the line next to the item name.
+As shown in \autoref{analysis/difference-between-graphical-and-hiearchical}, the schema may be represented as a "bullet list" where each class, association, or attribute is on a separate line. Classes have a list of properties under the class name. Associations point directly to other classes and, therefore, can be merged with the class name on a single line. Other attributes, including format-specific, will be on the line next to the item name.
 
 \begin{figure}[h!]\centering
   \begin{Verbatim}[commandchars=\\\{\}]
@@ -243,4 +242,4 @@ As shown in \autoref{analysis/difference-between-graphical-and-hiearchical}, the
   \label{analysis/general-schema-representation}
 \end{figure}
 
-It shall be possible to change the order of the properties by dragging them, and options for given items shall be available next to them. Attributes and associations shall be distinguished both by color and supporting graphics. More advanced constructs may have unique styling options to provide more information if necessary.
+It shall be possible to change the order of the properties by dragging thems, and options for given items shall be available next to them. Attributes and associations shall be distinguished both by color and supporting graphics. More advanced constructs may have unique styling options to provide more information if necessary.

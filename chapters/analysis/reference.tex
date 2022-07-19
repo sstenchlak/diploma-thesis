@@ -7,7 +7,7 @@ Referencing other schemas is crucial for advanced use cases where it is essentia
 
 For most schema languages, it should be sufficient to refer to the other schema as is. For example, in JSON, we can use the \verb|$ref| keyword with a path to the referenced schema. On the other hand, data transformations may not always be able to handle this approach. Hence, having a full copy of the schema might be necessary. Referencing a schema would thus require access to all data in its specification.
 
-To avoid problems with tracking references and knowing which data specification needs to be loaded to generate artifacts properly, a user would need to explicitly set a given \textbf{data specification is being reused}. Similarly to the requirement with the ontology, we do not require that the reused data specification be always available.\footnote{See the requirement X for context.} The application shall work even if the data specification is not available at the moment if the presence of the specification is not required directly, such as for creating a new reference or generating artifacts that depend on it.
+To avoid problems with tracking references and knowing which data specification needs to be loaded to generate artifacts properly, a user would need to set a given \textbf{data specification that is being reused} explicitly. Similarly to the \autoref{requirement:ontologies-on-the-web} with the ontology, we do not require that the reused data specification be always available. The application shall work even if the data specification is not available at the moment if the presence of the specification is not required directly, such as for creating a new reference or generating artifacts that depend on it.
 
 \begin{figure}[h!]\centering
   \begin{tikzpicture}
@@ -25,5 +25,5 @@ To avoid problems with tracking references and knowing which data specification 
       \draw[-latex,densely dotted] (ds1) -- node[above] {reuses} (ds2);
       \draw[-latex,densely dotted] (s12) -- node[above] {refers} (s21);
   \end{tikzpicture}
-  \caption{Example of reusing of specifications. All schemas from reused specification become available to refer from local schemas. Only the root of the schema may be refered.}
+  \caption{Example of reusing of specifications. All schemas from a reused specification become available to refer from local schemas. Only the root of the schema may be referred.}
 \end{figure}
