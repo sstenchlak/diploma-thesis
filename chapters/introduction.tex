@@ -117,7 +117,7 @@ Using pre-defined ontologies in a semi-automatic way of defining schemas is bene
 \section*{An alternative problem}
 \addcontentsline{toc}{section}{An alternative problem}
 
-In the section above, we have introduced a problem behind data modeling during software development as it is hard and time-consuming to design schemas properly. Nevertheless, schema design may be used in a wider environment to create recommendations for publishing various data in a unified format.
+In the section above, we have introduced a problem behind data modeling during software development as it is hard and time-consuming to design schemas properly. Nevertheless, schema design may be used in a broader to create recommendations for publishing various data in a unified format.
 
 This task is usually undertaken by the state administration to ensure interoperability between various state and private organizations. The European Union enforces this in the directive 2019/1024 of the European Parliament, that data of public institutions shall be published as open data on the Internet in all formats it was created and, if possible, in a machine-readable format.
 
@@ -137,9 +137,9 @@ The definition of open data is very loose but can be further specified by a 5-st
 
 The act then specifies \textbf{FOSes}\footnote{\url{https://eur-lex.europa.eu/legal-content/en/TXT/?uri=CELEX\%3A32019L1024}} \textit{(Formal Open Standard)} as recommendations for publishing selected categories of data, such as information about \textit{Tourist destinations} and \textit{Sports centers}. The purpose of these documents is to standardize how these data are published, usually by defining JSON and XML schemas along with textual documentation.
 
-The process of designing those recommendations is comparable to designing schemas for a software system mentioned above - the designer needs to create schemas and documentation for them with examples and images.
+The process of designing those recommendations is comparable to designing schemas for a software system mentioned above - the designer needs to create schemas and documentation for them with examples and diagrams.
 
-Besides the different use cases, the process of designing the specification is slightly different, as we need to provide multiple formats, compared to the previous example, where a single format is sufficient. This brings us to several other challenges that are usually related to ease of the publications of the data:
+Besides the different use cases, the process of designing the specification is slightly different, as we need to provide multiple formats, compared to the previous example, where a single format of data is sufficient. This brings us to several other challenges that are usually related to ease of the publications of the data:
 \begin{enumerate}
   \item As there are multiple different formats, to not restrict the publishers, we need to design tools that can convert data between those formats. Because the conversion depends strictly on the schema, it is related directly to the schema modeling.
   \item To ensure the publishers that data are published correctly, we shall provide them with a platform for testing. This is also significantly related to schema modeling, as the purpose of the platform is to visualize the provided data to show that everything works.
@@ -148,9 +148,9 @@ Besides the different use cases, the process of designing the specification is s
 \section*{Focus of the work}
 \addcontentsline{toc}{section}{Focus of the work}
 
-This thesis analyzes and extends a newly created tool, Dataspecer \cite{dataspecer}, and formally defines and analyzes its internal framework, which follows the previous research \cite{necasky2007xsem, necasky2012conceptual, nevcasky2012evolution, xcase, exolutio} in the XML data modeling area and extends it to support new requirements.
+This thesis analyzes and implements a newly created tool, Dataspecer \cite{dataspecer}, and formally defines and analyzes its internal framework, which follows the previous research \cite{necasky2007xsem, necasky2012conceptual, nevcasky2012evolution, xcase, exolutio} in the XML data modeling area and extends it to support new requirements.
 
-The purpose of the tool is to ease the process of creation and management of data specifications, such as XSD, JSON Schema, and CSV Schema, and the creation of supplementary documents. The tool shall help users model schemas by providing relations from the chosen ontology and automatically performing manual work.
+The purpose of the tool is to ease the process of creation and management of data specifications, such as XSD, JSON Schema, and CSV Schema, and the creation of supplementary documents. The tool shall help users model schemas by providing relations and entities from the chosen and letting them focus on the modeling part only.
 
 Supplementary documents are automatically generated files from the modeled schemas, such as the documentation, examples, diagrams, transformation scripts, and others.
 
@@ -164,4 +164,4 @@ The purpose of this thesis is to provide basic formalisms and findings for the n
 
 \bigskip
 
-The rest of the thesis is organized as follows. The following \autoref{chapters:previous-research} introduces the previous research as the common ground this work will follow - precisely the model-driven approach for data modeling and evolution of XML documents. The succeeding \autoref{chapters:analysis} analyzes new requirements for the tool and proposes a solution to some of them. The rest is only briefly analyzed to set a direction for future development. The next \autoref{chapters:implementation} identifies key implementation decisions and describes them. Then \autoref{chapters:related-work} analyzes related work in the area of data modeling. The last \autoref{chapters:evaluation} evaluates the tool in the context of use in modeling FOSes for the Czech Republic.
+The rest of the thesis is organized as follows. The following \autoref{chapters:previous-research} introduces the previous research as the common ground this work will follow - precisely the model-driven approach for data modeling and evolution of XML documents. The succeeding \autoref{chapters:analysis} analyzes new requirements for the tool and proposes a solution to some of them. The rest is only briefly analyzed to set a direction for future development. The solution is then formalized in \autoref{chapters:formal-background}. The next \autoref{chapters:implementation} identifies key implementation decisions and describes them. Then \autoref{chapters:related-work} examines related work in the area of data modeling. The last \autoref{chapters:evaluation} evaluates the tool in the context of use in modeling FOSes for the government of the Czech Republic.

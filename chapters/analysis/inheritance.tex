@@ -136,7 +136,7 @@ There are two ways to implement the OR operator in our proposed hierarchical mod
 
 The former model is more common for programmers, as in some languages (such as TypeScript), it is possible to specify a type of property in this particular way as an OR of multiple types. On the other hand, the latter approach is more well known in data modeling, as XSD's {\tt xs:choice} works exactly the same way.
 
-The model using a property-level OR can not use the disjunction in the root of the schema, which is an essential disadvantage as there may be use-cases for those schemas. On the other hand, this model is better suited for the Cartesian product of multiple disjunctions in a single class. Suppose a schema for class $C$ having the following attributes: the first attribute is either $A_11$ or $A_12$, and the second attribute is either $A_21$ or $A_22$.
+The model using a property-level OR can not use the disjunction in the root of the schema, which is an essential disadvantage as there may be use cases for those schemas. On the other hand, this model is better suited for the Cartesian product of multiple disjunctions in a single class. Suppose a schema for class $C$ having the following attributes: the first attribute is either $A_11$ or $A_12$, and the second attribute is either $A_21$ or $A_22$.
 
 \begin{figure}[h!]\centering
   \begin{subfigure}[b]{.6\textwidth}

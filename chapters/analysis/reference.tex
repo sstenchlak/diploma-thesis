@@ -3,7 +3,7 @@
   \label{analysis/requirement/schema-reference}
 \end{requirement}
 
-Referencing other schemas is crucial for advanced use-cases where it is essential to split large schemas into smaller blocks that can be published and used separately.
+Referencing other schemas is crucial for advanced use cases where it is essential to split large schemas into smaller blocks that can be published and used separately.
 
 For most schema languages, it should be sufficient to refer to the other schema as is. For example, in JSON, we can use the \verb|$ref| keyword with a path to the referenced schema. On the other hand, data transformations may not always be able to handle this approach. Hence, having a full copy of the schema might be necessary. Referencing a schema would thus require access to all data in its specification.
 
