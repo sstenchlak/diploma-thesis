@@ -3,27 +3,23 @@
     \label{requirement:evolution}
 \end{requirement}
 
-Although designing the schemas with the documentation may seem like a one-time job, later management of the schemas is also essential. User requirements may change, resulting in a change in the ontology and underlying schemas. The change may be as simple as adding a new property, but can also be more complex, such as splitting classes, moving properties, or changing their semantics. (Another example may be to split an address into individual parts, as shown in \autoref{requirement:ontology-alignments}).
+Although designing the schemas with the documentation may seem like a one-time job, later management of the schemas is also essential. User requirements may change, resulting in a change in the ontology and underlying schemas. The change may be as simple as adding a new property but can also be more complex, such as splitting classes, moving attributes, or changing their semantics. (Another example may be to split an address into individual parts, as shown in \autoref{requirement:ontology-alignments}).
 
-As the tool's purpose is to support the whole process of designing the schemas, the tool shall also provide the possibility to easily change the schemas in the future. We can analyze this requirement on two levels: how to change the schemas and how the change is reflected.
+As the tool's purpose is to support the whole process of designing the schemas, it shall also provide the possibility to change the schemas in the future easily. We can analyze this requirement on two levels: how to change the schemas and how the change is reflected.
 
-Our current goal is not to create a complex model capable of any change, but rather to create a simple, easy-to-maintain solution that can handle most cases. Moreover, for complex changes, it may be cleaner to recreate the schemas from scratch without the need for any evolution mechanism.
+Our current goal is not to create a complex model capable of any change but rather to create a simple, easy-to-maintain solution that can handle most cases. Moreover, for complex changes, it may be cleaner to recreate the schemas from scratch without the need for any evolution mechanism.
 
-\subsection*{Changing the schemas}
+\paragraph{Changing the schemas} The source of the change is the ontology, as we are interested only in a top-down (from the ontology to schemas) modeling. Because we want to support all kinds of ontologies, we cannot have additional requirements, such as the history of changes. Therefore, the tool needs to have a mechanism to analyze the ontology in the current state and generate a list of changes.
 
-The source of the change is the ontology, as we are interested only in a top-down (from the ontology to schemas) modeling. Because we want to support all kinds of ontologies, we cannot have additional requirements, such as the history of changes. Therefore, the tool needs to have a mechanism to analyze the ontology in the current state and generate a list of changes.
-
-Having a list of changes and the previously designed schemas, we can perform the evolution. Depending on the context and the user preferences, some changes may be performed automatically. For example, suppose that \textit{name} of the goods is changed to \textit{title}. This change is simple, and since we are performing the evolution, we probably want the change to be applied as is. On the other hand, some changes may be more complex, where user interaction is necessary.
+Having a list of changes and the previously designed schemas, we can perform the evolution. Depending on the context and the user preferences, some changes may be performed automatically. For example, suppose that \textit{name} of the goods is changed to the \textit{title}. This change is simple, and since we are performing the evolution, we probably want the change to be applied as is. On the other hand, some changes may be more complex, where user interaction is necessary.
 
 In any case, the result of the evolution is a new general schema that conforms to the ontology. We can use this general schema to re-generate documentation and schemas for desired languages. In some cases, this may be sufficient, and the work ends here.
 
-\subsection*{Reflecting changes}
-
-Nevertheless, some users may not be satisfied with just a new version of schemas and documentation, as it may be difficult to actually find out what has changed and how. To painlessly apply the changes in their systems and understand the change, they may require:
+\paragraph{Reflecting the changes} Nevertheless, some users may not be satisfied with just a new version of schemas and documentation, as it may be difficult to find out what has changed and how. To painlessly apply the changes in their systems and  to understand the change, they may require:
 
 \begin{enumerate}
-    \item \textbf{Data transformations between the old and new schemas} to easily convert the data between old and new representations. This may be useful as a temporary workaround to switch to a new format without actually changing the application that uses it. Transformations, of course, can be used to convert all data to the current format if data are stored in it.
-    \item \textbf{Document describing what has changed} to easily apply those changes. The document format can be, for example, an HTML file containing the table of renamed attributes, associations, and classes, and a textual description of more advanced changes. The purpose of the document can be similar to the documentation, as the main document containing links to other supporting files.
+    \item \textbf{Data transformations between the old and new schemas} to easily convert the data to a new representation. This may be useful as a temporary workaround to switch to a new format without actually changing the application that uses it. Transformations, of course, can be used to convert all data to the current format if data are stored in it.
+    \item \textbf{A document describing what has changed} to easily understand and apply those changes. The document format can be, for example, an HTML file containing the table of renamed attributes, associations, and classes with a textual description of more advanced changes. The purpose of the document can be similar to the documentation and may link other documents and transformation scripts.
 \end{enumerate}
 
 Data transformations are de facto already handled by the previous requirements. We will not modify the existing schema during the evolution but rather create a copy. Because both schemas use the same ontology, we can generate data transformations between them with RDF as the central format.

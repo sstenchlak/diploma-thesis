@@ -113,7 +113,7 @@ There are two ways to implement the OR operator in our proposed hierarchical mod
     \begin{tikzpicture}[
       level 1/.style = {sibling distance = 1.5cm, level distance = 1.125cm},
       level 2/.style = {sibling distance = 2cm, level distance = .5cm},
-      level 3/.style = {sibling distance = 1cm, level distance = 0.75cm},
+      level 3/.style = {sibling distance = 1cm, level distance = 0.9cm},
       every child/.style={-latex}
     ]
       \node[psmClass] (root) {$C$}
@@ -175,9 +175,9 @@ The model using a property-level OR can not use the disjunction in the root of t
     \begin{subfigure}[b]{.4\textwidth}
     \centering
     \begin{tikzpicture}[
-      level 1/.style = {sibling distance = 2.2cm, level distance = 1.125cm},
-      level 2/.style = {sibling distance = 1cm, level distance = .5cm},
-      level 3/.style = {level distance = 0.75cm},
+      level 1/.style = {sibling distance = 2.2cm, level distance = .75cm},
+      level 2/.style = {sibling distance = 1cm, level distance = .9cm},
+      level 3/.style = {level distance = 0.9cm},
       every child/.style={-latex}
     ]
       \node[psmClass] (root) {$C$}
@@ -230,7 +230,7 @@ All classes that participate in the inheritance are internally under the same OR
           }
           child {
               node[psmClass] {Food}
-              child { node[psmIncludes] (includes) {includes} }
+              child { node[psmIncludes] (includes) {include} }
               child { node[psmAttribute] {exp.\\date} }
               child { node[psmAttribute] {storing\\temp.} }
           };

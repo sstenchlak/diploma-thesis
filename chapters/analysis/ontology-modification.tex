@@ -5,7 +5,7 @@
 
 As stated in \autoref{requirement:ontologies-on-the-web}, the preferred way is to create a complete ontology externally and keep it up to date and valid against the requirements of all involved parties.
 
-However, there may be scenarios in which it may be beneficial to change the ontology directly. Some of them are the following:
+However, there may be scenarios where it may be beneficial to change the ontology directly. Some of them are the following:
 
 \begin{enumerate}
   \item The ontology is wrong and does not describe the domain correctly. - \textit{Then, a correct way would be to fix the ontology.}
@@ -13,16 +13,14 @@ However, there may be scenarios in which it may be beneficial to change the onto
   \item The ontology is not granular enough. Some entities can be represented in more detail than they currently are or vice versa. - \textit{We would need to create a copy of affected classes or use an advanced tool if it exists.}
 \end{enumerate}
 
-Suppose the example with goods in the delivery company. Although the goods may be identified by EAN (barcode on items), the software team may prefer their own internal identifiers. There may be reasons for not including the identifier in the ontology, as it is too specific for only a software team, for example. This would correspond to the second category from the list above. The missing attribute then may belong to either the original class or the new extended class. The third category may represent the case where, for example, we need to replace an address with a set of more specific attributes such as \textit{street}, \textit{number}, \textit{city}, \textit{country}, etc.
+Suppose the example with goods in the delivery company. Although the goods may be identified by EAN (barcode on items), the software team may prefer their own internal identifiers. There may be reasons for not including the identifier in the ontology, as it is too specific for only a software team, for example. This would correspond to the second category from the list above. The missing attribute then may belong to either the original class or the new extended class in the modified ontology. The third category may represent the case where, for example, we need to replace an address with a set of more specific attributes such as \textit{street}, \textit{number}, \textit{city}, \textit{country}, etc.
 
-Although in all scenarios, the preferred way would be to create a new ontology or modify the remaining, it can be too cumbersome and time-consuming, especially if the change is too small or the data modeler is performing an experiment. Therefore, the possibility of modifying the ontology should be possible.
-
-But it may be hard to follow the rules, especially when doing experiments, or small errors need to be fixed.
+Although in all scenarios, the preferred way would be to create a new ontology or modify the remaining, it can be too cumbersome and time-consuming, especially if the change is too small, the data modeler wants to try something with an altered ontology, or only a small error needs to be fixed quickly. Therefore, the opportunity of modifying the ontology should be possible.
 
 Allowing such changes must be done carefully as it may interfere with some mechanisms.
 \begin{enumerate}
-  \item If the ontology changes, the local overwrites may need to be changed as well; otherwise, may become invalid. Overwritten data may be removed or moved elsewhere. Evolution mechanism hence must work with the overwrites as well.
-  \item Moreover, the overwritten data may change, which can lead to two scenarios. Either the user wishes to keep the local version as if nothing happened, or he/she may want to discard the local version as the new version fixes the issue that caused the modification in the first place.
+  \item If the original ontology changes, the local overwrites may need to be changed as well; otherwise, they may become invalid. Overwritten data may be removed or moved elsewhere. The evolution mechanism (that is described in more detail in \autoref{requirement:evolution}) hence must work with the overwrites as well.
+  \item Moreover, the overwritten data may change, which can lead to two scenarios. Either the user wishes to keep the local version as if nothing happened, or they may want to discard the local version as the new version fixes the issue that caused the modification in the first place.
 \end{enumerate}
 
-This issue is too complex, and due to the nature of the requirement, it must be solved directly in the application. We keep the question behind this problem partially open and focus only on simple modifications, as this will cover most use cases.\footnote{From our specific use case on the Semantic government vocabulary (SGOV), most of the changes consist of adding a missing cardinality or fixing labels and descriptions.}
+This issue is too complex, and due to the nature of the requirement, it must be solved directly in the application. We keep the question behind this problem partially open and focus only on simple modifications, as this will cover most use cases.\footnote{From our specific use case on the Semantic government vocabulary (SGOV), most local changes consist of adding a missing cardinality or fixing labels and descriptions.}
