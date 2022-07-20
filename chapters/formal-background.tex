@@ -3,7 +3,7 @@
 
 This chapter proposes modifications to the framework layers introduced by previous tools \textit{XCase} and \textit{eXolutio} and formally describes them. Some problems are further analyzed as the reasoning depends on the framework structure and not just user requirements.
 
-As mentioned in the previous chapter, not everything has been implemented yet due to the complexity of the problem. Nevertheless, it is crucial to properly design and plan everything in advance to minimize the technical debt.
+As mentioned in previous chapters, not everything has been implemented yet due to the complexity of the problem. Nevertheless, it is crucial to properly design and plan everything in advance to minimize the technical debt.
 
 \bigskip
 
@@ -11,20 +11,20 @@ In contrast with the approach introduced in \textit{XCase} and \textit{eXolutio}
 
 To fulfill the introduced requirements, we have modified the previously introduced five-level framework in the following way:
 \begin{itemize}
-    \item We have added a new top-most level called \textbf{CIM} (from \textit{Computational Independent Model}). CIM represents the remote ontology on the web according to \autoref{requirement:ontologies-on-the-web}. Although the level is part of the framework design, it is important to stress that it has no direct representation in the tool as it represents data on the web. Because we suppose ontologies respect LD principles, we can see them as a single graph, not multiple independent sources.
-    \item Previous \textbf{PIM} layer is used as a copy of the CIM layer, and only the necessary entities are copied to it. This approach is compatible with the design of the previous tools, which used PIM as the source of the ontology.
+    \item We have added a new top-most level \textbf{CIM} (from \textit{Computational Independent Model}). CIM represents the remote ontology on the web according to \autoref{requirement:ontologies-on-the-web}. Although the level is part of the framework design, it is important to stress that it has no direct representation in the tool as it represents data on the web. Because we suppose ontologies respect LD principles, we can see them as a single graph, not multiple independent sources. To be strict, our definition of CIM does not correspond to the definition from MDA, as CIM shall be only a concept with no representation. Hence our CIM is more like an online-PIM level, but due to simplicity, we keep the naming as we proposed.
+    \item The previous \textbf{PIM} layer is used as a copy of the CIM layer, and only the necessary entities are copied to it. This approach is compatible with the design of the previous tools, which used PIM as the source of the ontology.
 \end{itemize}
 
 This modification brings several advantages:
 \begin{enumerate}
-    \item As the ontology is copied, this allows us to use the tool seamlessly without depending on the ontology. We can generate artifacts and modify the schema. Only the operations related to directly using the ontology depend on CIM.
+    \item As the ontology is copied, we can use the tool seamlessly without depending on the ontology. We can generate artifacts and modify the schema. Only the operations related to directly using the ontology depend on CIM.
     \item The mechanism that derives a list of changes during the evolution (see \autoref{requirement:evolution}) may use the PIM layer as a comparison.
     \item The layer still separates the ontology from the rest of the model, simplifying the design of the whole framework. For example, the other layers may refer to information in PIM.
 \end{enumerate}
 
 PSM, as a second level from the five-level framework, then represents the general schema.
 
-In the previous chapter, we defined data specification as a project containing multiple schemas, configurations for generators, and metadata, such as a list of reused specifications. This would mean that individual PSMs belong to a concrete data specification. To simplify things, we say that exactly one PIM is part of the specification as well.
+In the previous chapter, we defined data specification as a project containing multiple schemas, configurations for generators, and metadata, such as a list of reused specifications. This would mean that individual PSMs belong to a concrete data specification. To simplify the architecture, we state that exactly one PIM is part of the specification with multiple PSMs.
 
 \begin{figure}[h]\centering
     \begin{tikzpicture}
@@ -62,34 +62,34 @@ In the previous chapter, we defined data specification as a project containing m
             \draw [dotted] (-7,-0.75-1.5*\x) -- (5,-0.75-1.5*\x);
         }
     \end{tikzpicture}
-    \caption{Schema of the new framework structure (without the lower levels containing artifacts). The topmost level represents the ontology, then different PIMs serve as copies of the ontology for different data specifications that are represented by dashed rectangles. The third level represents the general schemas.} % Schema C shows a proposition for schema extending and is described later in the thesis.
+    \caption{Schema of the new framework structure (without the lower levels containing artifacts). The topmost level represents the ontology; then, different PIMs serve as copies of the ontology for different data specifications that are symbolized by dashed rectangles. The third level represents the general schemas.} % Schema C shows a proposition for schema extending and is described later in the thesis.
 \end{figure}
 
 \section{Conceptual levels}
 
 We will start by defining PIM, as the definition of CIM depends on it.
 
-\begin{definition}[PIM] PIM is a quadruple $C=(C_\textrm{c}, C_\textrm{attr}, C_\textrm{assoc}, C_\textrm{end})$ of sets of classes, attributes, associations and association ends, respectively (we will call them as entities), with a set of annotation functions such that:
+\begin{definition}[PIM] PIM is a quadruple $C=(C_\textrm{c}, C_\textrm{attr}, C_\textrm{assoc}, C_\textrm{end})$ of sets of classes, attributes, associations, and association ends, respectively (we will call them as entities), with a set of annotation functions such that:
     \begin{itemize}
         \item Attribute $a \in C_\textrm{attr}$ belongs to exactly one class $c \in C_\textrm{c}$, which is denoted by annotation function $\textrm{class}: C_\textrm{attr} \rightarrow C_\textrm{c}$ as $\textrm{class}(a)=s$.
-        \item Association $r \in C_\textrm{assoc}$ has a tuple of two distinct associations ends denoted by $\textrm{end}: C_\textrm{assoc} \rightarrow C_\textrm{end}\times C_\textrm{end}$. Each association end belongs to exactly one association. Each association end has one class denoted by $\textrm{class}: C_\textrm{assoc} \rightarrow C_\textrm{c}$.
+        \item Association $r \in C_\textrm{assoc}$ has a tuple of two distinct association ends denoted by $\textrm{end}: C_\textrm{assoc} \rightarrow C_\textrm{end}\times C_\textrm{end}$. Each association end belongs to exactly one association. Each association end has one class defined by $\textrm{class}: C_\textrm{assoc} \rightarrow C_\textrm{c}$.
     \end{itemize}
 
     PIM entities can be decorated by other various semantic and syntactic annotations. We do not require that an annotation must be defined for every entity if not stated otherwise.
 
     \begin{itemize}
         \item Classes, attributes, associations, and association ends may have title and description, or potentially other describing properties that are not directly used in schema generation. However, the title may be used to propose the naming of entities' labels at the PSM level. (For example $\textrm{title}(c)="\textrm{Tourist destination}"@en$)
-        \item Each class have a set of classes that they extends by annotation $\textrm{extends}: C_\textrm{c} \rightarrow \mathcal{P}(C_\textrm{c})$. (see \autoref{requirement:inheritance})
-        \item Attributes and association ends have cardinalities $\textrm{card}_{\textrm{min}}: C_\textrm{attr} \cup C_\textrm{end} \rightarrow \mathds{N}_0$ and $\textrm{card}_{\textrm{max}}: C_\textrm{attr} \cup C_\textrm{end} \rightarrow \mathds{N} \cup \{\infty\}$, where $\textrm{card}_{\textrm{min}}(i) \leq \textrm{card}_{\textrm{max}}$, where the comparison operator works same as in the extended real number system.
-        \item Attributes have data types $\textrm{datatype}: C_\textrm{attr} \rightarrow D$ where $D$ is a set of data types, usually specified by a IRI.
+        \item Each class has a set of classes that extends by annotation $\textrm{extends}: C_\textrm{c} \rightarrow \mathcal{P}(C_\textrm{c})$. (see \autoref{requirement:inheritance})
+        \item Attributes and association ends have cardinalities $\textrm{card}_{\textrm{min}}: C_\textrm{attr} \cup C_\textrm{end} \rightarrow \mathds{N}_0$ and $\textrm{card}_{\textrm{max}}: C_\textrm{attr} \cup C_\textrm{end} \rightarrow \mathds{N} \cup \{\infty\}$, where $\textrm{card}_{\textrm{min}}(i) \leq \textrm{card}_{\textrm{max}}$, where the comparison operator works the same as in the extended real number system.
+        \item Attributes have data types $\textrm{datatype}: C_\textrm{attr} \rightarrow D$ where $D$ is a set of data types, usually specified by an IRI.
     \end{itemize}
 \end{definition}
 
-The purpose of annotations is to bring additional information to the model that is not essential for the generation. As we stated in the previous chapter, there are various ontologies, and some of them may lack the support of some construct. We have already mentioned that RDFS does not allow naming the reverse direction of an association. Some ontologies may not support cardinalities or inheritance (although most of them do). Similarly, some artifacts may not use all the information from PIM. For example, data transformations do not need a title and description to work with.
+The purpose of annotations is to bring additional information to the model that is not essential for the generation. As we stated in the previous chapter, there are various ontologies, some of which may lack the support of some construct. We have already mentioned that RDFS does not allow naming the reverse direction of an association. Some ontologies may not support cardinalities or inheritance (although most of them do). Similarly, some artifacts may not use all the information from PIM. For example, data transformations do not need a title and description to work with.
 
 We do not provide a complete list of all annotations as the intention is to let programmers use their own if necessary, either when creating a new generator or adding support for the new format of an ontology.
 
-The purpose of PIM entities should be clear as we have described all important concepts in \autoref{chapters:analysis}.
+The purpose of PIM entities should be clear, as we have described all essential concepts in \autoref{chapters:analysis}.
 
 \begin{figure}[h!]\centering
 \centering
@@ -117,27 +117,27 @@ The purpose of PIM entities should be clear as we have described all important c
 
     \end{tikzpicture}
 
-  \caption{Example of the PIM model shown as a graph. Rectangles represent entities. An Italic font either inside the rectangle or on the arrow represents the given annotation function with the given value.}
+  \caption{Example of the PIM model shown as a graph. Rectangles represent entities. An Italic font inside the rectangle or on the arrow represents the given annotation function with the given value.}
   \label{figure:pim-example}
 \end{figure}
 
-Because during the modeling process, CIM (specifically ontologies under different formats) is being copied to PIM, it would make sense to define the CIM in a way that is compatible with PIM.
+Because during the modeling process, CIM (specifically ontologies under different formats) is being copied to PIM, it would be reasonable to define the CIM in a way that is compatible with PIM.
 
 First, we need to define an interpretation that will be used to connect entities from PIM with those in CIM.
 
 \begin{definition}[interpretation]
-    Let us have an annotation $\textrm{interpretation}: E \rightarrow \mathcal{I} \cup \{\emptyset\}$ from all entities to $\mathcal{I}$, set of CIM entities. We say that PIM entity $I$ is interpreted if and only if annotation $\textrm{interpretation}(I) \neq \emptyset$.
+    Let us have an annotation $\textrm{interpretation}: E \rightarrow \mathcal{I} \cup \{\emptyset\}$ from all entities to $\mathcal{I}$, a set of CIM entities. We say that PIM entity $I$ is interpreted if and only if annotation $\textrm{interpretation}(I) \neq \emptyset$.
 \end{definition}
 
 \begin{definition}[CIM]
-    CIM $O$ is an ontology for which function \textbf{CIM adapter} $A$ exists, such that $A(O) = C$ is a valid PIM, where every PIM class, attribute, and association has a different defined interpretation representing the CIM entity and that interpretation is stable over time. That means if the CIM entity is changed but still represents the semantically same thing, then the interpretation of the corresponding PIM entity shall stay the same.
+    CIM $O$ is an ontology for which function \textbf{CIM adapter} $A$ exists, such that $A(O) = C$ is a valid PIM, where every PIM class, attribute, and association has a different defined interpretation representing the CIM entity, and that interpretation is stable over time. That means if the CIM entity is changed but still represents the semantically same thing, then the interpretation of the corresponding PIM entity shall stay the same.
 \end{definition}
 
-The definition tells us that the CIM can be viewed as a PIM where with interpretation as a pointer to the original thing in the ontology. In practice, it is the IRI of the entity in the ontology.
+The definition tells us that the CIM can be viewed as a PIM with an interpretation as a pointer to the original thing in the ontology. In practice, it is the IRI of the entity in the ontology.
 
 If the CIM changes, entities shall keep their original IRIs to stress that the given entity is semantically still the same. Only the representation may have changed. This will help us, for example, to detect changes and properly propagate them in the model.
 
-For simplification, in the rest of the thesis, we may omit that CIM \textit{needs to be translated} to PIM and suppose that it is already in PIM-like format.
+For simplification, in the rest of the thesis, we may omit that CIM \textit{needs to be transformed} to PIM and suppose that it is already in PIM-like format.
 
 The definition does not require association ends to be interpreted as some ontologies consider the whole association as a single entity. Nevertheless, each association end belongs to its association which is interpreted. Hence the link to CIM exists.
 
@@ -149,29 +149,29 @@ We will introduce PSM (platform-specific) level to represent the schemas. PSM le
 
 \begin{definition}[PSM]
     PSM is a tuple $S=(S_{\textrm{r}}, S_{\textrm{c}}, S_{\textrm{ref}}, S_{\textrm{or}}, S_{\textrm{attr}}, S_{\textrm{end}}, S_{\textrm{incl}})$ with a set of annotation functions such that:
-    \\(let $C:=S_{\textrm{c}}\cup S_{\textrm{ref}}\cup S_{\textrm{or}}$ be a set of objects and $P:=S_{\textrm{attr}}\cup S_{\textrm{end}}\cup S_{\textrm{incl}}$ set of properties)
+    \\(let $C:=S_{\textrm{c}}\cup S_{\textrm{ref}}\cup S_{\textrm{or}}$ be a set of \textbf{objects} and $P:=S_{\textrm{attr}}\cup S_{\textrm{end}}\cup S_{\textrm{incl}}$ set of \textbf{properties})
     \begin{itemize}
-        \item $S_{\textrm{r}} \neq \emptyset$, $S_{\textrm{r}} \in C^n$ is a tuple objects that are schema roots
+        \item $S_{\textrm{r}} \neq \emptyset$, $S_{\textrm{r}} \in C^n$ is a tuple objects that are schema roots.
 
-        \item $S_{\textrm{c}}$ is a set of classes with annotation function $\textrm{parts}: S_{\textrm{c}} \rightarrow P^n$ that returns a tuple of class properties
+        \item $S_{\textrm{c}}$ is a set of classes with annotation function $\textrm{parts}: S_{\textrm{c}} \rightarrow P^n$ that returns a tuple of class properties. Each property belongs to exactly one class.
 
-        \item $S_{\textrm{ref}}$ is set of all references to other PSMs with annotation function $\textrm{ref}: S_{\textrm{ref}} \rightarrow \mathcal{S} \times \mathcal{S}_{\textrm{r}}$ that returns the referenced PSM and one of its root objects
+        \item $S_{\textrm{ref}}$ is set of all references to other PSMs with annotation function $\textrm{ref}: S_{\textrm{ref}} \rightarrow \mathcal{S} \times \mathcal{S}_{\textrm{r}}$ that returns the referenced PSM and one of its root objects.
 
-        \item $S_{\textrm{or}}$ is a set of ORs with annotation function $\textrm{choices}: S_{\textrm{or}} \rightarrow \mathcal{P}(C)$ that returns the set of all possible choices of the OR
+        \item $S_{\textrm{or}}$ is a set of ORs with annotation function $\textrm{choices}: S_{\textrm{or}} \rightarrow \mathcal{P}(C)$ that returns the set of all possible choices of the OR.
 
-        \item $S_{\textrm{attr}}$ is set of attributes with annotation function $\textrm{technicalLabel}: S_{\textrm{attr}} \rightarrow \textrm{string}$ that returns the label of the attribute
+        \item $S_{\textrm{attr}}$ is set of attributes with annotation function $\textrm{technicalLabel}: S_{\textrm{attr}} \rightarrow \textrm{string}$ that returns the label of the attribute.
 
-        \item $S_{\textrm{end}}$ is a set of association ends with two annotation functions (i)\\$\textrm{technicalLabel}: S_{\textrm{end}} \rightarrow \textrm{string}$ that returns the label of the association and (ii) $\textrm{end}: S_{\textrm{assoc}} \rightarrow C$ that returns the associated object
+        \item $S_{\textrm{end}}$ is a set of association ends with two annotation functions (i)\\$\textrm{technicalLabel}: S_{\textrm{end}} \rightarrow \textrm{string}$ that returns the label of the association and (ii) $\textrm{end}: S_{\textrm{assoc}} \rightarrow C$ that returns the associated object.
 
-        \item $S_{\textrm{incl}}$ is a set of all includes with annotation function $\textrm{includes}: S_{\textrm{incl}} \rightarrow C$ that returns the included class
+        \item $S_{\textrm{incl}}$ is a set of all includes with annotation function $\textrm{includes}: S_{\textrm{incl}} \rightarrow C$ that returns the included class.
     \end{itemize}
 \end{definition}
 
-The definition puts together the findings from the previous chapter, where we analyzed the structure and individual concepts of the general schema. The definition re-introduces well-known terms from PIM, such as class, attribute, and association end. Association itself has no counterpart in PSM as we are only interested in one specific direction. References are a necessary concept for the implementation part as their meaning is to reference outside of the PSM, whether referring to entities inside PSM is implicit. As decided, class-level OR is used to support disjunction, hence belonging to object types that can be associated and placed as schema roots.
+The definition puts together the findings from previous chapters, where we analyzed the structure and individual concepts of the general schema. The definition re-introduces well-known terms from PIM, such as class, attribute, and association end. Association itself has no counterpart in PSM as we are only interested in one specific direction. References are a necessary concept for the implementation part as their meaning is to reference outside of the PSM, whether referring to entities inside PSM is implicit. As decided, class-level OR is used to support disjunction, hence belonging to object types that can be associated and placed as schema roots.
 
-We allow multiple roots for a single schema for advanced cases, such as creating a database model of multiple tables. For most schemas, however, only one root is allowed. Hence, the general schema with root $R$ means PSM $S$ with a single root $S_{\textrm{c}} = (R)$ with all other entities that are part of the chain originating from the class.
+For advanced cases, we allow multiple roots for a single schema, such as creating a database model of multiple tables. For most schemas, however, only one root is allowed. Hence, the general schema with root $R$ is PSM $S$ with a single root $S_{\textrm{c}} = (R)$ with all other entities being part of the chain originating from the class.
 
-Although it may seem that the PSM is a forest (tree for every root), the PSM is neither DAG nor a connected graph. We have already discussed the include construct (see \autoref{fig:cartesian-product:include}) as it takes properties from another existing class, hence creating a diamond shape in the graph. We also did not restrict that two different association ends may point to the same object. Nevertheless, we also allow oriented cycles. For example, a class may have an association end referencing the class itself. This allows us to design schemas for data structures containing, for example, serialized trees, as a tree can be arbitrarily deep.
+Although it may seem that the PSM is a forest (tree for every root), the PSM is neither DAG nor a connected graph. We have already discussed the include construct (see \autoref{fig:cartesian-product:include}) as it takes properties from another existing class, hence creating a diamond shape in the graph. We also did not restrict that two different association ends may point to the same object. Nevertheless, we also allow oriented cycles. For example, a class may have an association end referencing the class itself. This allows us to design schemas for data structures containing, for example, serialized trees, as a tree can be arbitrarily deep. All properties, on the other hand, such as attributes, association ends, and includes belong to a given class, and hence may not be referenced multiple times.
 
 \medskip
 
@@ -181,7 +181,7 @@ To keep the relation between entities from PSM and PIM, we will introduce the sa
     Let us have an annotation $\textrm{interpretation}$ defined as follows on the set of PSM classes $S_{\textrm{c}}  \rightarrow C_{\textrm{c}} \cup \{\emptyset\}$, attributes $S_{\textrm{attr}}  \rightarrow C_{\textrm{attr}} \cup \{\emptyset\}$ and association ends $S_{\textrm{end}} \rightarrow C_{\textrm{end}} \cup \{\emptyset\}$.
 \end{definition}
 
-Interpreted PSM entities are linked to their PIM counterpart which semantically means that they were constructed from it. ORs, includes, and references cannot be interpreted as they do not represent concepts from the ontology.
+Interpreted PSM entities are linked to their PIM counterpart, which semantically means that they were constructed from it. ORs, includes, and references cannot be interpreted as they do not represent concepts from the ontology.
 
 \medskip
 
@@ -195,22 +195,21 @@ It is essential to mention that both PIM and PSM may be extended in the future b
 
 Whereas this is not causing issues in the PIM, as an additional construct may be simply ignored if not understood by the rest of the application, we must proceed with caution if we want to extend PSM. PSM schema must be understood completely to correctly generate artifacts from it. Hence even a small change may impact many other parts of the application and also possible third-party plugins, which are expected to read PSM.
 
-This is an issue only if we intend to generate schemas in different formats from the PSM. If the use case is to use PSM to generate a single format, such as XML schema, then there is no problem to use XML-specific constructs that may break the generation of JSON and CSV schemas. Nevertheless, it is advised that any format-specific option shall be used as an annotation, if possible.
+This is an issue only if we intend to generate schemas in different formats from the PSM. If the use case is to use PSM to generate a single format, such as XML schema, then there is no problem with using XML-specific constructs that may break the generation of JSON and CSV schemas. Nevertheless, it is advised that any format-specific option shall be used as an annotation, if possible.
 
-As an example, XML schema has \verb|<xs:sequence>| and \verb|<xs:all>| model groups that specify whether the elements are ordered or not. Although, on the XSD level, those are different things, on the PSM level we may introduce association $\textrm{ordered}: S_C \rightarrow \{\textrm{false}, \textrm{true}\}$ to achieve the same effect.\footnote{This is not entirely correct as XSD may specify that only some elements are ordered, whereas others may have random order. This is an example of a feature that is currently too complex to be handled by our general schema model.}
+As an example, XML schema has \verb|<xs:sequence>| and \verb|<xs:all>| model groups that specify whether the elements are ordered or not. Although on the XSD level, those are different things, on the PSM level, we may introduce association $\textrm{ordered}: S_C \rightarrow \{\textrm{false}, \textrm{true}\}$ to achieve the same effect.\footnote{This is not entirely correct as XSD may specify that only some elements are ordered, whereas others may have random order. This is an example of a feature that is currently too complex to be handled by our general schema model.}
 
-On the other hand, one may want to add support for comments. Although comments are usually intended to be bound to a specific element, hence annotation might be enough, it is possible to introduce them as standalone entities. This would require reimplementing all generators as they need to understand the concept of this new entity.
+On the other hand, one may want to add support for comments. Although comments are usually intended to be bound to a specific element, hence annotation might be enough; it is possible to introduce them as standalone entities. This would require reimplementing all generators as they need to understand the concept of this new entity.
 
 \bigskip
 
-Similar to PIM, PSM entities, as well as the PSM itself, may have additional annotations. Besides that, generators may exploit interpretation to PIM to obtain additional info. This usually means, for example, that interpreted PSM entities do not need to define title, description, or cardinality, as those can be extracted from PIM. We still must allow those annotations on PSM for non-interpreted entities or for overrides. PSM itself may specify whether the schema represents a single entity or a collection of them.
+Similar to PIM, PSM entities, as well as the PSM itself, may have additional annotations. Besides that, generators may exploit interpretation to PIM to obtain additional info about entities. This usually means, for example, that interpreted PSM entities do not need to define title, description, or cardinality, as those can be extracted from PIM. We still must allow those annotations on PSM for non-interpreted entities or for overrides.
 
+Finally, PSM itself needs to specify whether the schema represents a single entity or a collection of them, which is an annotation directly on PSM.
 
 \paragraph{Regarding the definitions} It may seem that, in general, the definitions are too permissive or incomplete. This is intentional, as any introduced restriction may limit some functionalities in the future. Hence, we prefer this robust model and move the burden to generators to decide whether the schema is invalid in the current context or whether generating an artifact with a warning message is still possible.
 
-In fact, from the perspective of incremental development of the tool and extendability of the model, this is a preferred behavior. Suppose, for example, that some generators may not understand the concept of OR, as it is not trivial to handle. In that case, the generator may simply ignore it and generate at least the rest of the schema/artifact. Users then get at least an incomplete result (with a warning) which they may fix by hand. A similar rule is applied implicitly to annotations, as generators use only the known, keeping the other ignored.
-
-
+In fact, from the perspective of incremental development of the tool and extendability of the model, this is a preferred behavior. Suppose, for example, that some generators may not understand the concept of OR, as it is not trivial to handle. In that case, the generator may simply ignore it and generate at least the rest of the schema/artifact. Users then get an incomplete result (with a warning) which they may fix by hand. A similar rule is applied implicitly to annotations, as generators use only the known, keeping the other ignored.
 
 \section{Changes on the framework levels}
 
