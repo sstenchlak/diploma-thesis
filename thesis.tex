@@ -349,7 +349,30 @@ The primary use case of the tool is modeling formal open standards for publishin
 %%% should be uploaded to SIS and optionally also included in the thesis on a~CD/DVD.
 %%% Allowed file formats are specified in provision of the rector no. 72/2017.
 %\appendix
-%\chapter{Attachments}
+
+\chapter{Attachments}
+\vfill
+\begin{figure}[h!]
+  \centering
+  \begin{subfigure}[b]{\textwidth}
+    \includegraphics[width=\textwidth]{img/or_inheritance_off.png}
+    \caption{General schema with OR in the root of the schema and several includes.}
+  \end{subfigure}
+  \begin{subfigure}[b]{\textwidth}
+    \includegraphics[width=\textwidth]{img/or_inheritance.png}
+    \caption{Same general schema visualized as one base class with specializations.}
+  \end{subfigure}
+  \caption{Screenshots from the tool comparing a general schema of a Public place that has two specializations according to \autoref{requirement:inheritance}. The variants shows the raw view, consisting of OR and include, and the user-friendly view that hides those constructs. The example shows one of FOSes that we are trying to model. For the purpose of this example, the schema was simplified, some classes were contracted, and labels were translated to English.}
+  \label{fig:screenshot-comparison}
+\end{figure}
+\vfill
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{img/objekt_nebo_subjekt.png}
+  \caption{Real example of a general schema of one of the RPP FOSes, that were described in \autoref{sec:register-of-rights-and-obligations}. You can see, that the schema consists of only few associations and attributes. There are two references to the ohter schema denoted by \textit{[refers to]} text.}
+  \label{fig:screenshot}
+\end{figure}
 %
 %\section{First Attachment}
 
