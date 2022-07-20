@@ -3,17 +3,17 @@
 
 \section{Enterprise Architect}
 
-Sparx Systems Enterprise Architect is a tool for visual modeling and design based on OMG's UML. It supports software engineers during the whole development processby providing constructs for modeling business logic, diagrams, the architecture of software, use case diagrams and others. It has a proprietary license and the product is paid.
+Sparx Systems Enterprise Architect is a tool for visual modeling and design based on OMG's UML. It supports software engineers during the whole development process by providing constructs for modeling business logic, diagrams, the architecture of software, use case diagrams, and others. It has a proprietary license, and the product is paid.
 
-EA supports the basics of MDA, which was introduced in \autoref{chapters:previous-research}. Users can create PIM directly in the tool by modeling the relations between the classes (creating a UML class diagram) and then the tool transforms PIM into PSM representation. Transformation is, however, very simple and it seems that is not possible to choose which part of PIM shall be transformed into PSM and does not provide the variety of options as we are planning. PSM can represent XML only by default, but there is support for plugins that can extend this functionality. EA focuses more on the programming languages as, besides the XML, PSM may represent C\#, C++, Java, PHP and NUnit elements.
+EA supports the basics of MDA, which was introduced in \autoref{chapters:previous-research}. Users can create PIM directly in the tool by modeling the relations between the classes (creating a UML class diagram), and then the tool transforms PIM into PSM representation. Transformation is, however, only elementary, and it seems that it is not possible to choose which part of PIM shall be transformed into PSM. It also does not provide the variety of options we are planning. PSM can represent XML only by default, but there is support for plugins that can extend this functionality. EA focuses more on the programming languages as, besides the XML, PSM may describe C\#, C++, Java, PHP, and NUnit elements.
 
 Although it should be possible to implement most of the desired functionality directly into EA, the proprietary license and the fact that the tool is too general for our use case makes it not unusable.
 
 \section{OSLO}
 
-OSLO\footnote{\url{https://joinup.ec.europa.eu/collection/oslo-open-standards-linked-organisations-0/about}} - Open Standards for Linked Organisations is an initiative that originated in Flanders, Dutch-speaking northern portion of Belgium, to promote the use of technical standards for the data exchange between various organizations, government, and a local government. The goal of OSLO is to maintain and create the standards through the open process (hence everyone can intervene), keep the rules respected, provide a publication platform and support the adoption of the standards. So far, OSLO contains over 18 different domains consisting of definitions from 107 organizations.
+OSLO\footnote{\url{https://joinup.ec.europa.eu/collection/oslo-open-standards-linked-organisations-0/about}} - Open Standards for Linked Organisations is an initiative that originated in Flanders, the Dutch-speaking northern portion of Belgium, to promote the use of technical standards for the data exchange between various organizations, governments, and local governments. The goal of OSLO is to maintain and create the standards through the open process (hence everyone can intervene), keep the rules respected, provide a publication platform and support the adoption of the standards. So far, OSLO contains over 18 different domains consisting of definitions from 107 organizations.
 
-The initiative developed a toolchain to ease the process of publication of the standards. The standards are modeled in \textit{Enterprise Architect UML} software and then converted into an RDF representation with their tool\footnote{\url{https://github.com/Informatievlaanderen/OSLO-EA-to-RDF}}. The next tool then generates artifacts (resulting files) that are automatically published on one centralized server \url{https://data.vlaanderen.be/ns}. The artifacts contain HTML documentation, RDF vocabulary, SHACL\footnote{\url{https://www.w3.org/TR/shacl/}} templates for validation of RDF, and a JSON-LD context for developers that prefer JSON formats. Their toolchain uses the GitHub platform for storing their standards and triggering the rest of the toolchain. They also provide tools for organizations to validate their data against the standards to check that data are machine-readable without errors.
+The initiative developed a toolchain to ease the standards' publication process. The standards are modeled in \textit{Enterprise Architect UML} software and then converted into an RDF representation with their tool\footnote{\url{https://github.com/Informatievlaanderen/OSLO-EA-to-RDF}}. The following tool then generates artifacts (resulting files) that are automatically published on one centralized server \url{https://data.vlaanderen.be/ns}. The artifacts contain HTML documentation, RDF vocabulary, SHACL\footnote{\url{https://www.w3.org/TR/shacl/}} templates for validation of RDF, and a JSON-LD context for developers that prefer JSON formats. Their toolchain uses the GitHub platform for storing their documents and triggering the rest of the toolchain. They also provide tools for organizations to validate their data against the standards to check that data are machine-readable without errors.
 
 OSLO also focuses on the interoperability of services that provide those data so that every service has a generic hyper-media-driven API.
 
@@ -21,11 +21,11 @@ OSLO also focuses on the interoperability of services that provide those data so
 
 Compared to our approach, OSLO's primary focus is on the interoperability of public services and their data in LOD format. Their goal is to provide a set of tools to create and later validate public services effectively. Our approach is to design a general tool (hence it can be used for any related purpose, such as software development process) for services that use non-RDF formats, such as CSV or XML files, and provide tools to convert them to linked data format.
 
-As noted in the introduction chapter, we also focus on the public sector, but only as one of many use cases. Hence, in general, their approach is better suited for the public sector as their tool may be better suited to the problem.
+As noted in the introduction chapter, we also focus on the public sector, but only as one of many use cases. Hence, in general, their approach is better suited for the public sector as their tool may better fit the problem.
 
 \section{LinkML}
 
-LinkML is a general-purpose language and a tool using YAML for modeling schemas that can be converted to various formats such as JSON, CSV, SQL and RDF schemas, or Python Dataclasses. It also generates human-readable documentation with diagrams and can validate the data in different formats. It is written in Python.
+LinkML is a general-purpose language and a tool using YAML for modeling schemas that can be converted to various formats such as JSON, CSV, SQL, and RDF schemas, or Python Dataclasses. It also generates human-readable documentation with diagrams and can validate the data in different formats. It is written in Python.
 
 \begin{figure}[h!]\centering
     \begin{Verbatim}[commandchars=\\\{\}]
@@ -52,11 +52,11 @@ classes:
 %description: other names for the person
 
 
-The core concepts in their model are classes with properties. Classes then support inheritance and the model in general supports many options for the data types, cardinalities, regular expression patterns, and others.
+The core concepts in their model are classes with properties. Classes then support inheritance, and the model, in general, supports many options for the data types, cardinalities, regular expression patterns, and others.
 
-Nevertheless, the main input of the framework is the YAML file where the ontology needs to be defined and then the tool generates artifacts. This is a completely different concept than we have, as the ontology already exists and we model the schemas. It seems, that the tool does not let the user choose what to include to the schema in such granularity as our tool does.
+Nevertheless, the primary input of the framework is the YAML file, where the ontology needs to be defined. This is an entirely different concept than we have, as the ontology already exists, and we model the schemas. The tool seems not to let the user choose what to include to the schema in such granularity as our tool does.
 
-Based on how the framework is used, we suppose, that it targets the former use case from the introduction: to create schemas for (micro)service architecture. The lack of UI makes it difficult to use outside this case.
+Based on how the framework is used, we suppose that it targets the former use case from the introduction: to create schemas for (micro)service architecture. The lack of UI makes it difficult to use outside this case.
 
 \afterpage{\begin{landscape}\thispagestyle{empty}
   \begin{table}\centering
@@ -67,17 +67,18 @@ Based on how the framework is used, we suppose, that it targets the former use c
   \textbf{Schema extension       } & ?     & n/a            & n/a                   & no                & planned           \\
   \textbf{Evolution              } & ?     & no             & no                    & yes               & planned           \\
   \textbf{Custom artifacts       } & no     & by plugin      & in their DSL          & no               & by plugin \\
-  \textbf{User interface         } & graph & YAML           & graph                 & graph             & tree              \\\bottomrule
+  \textbf{User interface         } & graph & YAML           & graph                 & graph             & tree              \\\midrule
+  \textbf{Pricing         } & paid due to EA & free           & paid                 & free             & free              \\\bottomrule
   \end{tabular}
-  \caption[Comparison table]{Comparison of the the introduced tools with both the previous tools and the current tool \textit{Dataspecer}. The compared aspects are those those, that are important for this tool either by the use case or the requirements to the tool.
+  \caption[Comparison table]{Comparison of all the introduced tools with \textit{Dataspecer}. The compared aspects are those that are important for us either by the use case or the requirements from chapters \ref{chapters:analysis} and \ref{chapters:future-requirements}.
 
   \bigskip
 
-  \textbf{Shared ontology} - Whether the tool is capable of using a pre-defined ontology that is shared on the Web. The tools that do not support this requirement usually require the user to download it manually or create it directly in the tool.\\
+  \textbf{Shared ontology} - Whether the tool can use a pre-defined ontology that is shared on the Web. The tools that do not support this requirement usually require the user to download it manually or create it directly in it.\\
   \textbf{Custom schema structure} - If it is possible to define your own structure of schema and not have to have it generated automatically from the conceptual model.\\
-  \textbf{Schema extension} - Whether the tool supports using already defined schemas and modifying them but keeping the semantic linking between them.\\
-  \textbf{Custom artifacts} - If it is possible to extend the functionality of the tool so custom artifacts can be generated. For example domain-specific documentation or schemas.\\
-  \textbf{User interface} - How the schema is being modeled and with which part of the application the user spends most of the time. \textit{graph} means visual graph representation of the structure whether \textit{tree} is for the bullet-list representation.
+  \textbf{Schema extension} - Whether the tool supports modifying schemas by creating their copy but keeping the semantic linking between them that could be used for evolution. (see \autoref{requirement:schema-inheritance})\\
+  \textbf{Custom artifacts} - If it is possible to extend the tool's functionality so custom artifacts can be generated. For example, domain-specific documentation or schemas.\\
+  \textbf{User interface} - How the schema is being modeled and with which part of the application the user spends most of the time. \textit{graph} means visual graph representation of the structure whether \textit{tree} is for the bullet-list representation discussed in \autoref{requirement:general-schema}.
   }
   \end{table}
 \end{landscape}}

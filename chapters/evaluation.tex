@@ -35,29 +35,29 @@ It appears that the problem of schemas belonging to data specifications must be 
 
 Possible solutions would include generalizing a concept of data specification to a project directory, where each schema belongs to one project, and the project may belong to another one (not creating a cycle). However, this would require analyzing how the PIM level shall work, whether each directory shall inherit (see \autoref{section:inheriting-schemas}) it from the parent and how the evolution shall work.
 
-\paragraph{Schema modeling} Regarding the modeling, about half of the schemas contained maximally 10 entities and their purpose was to be referenced from others. The other half contained about 20 or 30 entities at most. Most of the schemas used only standard constructs, such as classes, atrritbutes, associations and reverse associations. About a third of the schemas referenced others. The references did not have cycles, but some of them had lengths of three.
+\paragraph{Schema modeling} Regarding the modeling, about half of the schemas contained maximally ten entities, and their purpose was to be referenced from others. The other half had about 20 or 30 entities at most. Most schemas used only standard constructs, such as classes, attributes, associations, and reverse associations. See \autoref{fig:screenshot} with a screenshot from the application with one of the schemas. About a third of the schemas referenced others. The references did not have cycles, but some of them had lengths of three.
 
-Three schemas required disjunction, specifically the inheritance of classes as specified in \autoref{requirement:inheritance} and one schema required the inheritance on the root level. Although the sample is small, it shows that in normal cases we do not need the disjunction per se, only the inheritance, as usually, when we need to select between two different things, they are usually of the same type.
+Three schemas required disjunction, specifically the inheritance of classes as specified in \autoref{requirement:inheritance}, and one schema required the inheritance on the root level. Although the sample is small, it shows that in typical cases, we do not need the disjunction per se, only the inheritance, as usually, when we need to select between two different things, they are usually of the same type.
 
 \smallskip
 
-This specific use case of generating FOSes for the Czech government requires that if the schema shall represent an array, it shall be an object containing that array. Unfortunately, with the current state of development, this can not be supported as the creation of non-interpreted classes may break the generation of transformation scripts, for example, and hence need to be further analyzed. Currently, those affected schemas can be altered by hand by adding a wrapper object. In the future, this problem can be addressed on two levels.
+This specific use case of generating FOSes for the Czech government requires that if the schema represents an array, it shall be an object containing that array. Unfortunately, with the current state of development, this can not be supported as the creation of non-interpreted classes is not trivial, as it may break the generation of transformation scripts, for example, and hence need to be further analyzed. Currently, those affected schemas can be altered by hand by adding a wrapper object. In the future, this problem can be addressed on two levels.
 
 \begin{enumerate}
-    \item Either introduce a generator, that is doing it automatically, as this is the required behavior for Czech FOSes.
-    \item Or, add support for non-interpreted entities and model the schema with them.
+    \item Either introduce a generator that does it automatically, as this is the required behavior for Czech FOSes.
+    \item Or add support for non-interpreted entities and model the schema with them.
 \end{enumerate}
 
-Although the latter approach may seem cleaner, yet harder for the user, it may not be correct, as adding the wrapper object may not have the desired semantics. For example, suppose that we would like to reference such schema. Should the wrapper object be present, as it is part of the schema, or do we want to reference the interpreted class instead and set the appropriate cardinality?
+Although the latter approach may seem cleaner yet harder for the user, it may not be correct, as adding the wrapper object may not have the desired semantics. For example, suppose that we would like to reference such schema. Should the wrapper object be present as it is a part of the schema, or do we want to reference the interpreted class instead and set the cardinality correctly?
 
 \smallskip
 
 Another similar requirement is that each interpreted class shall have a \textit{type} attribute with a string value that follows specific pattern rules based on the type of property. This is a very similar problem to the previous one, as the \textit{type} may be considered a domain-specific attribute that is generated automatically.
 
-\paragraph{Documentation} Some FOSes had examples, that we do not support yet and it is a subject for future work.
+\paragraph{Documentation} Some FOSes had examples that we do not support yet, and it is a subject for future work.
 
-Comparing the generated documentation, our results missing some schema-unrelated info, such as the author of the specification, logo of the European Union, etc. In general, this shall be solved by introducing a new documentation generator that works similarly, but adds those missing information and sets the structure as required.
+Comparing the generated documentation, our results are missing some schema unrelated info, such as the specification's author or European Union logo. In general, this shall be solved by introducing a new documentation generator that works similarly but adds those missing information and sets the structure as required.
 
-Our tool successfully generated descriptions for the conceptual model with diagrams (which some FOSes do not have) and the documentation of the schemas. The schema documentation, however, is a little harder to read, hence we need to focus on improving this as well.
+Our tool successfully generated descriptions for the conceptual model with diagrams (which some FOSes do not have) and the documentation of the schemas. The schema documentation, however, is a little harder to read. Therefore we need to focus on improving this as well.
 
-In general, because the original documentation was hard to make by hand and various scripts were used to generate it, it shouldn't be hard to achieve almost the same result by modifying the generator accordingly.
+In general, because the original documentation was hard to make by hand and various scripts were used to generate it, it shouldn't be challenging to achieve almost the same result by modifying the generator accordingly.
