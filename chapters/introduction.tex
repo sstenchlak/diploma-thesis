@@ -39,7 +39,7 @@ As an example, consider a company selling and distributing its own goods. The go
 
 To describe the data that are being sent between the goods management system and both the online shop and the warehouse, we need to make two "agreements." Although both describe goods, the warehouse may require different properties than the shop. The \textit{name} and \textit{weight} of the items are essential for both systems, but the shop also requires the \textit{price}, contrary to the warehouse, which needs \textit{storing requirements}.
 
-Furthermore, these properties are also reflected in a database schema design of the individual modules. The goods management has a database of goods, whether warehouse management only stores the position of individual goods in the warehouse and the information of warehouses, which are sent to the shop.
+Furthermore, these properties are also reflected in a database schema design of the individual modules. The goods management has a database of goods, whether warehouse management only stores the position of individual goods in the warehouse and the information about warehouses, which is sent to the shop.
 
 \medskip
 
@@ -139,18 +139,18 @@ The act then specifies \textbf{FOSes}\footnote{\url{https://eur-lex.europa.eu/le
 
 The process of designing those recommendations is comparable to designing schemas for a software system mentioned above - the designer needs to create schemas and documentation for them with examples and diagrams.
 
-Besides the different use cases, the process of designing the specification is slightly different, as we need to provide multiple formats, compared to the previous example, where a single format of data is sufficient. This brings us to several other challenges that are usually related to ease of the publications of the data:
+Besides the different use cases, the process of designing the specification is slightly different, as we need to provide multiple formats to not restrict the publishers by using specific technology, compared to the previous example, where a single format of data is sufficient. This brings us to several other challenges that are usually related to ease of the publications of the data:
 \begin{enumerate}
-  \item As there are multiple different formats, to not restrict the publishers, we need to design tools that can convert data between those formats. Because the conversion depends strictly on the schema, it is related directly to the schema modeling.
+  \item As there are multiple different formats, we need to design tools that can convert data between those formats. Because the conversion depends strictly on the schema, it is related directly to the schema modeling.
   \item To ensure the publishers that data are published correctly, we shall provide them with a platform for testing. This is also significantly related to schema modeling, as the purpose of the platform is to visualize the provided data to show that everything works.
 \end{enumerate}
 
 \section*{Focus of the work}
 \addcontentsline{toc}{section}{Focus of the work}
 
-This thesis analyzes and implements a newly created tool, Dataspecer \cite{dataspecer}, and formally defines and analyzes its internal framework, which follows the previous research \cite{necasky2007xsem, necasky2012conceptual, nevcasky2012evolution, xcase, exolutio} in the XML data modeling area and extends it to support new requirements.
+This thesis analyzes and implements a tool Dataspecer \cite{dataspecer}, and formally defines and analyzes its internal framework, which follows the previous research \cite{necasky2007xsem, necasky2012conceptual, nevcasky2012evolution, xcase, exolutio} in the XML data modeling area and extends it to support new requirements.
 
-The purpose of the tool is to ease the process of creation and management of data specifications, such as XSD, JSON Schema, and CSV Schema, and the creation of supplementary documents. The tool shall help users model schemas by providing relations and entities from the chosen and letting them focus on the modeling part only.
+The purpose of the tool is to ease the process of creation and management of data specifications, such as XSD, JSON Schema, and CSV Schema, and the creation of supplementary documents. The tool shall help users model schemas by providing relations and entities from the chosen ontology and letting them focus on the modeling part only.
 
 Supplementary documents are automatically generated files from the modeled schemas, such as the documentation, examples, diagrams, transformation scripts, and others.
 
@@ -164,4 +164,4 @@ The purpose of this thesis is to provide basic formalisms and findings for the n
 
 \bigskip
 
-The rest of the thesis is organized as follows. The following \autoref{chapters:previous-research} introduces the previous research as the common ground this work will follow - precisely the model-driven approach for data modeling and evolution of XML documents. The succeeding \autoref{chapters:analysis} analyzes new requirements for the tool and proposes a solution to some of them. The rest is only briefly analyzed to set a direction for future development. The solution is then formalized in \autoref{chapters:formal-background}. The next \autoref{chapters:implementation} identifies key implementation decisions and describes them. Then \autoref{chapters:related-work} examines related work in the area of data modeling. The last \autoref{chapters:evaluation} evaluates the tool in the context of use in modeling FOSes for the government of the Czech Republic.
+The rest of the thesis is organized as follows. The following \autoref{chapters:previous-research} introduces the previous research as the common ground this work will follow - precisely the model-driven approach for data modeling and evolution of XML documents. The succeeding \autoref{chapters:analysis} analyzes new requirements for the tool and proposes a solution to some of them. The rest in \autoref{chapters:future-requirements} is only briefly analyzed to set a direction for future development. The solution is then formalized in \autoref{chapters:formal-background}. The next \autoref{chapters:implementation} identifies key implementation decisions and describes them. Then \autoref{chapters:related-work} examines related work in the area of data modeling. The last \autoref{chapters:evaluation} evaluates the tool in the context of use in modeling FOSes for the government of the Czech Republic.
