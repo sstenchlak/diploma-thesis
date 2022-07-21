@@ -123,7 +123,7 @@ The manager is a React application that can manage schemas stored in the backend
 
 As model data are represented by entities that shall be serialized in RDF, we introduce a \textbf{schema store} as an abstraction layer. The schema store can read and write \textbf{resources}, where the resource is a document/object that contains arbitrary data. In the context of PIM and PSM, the entity is a resource. Resources are identified by their IRI, which is an IRI of the corresponding RDF resource.
 
-Entities can be read from the schema store, but writing is limited to \textbf{operations}. Operations that were executed are saved in the schema store to provide a history of the model at any given point in time. Schema store must contain exactly one \textbf{schema resource}. A schema resource is a resource that identifies all other entities in the schema store, formally creating a set of resources.
+Entities can be read from the schema store, but writing is limited to \textbf{operations}. Operations that were executed are saved in the schema store to provide a history of the model at any given point in time. The schema store must contain exactly one \textbf{schema resource}. A schema resource is a resource that identifies all other entities in the schema store, formally creating a set of resources.
 
 Schema stores are managed in \textbf{stores}. The store is an interface for reading resources by their IRI and executing operations on a given schema resource. The store is asynchronous and represents a database of resources. For example, a store may be an interface on the SPARQL endpoint, a file system, a read-only dump on the internet, or just data in local memory.
 
@@ -133,27 +133,29 @@ The current implementation of the tool uses stores that are synchronized with th
 
 The store also shall generate new IRIs that can be later assigned to entities. IRIs needs to be generated in advance to be part of the operation, so we can later identify which entities were created. Depending on the store, the IRIs may have different structures.
 
-The current implementation only supports a simple reading by IRI. This will be changed in the future for more advanced query operations, such as reverse lookup for the entity.
+The current implementation only supports simple access by IRI. This will be changed in the future for more advanced query operations, such as reverse lookup for the entity.
 
 \medskip
 
-Stores' interface allows creating of \textbf{federated stores}, hence allowing to have only a single interface for reading and writing any entity. This simplifies the application's design, as we may have a complex system of shared and reused data specifications, some of them possibly read-only, from different sources.
+Stores' interface allows the creation of \textbf{federated stores}, hence allowing to have only a single interface for reading and writing any entity. This simplifies the application's design, as we may have a complex system of shared and reused data specifications, some of them possibly read-only, from different sources, still available under one interface.
 
 \medskip
 
-In previous chapters, we have considered PIM as both the layer in general (PIM layer) and the set of PIM entities we have formally defined (PIM schema). The latter one, the PIM schema, is represented by one specific schema store. Similarly, the PSM schema (possibly having multiple roots) is also represented by one schema store. To simplify the design, the schema resource that is necessary for every schema store will also represent the PIM or PSM schema. To make the previous sentence clear, suppose PSM schema $S$. The schema contains entities such as classes, ORs, etc. Those entities are represented by resources. But the schema itself, which contains, for example, a set of roots, also needs to be represented by a resource. And the resource will be the schema resource.
+In previous chapters, we considered PIM as the general layer (PIM layer) and the set of PIM entities we have formally defined (PIM schema). The PIM schema is represented by one specific schema store. Similarly, one schema store also represents the PSM schema (possibly having multiple roots). To simplify the design, the schema resource that is necessary for every schema store will also define the PIM or PSM schema. To make the previous sentence clear, suppose PSM schema $S$. The schema contains entities such as classes, ORs, etc. Those entities are represented by resources. But the schema itself, which contains, for example, a set of roots, also needs to be represented by a resource. And the resource will be the schema resource.
 
-This all means that if a user creates a data specification with two schemas, three schema stores are created: one for the PIM schema and two for the PSM schemas. Hence three stores represented by three files are created as well.
+This all means that if a user creates a data specification with two schemas, three schema stores are created: one for the PIM schema and two for the PSM schemas. Hence three stores represented by three files are made as well.
 
 \medskip
 
-As we have noted, operations can be executed remotely. The current implementation of the store contains logic for local operation execution, hence all operations are evaluated on the client and only the final result is sent to the server. It is, however, possible to send the operations to the server and fetch the changes. This approach is useful for better synchronization of different clients as two clients may execute operations at the same time, possibly causing a collision.
+As we have noted, operations can be executed remotely. The current implementation of the store contains logic for local operation execution; hence all operations are evaluated on the client, and only the final result is sent to the server. It is, however, possible to send the operations to the server and fetch the changes. This approach is useful for better synchronization of different clients as two clients may execute operations at the same time, possibly causing a collision.
 
 Unfortunately, we can not go any further by executing complex operations on the server, as different schemas may be stored in different stores. A possible solution would be to introduce a proxy server, that would perform these complex operations on the given stores remotely.
 
+Although it may seem that the whole specification may go to an invalid state after only one store was modified (for example, when an application crashes), this is not an issue. The individual schema stores are well separated and formally connected only through evolution. Hence even if only the PIM store is updated, the individual PSMs became only inconsistent, not invalid literally.
+
 \paragraph{Data specification}
 
-Although data specifications are also identified by IRIs, they are not resources in the same sense as PIM or PSM entities. We do not require write-through-operation access and are also read in different situations. Current implementation stores them in SQL database for fast access (which is against the first rule that everything shall be stored in RDF).
+Data specifications are also identified by IRIs, but they are not resources in the same sense as PIM or PSM entities. We do not require write-through-operations access and are also read in different situations. Current implementation stores them in SQL database for fast access (which is against the first rule that everything shall be stored in RDF).
 
 A data specification contains, namely, (i) a set of reused data specifications' IRIs, (ii) a PIM schema's IRI, (iii) a list of PSM schemas' IRIs, and (iv) a set of stores' IRIs where the appropriate schemas can be found and (v) an artifact configuration.
 
@@ -161,40 +163,40 @@ A data specification contains, namely, (i) a set of reused data specifications' 
 
 Reading the model may be too complex, as the entities may not exist, reading them requires asynchronous access, and to obtain the value of all annotations, we usually need to go to the PIM layer. Letting individual generators access the model is, of course, necessary, but for most generators, this would mean implementing many helper functions for easier access. To reduce the burden on generators, we introduce conceptual and structural models whose purpose is to provide a more user-friendly interface for reading the model.
 
-\paragraph{Conceptual model} Conceptual model is fairly simple as it only simplifies access to PIM, which is simple by itself. Its structure is similar to PIM, but attributes and associations are referenced directly from the class as properties. The whole model is constructed in advance, hence we can check whether is correct and do not need to do it during the querying. But mainly we can access everything synchronously.
+\paragraph{Conceptual model} The conceptual model is relatively simple as it only simplifies access to PIM, which is simple by itself. Its structure is similar to PIM, but attributes and associations are referenced directly from the class as properties. The whole model is constructed in advance; therefore, we can check whether it is correct and not need to do it during the querying. But mainly, we can access everything synchronously.
 
 \paragraph{Structural model} Structural model employs a different approach to schema structure than PSM. As PSM is highly inspired by schemas, it also has a more schema-like structure. For example, include is valid class property, but from an object-oriented view, it has more semantic meaning. The structural model we use tends to be more object-oriented.
 
-Classes have properties as well, but the properties represent only attributes and associations. Include is translated to class inheritance, as it works almost precisely the same as inheriting properties from a parent class. The only difference is that the position of the include can not be preserved. This, however, for most generators, is not an issue.
+Classes also have properties, but the properties represent only attributes and associations. Include is translated to class inheritance, as it works almost precisely the same as inheriting properties from a parent class. The only difference is that the position of the include can not be preserved. This, however, for most generators, is not an issue.
 
-To simplify the work with disjunction, we exploit the fact that OR on one element is the same as the element without OR. Hence, all associations have an array of referred classes as OR between them. This won't introduce new objects that need to be specially handled and allows domain-specific generators to ignore the concept at all if it is not required.
+To simplify the work with disjunction, we exploit the fact that OR on one element is the same as the element without OR. Hence, all associations have an array of referred classes as individual OR choices. This won't introduce new objects that need to be specially handled and allows domain-specific generators to ignore the concept at all if it is not required. (although this is a bad design in general)
 
-It may seem, that this goes against our design, as we, after all, use an interface for object-oriented access. Our intent is, however, to have a robust model that can handle a wide range of use-cases and rather create a layer for easier access.
+It may seem that the object-oriented interface goes against our design. Our intent is, however, to have a robust model that can handle a wide range of use-cases and rather create a layer for easier access.
 
-\paragraph{Transformations} Conceptual and structural models provide various transformations (do not confuse with data transformations from \autoref{req:transformations}) that modifies the model or obtain additional data for given generator.
+\paragraph{Transformations} Conceptual and structural models provide various transformations\footnote{Do not confuse with data transformations from \autoref{req:transformations}.  In fact, individual structural models can be considered as levels in MDD architecture. Transformations then correspond to MDD transformations that convert one layer into another.} that modify the model or obtain additional data for a given generator.
 
 \begin{itemize}
-    \item It is possible to flatten the structural model by copying properties from parent to child classes. This transformation may simplify the work for developers of generators as they do not need to handle inheritance anymore (hence the include). Of course, this would cause the artifact to grow as the entities are not reused but may be useful for an early stage of development as simplification.
+    \item It is possible to flatten the structural model by copying properties from parent to child classes. This transformation may simplify the work for developers of generators as they do not need to handle inheritance anymore (hence the include). Of course, this would cause the artifact to grow as the entities are not reused but may be helpful in an early stage of development as simplification.
     \item As some information lies in PIM, such as naming, description, default cardinality, or datatype, there is a transformation that fetches this information to the structural model.
-    \item Associations marked as dematerialized (dematerialization is an annotation on the association that specifies, that all properties from the associated class shall be put into a parent class) may be "unpacked" to the parent class instead of the association itself.
+    \item Associations marked as dematerialized (dematerialization is an annotation on the association that specifies that all properties from the associated class shall be put into a parent class) may be "unpacked" to the parent class instead of the association itself.
 \end{itemize}
 
-\paragraph{Format-aware structural models} As there is usually a whole ecosystem of generators that work with a given technology, such as XML, it is important to let the designers extend or even transform the model on their own, making it format-aware. We already use this technique for XML to add namespace information to the entities. In general, the transformation may change the interface of the structural model to suit the needs of the generator better. The transformation may, for example, add a new type of class property that was extracted from PSM.
+\paragraph{Format-aware structural models} As there is usually a whole ecosystem of generators that work with a given technology, such as XML, it is crucial to let the designers extend or even alter the model's interface on their own, making it format-aware. We already use this technique for XML to add namespace information to the entities. In general, the transformation may change the interface of the structural model to suit the generator's needs better. The transformation may, for example, add a new type of class property that was extracted from PSM.
 
 \section{Artifacts generation}
 
-To properly generate artifacts that can reference each other, which is a crucial feature for the documentation, and to keep them highly configurable, we have employed the following interface. First, its configuration must be provided. The configuration consists of:
+We have utilized the following interface to properly generate artifacts that can reference each other, which is a crucial feature for the documentation and to keep the artifacts highly configurable. First, its configuration must be provided. The configuration consists of:
 
 \begin{enumerate}
     \item IRI of the given artifact.
-    \item IRI of the generator to be used to create given artifact.
-    \item Output path, as the generated artifact has to be stored somewhere. (a directory can be provided for generators, that create more than one file)
+    \item IRI of the generator to be used to create a given artifact.
+    \item Output path, as the generated artifact has to be stored somewhere. (a directory can be provided for generators that create more than one file)
     \item Public URL, as we expect, that the artifacts will be uploaded on the Internet. In most cases, the public URL shall be the same as the output path, which creates relative URLs between the artifacts.
-    \item Generators that reference other artifacts require their IRIs.
+    \item Generators that reference other artifacts require their IRIs. (this is necessary as, in general, we can create multiple similar artifacts, possible with a different configuration; hence the generator needs to know which to include)
     \item For schema artifacts, the IRI of the PSM schema is required.
 \end{enumerate}
 
-To generate this array of configurations, ArtifactConfigurator is used. The configurator itself is configured from data specification. The typical options are whether to generate all schemas, how the file structure should look like or the configuration for individual generators, such as whether CSV schema shall use multiple tables for the given schema.
+To construct the array of configurations, ArtifactConfigurator is used. The configurator itself is configured from data specification. The standard options are whether to generate all schemas, how the file structure should look or the configuration for individual generators, such as whether CSV schema shall use multiple tables for the given schema.
 
 \section{CIM adapter}
 
@@ -202,10 +204,30 @@ Currently, we support only one CIM adapter (with others planned) for Semantic Go
 
 To follow the definition of CIM, the CIM adapter returns resources as a read-only temporary store containing PIM entities. Those PIM entities are then inserted into the actual PIM through the operations. For example, when a user searches ontology for a root class, the adapter returns a list of PIM classes from the search query. The user then picks one PIM class which is passed to the complex operation that creates atomic operations on both PIM and PSM levels and properly adds the class to the schema.
 
-Besides the search operation, the CIM adapter provides functions for obtaining the class surroundings, full hierarchy or CIM adapter-specific properties. The last functionality provides data that are not stored in PIM but may be handy to show additional information about resources. For example a URL to the resource on the Internet (as not always the IRI gives access to the resource with human-friendly results).
+Besides the search operation, the CIM adapter provides functions for obtaining the class surroundings, complete hierarchy, or CIM adapter-specific properties. The last functionality provides data that are not stored in PIM but may be handy to display additional information about resources. For example, a URL to the resource on the Internet (as not always the IRI gives access to the resource info with human-friendly results).
 
-Our SGOV adapter also returns tags for the resources. These tags are then shown in the UI to help the user better understand which resources to choose, as sometimes, there can be multiple resources with the same name. Nevertheless, we currently do not store the tags in the PIM to be accessible by generators. In general, this\footnote{We mean any additional properties that have no impact on the data conforming to generated schemas.} would need to be analyzed concerning the evolution and local modifications, and what would it mean if they change.
+Our SGOV adapter also returns tags for the resources. These tags are then shown in the UI to help the user better understand which resources to choose, as sometimes, there can be multiple resources with the same name. Nevertheless, we currently do not store the tags in the PIM to be accessible by generators. In general, this\footnote{We mean any additional properties that have no impact on the data conforming to generated schemas.} would need to be analyzed concerning the evolution and local modifications and what would it mean if they change.
 
 \medskip
 
-All resources that are returned from the CIM adapter are consistent with CIM, not identical. This specifically means that the returned resource, for example, may not contain all extended classes (in the case of searching for the resource, this is not necessary).
+All resources returned from the CIM adapter are \textbf{consistent} with CIM, not identical. This means that the returned resource, for example, may not contain all extended classes (in the case of searching for the resource, this is unnecessary).
+
+\section{React libraries}
+
+We have also implemented React libraries for easier access to resources from the React framework. The individual resources are stored in the component state, and because the federated store implements an observer pattern, the component may listen for the changes in the store (for example from the executed operations) and appropriately update its state. All this functionality is provided from a React hook
+
+\begin{verbatim}
+    const {resource, isLoading} = useResource(iri);
+\end{verbatim}
+
+\noindent that returns the given resource and info, whether the resource is being loaded. If the resource updates, it provides the last known value until new is loaded not to cause visual flashing when a new resource is not available immediately.
+
+The library also provides a hook for accessing any amount of resources and memoizing the result until any of the queried resources changes. This is used for advanced features, such as determining whether the OR can be replaced with a more user-friendly representation of a class having specializations (see \autoref{fig:screenshot-comparison}).
+
+\begin{verbatim}
+    const {result, isLoading} = useResourcesInMemo(
+      async getResource => {
+        // Use getResource arbitrarily in the function
+        // const resource = await getResource(iri);
+      }, [dependencies]);
+\end{verbatim}
