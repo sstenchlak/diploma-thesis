@@ -4,12 +4,12 @@ This chapter aims to provide implementation details of the fundamental concepts 
 
 \bigskip
 
-The intent of the work is to build a solid foundation for an ecosystem of tools with the core framework for schema modeling. The key elements that shall be followed to achieve this goal are:
+The work intends to build a solid foundation for an ecosystem of tools with the core framework for schema modeling. The key elements that shall be followed to achieve this goal are:
 \begin{enumerate}
-    \item All model data and configuration shall be stored in RDF - \textit{There is already an ecosystem of tools that can work with RDF. It is easily shareable and linkable.}
-    \item The core framework shall work on its own - \textit{It shall be possible to integrate into other applications. The tool is only a user-friendly interface to execute the framework.}
-    \item Generators shall work as plugins for the core framework - \textit{The idea is that anyone can design generators for their specific purpose.}
-    \item The model shall be robust and extensible
+    \item All model data and configuration shall be stored in RDF. - \textit{There is already an ecosystem of tools that can work with RDF. It is easily shareable and linkable.}
+    \item The core framework shall work on its own. - \textit{It shall be possible to integrate into other applications. The tool is only a user-friendly interface to execute the framework.}
+    \item Generators shall work as plugins for the core framework. - \textit{The idea is that anyone can design generators for their specific purpose.}
+    \item The model shall be robust and extensible.
 \end{enumerate}
 
 Due to the current use case and state of development, our primary focus is to create a tool where is easy to design schemas and generate the required artifacts. Hence the goals above are not met yet, but some design decisions were made to fulfill them later easily.
@@ -36,7 +36,7 @@ Due to the current use case and state of development, our primary focus is to cr
         \draw[-latex] (ds) -- node[above,align=center,pos=.6]{Reads\\ontologies} (od2);
         \draw[-latex,dashed] (ds) -- node[left,align=right]{Reuses specifications\\or inherits schemas} (ds2);
     \end{tikzpicture}
-    \caption{Context of the tool with other systems. Dataspecer only reads the ontology, which must be modelled in other tools. Dashed line shows the intent to make the tools interoperable across the Internet.}
+    \caption{Context of the tool with other systems. Dataspecer only reads the ontology, which is modeled in other tools. The dashed line shows the intent to make the tools interoperable across the Internet as the tools shall be able to reuse and inherit specifications from each other.}
     \label{fig:context-of-the-tool}
 \end{figure}
 \def\h{1.3cm}\def\sp{0.5cm}
@@ -102,28 +102,24 @@ Due to the current use case and state of development, our primary focus is to cr
         \draw[latex-] ([yshift={(\h*3+\sp*2)/2-2*(\h+\sp)-\h+\h/2}]configuration.west) -- (14.1,{-2*(\h+\sp)-\h/2});
 
     \end{tikzpicture}
-    \caption{Schematic structure of the core framework and the tool. Below, there are various schema databases. Currently, there is only Dataspecer's backend, but others are planned, such as Solid Pods or Triplestores. Each database is read by store, which formally consists of schema stores, containing exactly one PIM or PSM schema with all entities. All stores are merged for easier manipulation, such as executing operations. We have also implemented React library to integrate the store into React ecosystem. Configuration, based on the data specification, select the stores that should be loaded.  } \label{fig:schematic}
+    \caption{Schematic structure of the core framework and the tool. Below, there are various schema databases. Currently, there is only Dataspecer's backend, but others are planned, such as Solid Pods or Triplestores. Each database is read by store, which formally consists of schema stores containing exactly one PIM or PSM schema with all entities. All stores are merged for easier manipulation, such as executing operations. We have also implemented React library to integrate the store into React ecosystem. Based on the data specification, the configuration selects the stores that should be loaded.} \label{fig:schematic}
 \end{figure}
 \clearpage
 }
 
 \bigskip
 
-\autoref{fig:context-of-the-tool} depicts the most zoomed-out view of the tool's architecture, where the tool is shown in the context of other applications. As we have noted several times, we are focusing only on schema modeling, whereas conceptual modeling is done elsewhere. We also plan that multiple instances of the tool may exist, each using its database, yet still be able to provide all the functionality, such as schema reference and evolution.
+\autoref{fig:context-of-the-tool} depicts the most zoomed-out view of the tool’s architecture, where the tool is shown in the context of other applications. We have noted several times that we focus only on schema modeling, whereas conceptual modeling is done elsewhere. We also plan that multiple instances of the tool may exist, each using its own database, yet still be able to provide all the functionality, such as schema reference and evolution.
 
-\paragraph{Container structure}Currently, the tool consist of a \textbf{backend}, \textbf{manager}, \textbf{editor} and a \textbf{CLI service}.
+\paragraph{Container structure} Currently, the tool consists of a \textbf{backend}, \textbf{manager}, \textbf{editor}, and a \textbf{CLI service}.
 
-The backend is a Node.js server that provides functionality for some generators, such as a documentation generator that requires a Python module to build the resulting HTML file. The backend also serves as the storage for modeled schemas. (see the bottommost layer of \autoref{fig:schematic}) We have plans to use also other types of storage, such as personal Solid Pods, triplestores in general or read-only documents stored on the internet.
+The backend is a Node.js server that provides functionality for some generators, such as a documentation generator that requires a Python module to build the resulting HTML file. The backend also serves as the storage for modeled schemas. (see the bottommost layer of \autoref{fig:schematic}) We also plan to use other types of storage, such as personal Solid Pods, triplestores in general, or read-only documents stored on the internet.
 
-The manager is a simple React application that can manage schemas stored in the backend and execute generators. It then opens an editor under a given configuration which is another React application purely designed for schema editing. A CLI service is a simple command line tool that is used for semi-automated testing of generated schemas and transformations.
+The manager is a React application that can manage schemas stored in the backend and execute generators. It then opens an editor under a given configuration which is another React application purely designed for schema editing. A CLI service is a command line tool used for semi-automated testing of generated schemas and transformations.
 
-\paragraph{Framework structure} The operation execution with schema generation is bundled into the tools, as it is just a TypeScript library. Hence the tools do all the work and the backend serves as a simple database. This is a sufficient solution for now, (and necessary for most backends, such as triplestore or Solid Pods) but the structure of operations and the whole framework allows us to execute the operations remotely on the server. This may be especially useful for large schemas during the evolution process when the difficult part can be performed safely by the server and the client only updates the local copy.
+\paragraph{Framework structure} The operation execution with schema generation is bundled into the tools, as it is just a TypeScript library. Hence the tools do all the work, and the backend serves as a simple database. This is a sufficient solution for now (and necessary for most backends, such as triplestore or Solid Pods), but the structure of operations and the whole framework allows for executing the operations remotely on the server as well. This may be especially useful for large schemas during the evolution process when the difficult part can be performed safely by the server and the client only updates the local copy.
 
-Part of the framework from \autoref{fig:schematic} has already been described.
-
-\section{Model representation}
-
-\subsection{Store}
+\section{Model representation} % po sem kontroly ok
 
 As model data are represented by entities that shall be serialized in RDF, we introduce a \textbf{schema store} as an abstraction layer. The schema store can read and write \textbf{resources}, where the resource is a document/object that contains arbitrary data. In the context of PIM and PSM, the entity is a resource. Resources are identified by their IRI, which is an IRI of the corresponding RDF resource.
 
@@ -141,36 +137,75 @@ The current implementation only supports a simple reading by IRI. This will be c
 
 \medskip
 
-Stores' interface allows creating of \textbf{federated stores}, hence allowing to have only a single interface for reading and writing any entity. This simplifies the application's design, as we may have a complex system of shared and reused data specifications from different sources.
+Stores' interface allows creating of \textbf{federated stores}, hence allowing to have only a single interface for reading and writing any entity. This simplifies the application's design, as we may have a complex system of shared and reused data specifications, some of them possibly read-only, from different sources.
 
 \medskip
 
 In previous chapters, we have considered PIM as both the layer in general (PIM layer) and the set of PIM entities we have formally defined (PIM schema). The latter one, the PIM schema, is represented by one specific schema store. Similarly, the PSM schema (possibly having multiple roots) is also represented by one schema store. To simplify the design, the schema resource that is necessary for every schema store will also represent the PIM or PSM schema. To make the previous sentence clear, suppose PSM schema $S$. The schema contains entities such as classes, ORs, etc. Those entities are represented by resources. But the schema itself, which contains, for example, a set of roots, also needs to be represented by a resource. And the resource will be the schema resource.
 
-This means that if a user creates a data specification with two schemas, three schema stores are created: one for the PIM schema and two for the PSM schemas. Hence three stores represented by three files are created as well.
+This all means that if a user creates a data specification with two schemas, three schema stores are created: one for the PIM schema and two for the PSM schemas. Hence three stores represented by three files are created as well.
 
-\subsection{Data specification}
+\medskip
 
-The resource that represents data specification contains, namely, (i) a set of reused data specifications' IRIs, (ii) a set of PIM schemas' IRIs, (iii) a list of PSM schemas' IRIs, (iv) a set of stores' IRIs where the appropriate schemas can be found and (v) an artifact configuration.
+As we have noted, operations can be executed remotely. The current implementation of the store contains logic for local operation execution, hence all operations are evaluated on the client and only the final result is sent to the server. It is, however, possible to send the operations to the server and fetch the changes. This approach is useful for better synchronization of different clients as two clients may execute operations at the same time, possibly causing a collision.
+
+Unfortunately, we can not go any further by executing complex operations on the server, as different schemas may be stored in different stores. A possible solution would be to introduce a proxy server, that would perform these complex operations on the given stores remotely.
+
+\paragraph{Data specification}
+
+Although data specifications are also identified by IRIs, they are not resources in the same sense as PIM or PSM entities. We do not require write-through-operation access and are also read in different situations. Current implementation stores them in SQL database for fast access (which is against the first rule that everything shall be stored in RDF).
+
+A data specification contains, namely, (i) a set of reused data specifications' IRIs, (ii) a PIM schema's IRI, (iii) a list of PSM schemas' IRIs, and (iv) a set of stores' IRIs where the appropriate schemas can be found and (v) an artifact configuration.
 
 \section{Layers for simplifying the model}
 
 Reading the model may be too complex, as the entities may not exist, reading them requires asynchronous access, and to obtain the value of all annotations, we usually need to go to the PIM layer. Letting individual generators access the model is, of course, necessary, but for most generators, this would mean implementing many helper functions for easier access. To reduce the burden on generators, we introduce conceptual and structural models whose purpose is to provide a more user-friendly interface for reading the model.
 
-\paragraph{Conceptual model} Conceptual model is fairly simple as it only simplifies access to PIM, which is simple by itself. Its structure is similar to PIM, but attributes and associations are referenced directly from the class as properties. The whole model is constructed in advance, hence we can check whether is correct, but mainly we can access everything synchronously.
+\paragraph{Conceptual model} Conceptual model is fairly simple as it only simplifies access to PIM, which is simple by itself. Its structure is similar to PIM, but attributes and associations are referenced directly from the class as properties. The whole model is constructed in advance, hence we can check whether is correct and do not need to do it during the querying. But mainly we can access everything synchronously.
 
 \paragraph{Structural model} Structural model employs a different approach to schema structure than PSM. As PSM is highly inspired by schemas, it also has a more schema-like structure. For example, include is valid class property, but from an object-oriented view, it has more semantic meaning. The structural model we use tends to be more object-oriented.
 
 Classes have properties as well, but the properties represent only attributes and associations. Include is translated to class inheritance, as it works almost precisely the same as inheriting properties from a parent class. The only difference is that the position of the include can not be preserved. This, however, for most generators, is not an issue.
 
-To simplify the work with disjunction, we exploit the fact that OR on one element is the same as the element without OR. Hence, all associations have an array of referred classes. This won't introduce new objects that need to be specially handled and allows domain-specific generators to ignore the concept at all if it is not required.
+To simplify the work with disjunction, we exploit the fact that OR on one element is the same as the element without OR. Hence, all associations have an array of referred classes as OR between them. This won't introduce new objects that need to be specially handled and allows domain-specific generators to ignore the concept at all if it is not required.
 
-\paragraph{Transformations} Both conceptual and structural models provide various transformations (do not confuse with data transformations from \autoref{req:transformations}) that simplify the model or obtain additional data.
+It may seem, that this goes against our design, as we, after all, use an interface for object-oriented access. Our intent is, however, to have a robust model that can handle a wide range of use-cases and rather create a layer for easier access.
+
+\paragraph{Transformations} Conceptual and structural models provide various transformations (do not confuse with data transformations from \autoref{req:transformations}) that modifies the model or obtain additional data for given generator.
 
 \begin{itemize}
-    \item It is possible to flatten the structural model by copying properties from parent to child classes. This transformation may simplify the work for developers of generators as they do not need to handle inheritance anymore. Of course, this would cause the artifact to grow as the entities are not reused but may be useful for an early stage of development as simplification.
+    \item It is possible to flatten the structural model by copying properties from parent to child classes. This transformation may simplify the work for developers of generators as they do not need to handle inheritance anymore (hence the include). Of course, this would cause the artifact to grow as the entities are not reused but may be useful for an early stage of development as simplification.
     \item As some information lies in PIM, such as naming, description, default cardinality, or datatype, there is a transformation that fetches this information to the structural model.
-    \item Associations marked as dematerialized may be "unpacked" to the parent class instead of the association itself.
+    \item Associations marked as dematerialized (dematerialization is an annotation on the association that specifies, that all properties from the associated class shall be put into a parent class) may be "unpacked" to the parent class instead of the association itself.
 \end{itemize}
 
-\paragraph{Format-aware structural models} As there is usually a whole ecosystem of generators that work with a given technology, such as XML, it is important to let the designers extend or even transform the model on their own, making it format-aware. We already use this technique for XML to add namespace information to the entities. In general, the transformation may change the interface of the structural model to suit the needs of the generator better.
+\paragraph{Format-aware structural models} As there is usually a whole ecosystem of generators that work with a given technology, such as XML, it is important to let the designers extend or even transform the model on their own, making it format-aware. We already use this technique for XML to add namespace information to the entities. In general, the transformation may change the interface of the structural model to suit the needs of the generator better. The transformation may, for example, add a new type of class property that was extracted from PSM.
+
+\section{Artifacts generation}
+
+To properly generate artifacts that can reference each other, which is a crucial feature for the documentation, and to keep them highly configurable, we have employed the following interface. First, its configuration must be provided. The configuration consists of:
+
+\begin{enumerate}
+    \item IRI of the given artifact.
+    \item IRI of the generator to be used to create given artifact.
+    \item Output path, as the generated artifact has to be stored somewhere. (a directory can be provided for generators, that create more than one file)
+    \item Public URL, as we expect, that the artifacts will be uploaded on the Internet. In most cases, the public URL shall be the same as the output path, which creates relative URLs between the artifacts.
+    \item Generators that reference other artifacts require their IRIs.
+    \item For schema artifacts, the IRI of the PSM schema is required.
+\end{enumerate}
+
+To generate this array of configurations, ArtifactConfigurator is used. The configurator itself is configured from data specification. The typical options are whether to generate all schemas, how the file structure should look like or the configuration for individual generators, such as whether CSV schema shall use multiple tables for the given schema.
+
+\section{CIM adapter}
+
+Currently, we support only one CIM adapter (with others planned) for Semantic Government Vocabulary (SGOV) \cite{kvremen2019improving}, as we have no use cases that would require others. In general, which adapters (multiple can be used) are used for a given schema are configured in data specification. Although this may not be necessary, and all adapters can be used all the time, we still want to limit this as the user may accidentally select a concept from a wrong ontology, and all the ontologies would have to be queried.
+
+To follow the definition of CIM, the CIM adapter returns resources as a read-only temporary store containing PIM entities. Those PIM entities are then inserted into the actual PIM through the operations. For example, when a user searches ontology for a root class, the adapter returns a list of PIM classes from the search query. The user then picks one PIM class which is passed to the complex operation that creates atomic operations on both PIM and PSM levels and properly adds the class to the schema.
+
+Besides the search operation, the CIM adapter provides functions for obtaining the class surroundings, full hierarchy or CIM adapter-specific properties. The last functionality provides data that are not stored in PIM but may be handy to show additional information about resources. For example a URL to the resource on the Internet (as not always the IRI gives access to the resource with human-friendly results).
+
+Our SGOV adapter also returns tags for the resources. These tags are then shown in the UI to help the user better understand which resources to choose, as sometimes, there can be multiple resources with the same name. Nevertheless, we currently do not store the tags in the PIM to be accessible by generators. In general, this\footnote{We mean any additional properties that have no impact on the data conforming to generated schemas.} would need to be analyzed concerning the evolution and local modifications, and what would it mean if they change.
+
+\medskip
+
+All resources that are returned from the CIM adapter are consistent with CIM, not identical. This specifically means that the returned resource, for example, may not contain all extended classes (in the case of searching for the resource, this is not necessary).
