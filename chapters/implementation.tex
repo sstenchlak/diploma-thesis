@@ -111,7 +111,7 @@ Due to the current use case and state of development, our primary focus is to cr
 
 \autoref{fig:context-of-the-tool} depicts the most zoomed-out view of the tool’s architecture, where the tool is shown in the context of other applications. We have noted several times that we focus only on schema modeling, whereas conceptual modeling is done elsewhere. We also plan that multiple instances of the tool may exist, each using its own database, yet still be able to provide all the functionality, such as schema reference and evolution.
 
-\paragraph{Container structure} Currently, the tool consists of a \textbf{backend}, \textbf{manager}, \textbf{editor}, and a \textbf{CLI service}.
+\paragraph{Container structure} Currently, the tool consists of a \textit{backend}, \textit{manager}, \textit{editor}, and a \textit{CLI service}.
 
 The backend is a Node.js server that provides functionality for some generators, such as a documentation generator that requires a Python module to build the resulting HTML file. The backend also serves as the storage for modeled schemas. (see the bottommost layer of \autoref{fig:schematic}) We also plan to use other types of storage, such as personal Solid Pods, triplestores in general, or read-only documents stored on the internet.
 
@@ -127,7 +127,7 @@ Entities can be read from the schema store, but writing is limited to \textbf{op
 
 Schema stores are managed in \textbf{stores}. The store is an interface for reading resources by their IRI and executing operations on a given schema resource. The store is asynchronous and represents a database of resources. For example, a store may be an interface on the SPARQL endpoint, a file system, a read-only dump on the internet, or just data in local memory.
 
-The current implementation of the tool uses stores that are synchronized with the server through a simple GET-POST API.\footnote{This de facto implicitly supports Solid Pods as a type of store.} Stores on the server are saved into individual files in the filesystem. Each store contains only one schema store for better granularity, as the file must be read and written atomically.
+The current implementation of the tool uses stores that are synchronized with the server through a simple GET-PUT API.\footnote{This de facto implicitly supports Solid Pods as a type of store.} Stores on the server are saved into individual files in the filesystem. Each store contains only one schema store for better granularity, as the file must be read and written atomically.
 
 \medskip
 
@@ -149,7 +149,7 @@ This all means that if a user creates a data specification with two schemas, thr
 
 As we have noted, operations can be executed remotely. The current implementation of the store contains logic for local operation execution; hence all operations are evaluated on the client, and only the final result is sent to the server. It is, however, possible to send the operations to the server and fetch the changes. This approach is useful for better synchronization of different clients as two clients may execute operations at the same time, possibly causing a collision.
 
-Unfortunately, we can not go any further by executing complex operations on the server, as different schemas may be stored in different stores. A possible solution would be to introduce a proxy server, that would perform these complex operations on the given stores remotely.
+Unfortunately, we cannot go any further by executing complex operations on the server, as different schemas may be stored in different stores. A possible solution would be to introduce a proxy server, that would perform these complex operations on the given stores remotely.
 
 Although it may seem that the whole specification may go to an invalid state after only one store was modified (for example, when an application crashes), this is not an issue. The individual schema stores are well separated and formally connected only through evolution. Hence even if only the PIM store is updated, the individual PSMs became only inconsistent, not invalid literally.
 
@@ -167,7 +167,7 @@ Reading the model may be too complex, as the entities may not exist, reading the
 
 \paragraph{Structural model} Structural model employs a different approach to schema structure than PSM. As PSM is highly inspired by schemas, it also has a more schema-like structure. For example, include is valid class property, but from an object-oriented view, it has more semantic meaning. The structural model we use tends to be more object-oriented.
 
-Classes also have properties, but the properties represent only attributes and associations. Include is translated to class inheritance, as it works almost precisely the same as inheriting properties from a parent class. The only difference is that the position of the include can not be preserved. This, however, for most generators, is not an issue.
+Classes also have properties, but the properties represent only attributes and associations. Include is translated to class inheritance, as it works almost precisely the same as inheriting properties from a parent class. The only difference is that the position of the include cannot be preserved. This, however, for most generators, is not an issue.
 
 To simplify the work with disjunction, we exploit the fact that OR on one element is the same as the element without OR. Hence, all associations have an array of referred classes as individual OR choices. This won't introduce new objects that need to be specially handled and allows domain-specific generators to ignore the concept at all if it is not required. (although this is a bad design in general)
 
@@ -191,7 +191,7 @@ We have utilized the following interface to properly generate artifacts that can
     \item IRI of the given artifact.
     \item IRI of the generator to be used to create a given artifact.
     \item Output path, as the generated artifact has to be stored somewhere. (a directory can be provided for generators that create more than one file)
-    \item Public URL, as we expect, that the artifacts will be uploaded on the Internet. In most cases, the public URL shall be the same as the output path, which creates relative URLs between the artifacts.
+    \item Public URL, as we expect, that the artifacts will be uploaded on the Internet. In most cases, the public URL shall be the same as the output path, which creates relative paths between the artifacts.
     \item Generators that reference other artifacts require their IRIs. (this is necessary as, in general, we can create multiple similar artifacts, possible with a different configuration; hence the generator needs to know which to include)
     \item For schema artifacts, the IRI of the PSM schema is required.
 \end{enumerate}

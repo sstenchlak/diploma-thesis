@@ -56,7 +56,7 @@ There are many formats for data exchange, the most famous being JSON, XML, CSV/T
 
 As our primary intent is to support JSON and XML, we will use the first type of model to represent the data in our general format. The translation from that format to individual schemas in the hierarchical model would be implicit (and will be described later in the text).
 
-Supporting translation from the general schema, which is in the hierarchical model, to the formats in the relational and graph models should be possible in a limited way\footnote{That means we may not be able to reverse translation from specific schema to the general schema or it may not be possible to use the full power of the given specific schema. However, this is not important to us, as our target is the support of basic use cases.}, which is sufficient and follows the requirement to have one general schema.
+Supporting translation from the general schema, which is in the hierarchical model, to the formats in the relational and graph models should be possible in a limited way\footnote{That means we may not be able to reverse translation from a specific schema to the general schema, or it may not be possible to use the full power of the given specific schema. However, this is not important to us, as our target is the support of basic use cases.}, which is sufficient and follows the requirement to have one general schema.
 
 The graph model is not even necessary to generate as we use the ontology that is already in the graph model; hence, we can use the ontology directly as the schema to validate our data.
 
@@ -133,7 +133,7 @@ Finally, we will start with the root tag, which was {\tt <Good>} in our case.
 To describe and distinguish between more advanced XML features, we would need to add XML-specific options to our model, such as:
 \begin{enumerate}
   \item For every object property with a primitive value, there should be an option that the given property becomes an attribute of the parent tag. For example, the \verb|id| property of the chair may be either the attribute \verb|id="3758"| of the parent or the full tag \verb|<id>3758</id>| inside the parent.
-  \item For every array property, there should be an option that the given list of tags will be wrapped.\footnote{This may not be necessary as we can add the wrapper class to the general schema by ourselves. This, however, is not the correct solution as the meaning of the wrapper class is not semantical, but rather syntactical and only specific for XML.}
+  \item For every array property, there should be an option that the given list of tags will be wrapped.\footnote{This may not be necessary as we can add the wrapper class to the general schema by ourselves. This, however, is not the correct solution as the meaning of the wrapper class is not semantical but rather syntactical and only specific for XML.}
   \item XML, compared to JSON, recognizes the order of the elements in the document. This means that we may decide whether we want to enforce the specific order or not, which can also be fixed by another option in the parent.
 \end{enumerate}
 
@@ -185,7 +185,7 @@ Classes then have an ordered list of properties. This is different from JSON, wh
 
 We can use two different approaches to visualize the model's hierarchical structure. The previous tools \textit{XCase} and \textit{eXolutio} used graph visualization, where nodes were used to show classes and edges to show associations. An alternative approach is to use a textual "bullet-list" representation, as the model is \textit{usually} a tree.
 
-The latter approach is easier to understand, as the final product is a schema for documents that has a similar structure as the representation. It is easier to implement, more compact in size on the screen, and easier to work with on smaller devices. Also, the order of the properties is more intuitive, and we can use more styling options for advanced constructs.\footnote{So far, we have described only a basic schema structure. See other requirements for advanced constructs.} However, in the general case, users may benefit from the graph view if the schema refers to another schema (see \autoref{analysis/requirement/schema-reference}) multiple times or contains cycles because this can be easily denoted in the graphical interface (see \autoref{analysis/difference-between-graphical-and-hiearchical}).
+The latter approach is easier to understand, as the final product is a schema for documents that has a similar structure as the representation. It is easier to implement, more compact in size on the screen, and easier to work with on smaller devices. Also, the order of the properties is more intuitive, and we can use more styling options for advanced constructs.\footnote{So far, we have described only a basic schema structure. See other requirements for advanced constructs.} However, in the general case, users may benefit from the graph view if the schema refers to another schema (see \autoref{analysis/requirement/schema-reference}) multiple times or contains cycles because this can be easily denoted in the graphical interface (see \autoref{analysis/difference-between-graphical-and-hierarchical}).
 
 \begin{figure}[h!]\centering
   \begin{subfigure}{.5\textwidth}
@@ -215,18 +215,18 @@ The latter approach is easier to understand, as the final product is a schema fo
   {\color{blue!60}- association 2} to
       {\color{purple!60}referenced class}
 \end{Verbatim}
-      \caption{Hiearchical representation}
+      \caption{Hierarchical representation}
     \end{subfigure}
 
-  \caption{Figure showing a schema referencing the same subschema twice, essentially creating a cycle in an unoriented graph. Two different representations are shown - graph and hierarchical. The former shows that both associations refer to the same subschema, which later representation can not show explicitly.}
-  \label{analysis/difference-between-graphical-and-hiearchical}
+  \caption{Figure showing a schema referencing the same subschema twice, essentially creating a cycle in an unoriented graph. Two different representations are shown - graph and hierarchical. The former shows that both associations refer to the same subschema, which later representation cannot show explicitly.}
+  \label{analysis/difference-between-graphical-and-hierarchical}
 \end{figure}
 
 Because the primary use case is to generate simple or moderately advanced schemas, the textual approach is preferred. Nevertheless, the graph view might be implemented in the future.
 
 \medskip
 
-As shown in \autoref{analysis/difference-between-graphical-and-hiearchical}, the schema may be represented as a "bullet list" where each class, association, or attribute is on a separate line. Classes have a list of properties under the class name. Associations point directly to other classes and, therefore, can be merged with the class name on a single line. Other attributes, including format-specific, will be on the line next to the item name.
+As shown in \autoref{analysis/difference-between-graphical-and-hierarchical}, the schema may be represented as a "bullet list" where each class, association, or attribute is on a separate line. Classes have a list of properties under the class name. Associations point directly to other classes and, therefore, can be merged with the class name on a single line. Other attributes, including format-specific, will be on the line next to the item name.
 
 \begin{figure}[h!]\centering
   \begin{Verbatim}[commandchars=\\\{\}]

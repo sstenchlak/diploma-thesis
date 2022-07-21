@@ -7,7 +7,7 @@
 \section{Inheritance}
 
 \begin{requirement}
-    The tool shall support class inheritance on a general schema level and in generated schemas.\footnote{See \autoref{fig:screenshot-comparison} for screenshots from the tool with this requirement implemeted.} That means it shall be possible to design a schema that validates data where both the base and derived classes can be used. The derived class may have additional properties.
+    The tool shall support class inheritance on a general schema level and in generated schemas.\footnote{See \autoref{fig:screenshot-comparison} for screenshots from the tool with this requirement implemented.} That means it shall be possible to design a schema that validates data where both the base and derived classes can be used. The derived class may have additional properties.
     \label{requirement:inheritance}
 \end{requirement}
 
@@ -44,7 +44,7 @@ This requirement impacts the application at three different levels. (i) The gene
 
 An advanced reader may point out that the problem can be generalized by introducing a disjunction to the schema. As we will show in the following text, this assumption is correct. However, designing schemas only with disjunction is a cumbersome and complicated task for less advanced users and does not preserve the intent of extending the class. Therefore, we still want to provide the ability to work more efficiently with the inheritance.
 
-In ordinary cases, a more general class shares its properties with all its descendants. This can be seen in the example, where the \textit{Ice-cream} has all properties a \textit{Chair} has. In UML modeling and most programming languages, copying the properties is unnecessary as they are inherited. We want to achieve a similar thing in our schema representation by not polluting the page with redundant information. This, however, restricts the use of inheritance because we can not select the order of properties in the descendant class if the properties are not shown.
+In ordinary cases, a more general class shares its properties with all its descendants. This can be seen in the example, where the \textit{Ice-cream} has all properties a \textit{Chair} has. In UML modeling and most programming languages, copying the properties is unnecessary as they are inherited. We want to achieve a similar thing in our schema representation by not polluting the page with redundant information. This, however, restricts the use of inheritance because we cannot select the order of properties in the descendant class if the properties are not shown.
 
 To formalize the restriction, a descendant class implicitly has all properties of the parent in the same order, and those properties are before any other properties of the descendant class. This is a limitation for XML and CSV documents as JSON does not depend on the order of properties. However, order generally does not play a huge role in modeling, and if it does, in most cases, the properties are sorted from most general to most specific, hence using our proposed solution. For advanced use cases, the low-level constructs introduced later can be used.
 
@@ -136,7 +136,7 @@ There are two ways to implement the OR operator in our proposed hierarchical mod
 
 The former model is more common for programmers, as in some languages (such as TypeScript), it is possible to specify a type of property in this particular way as an OR of multiple types. On the other hand, the latter approach is more well known in data modeling, as XSD's {\tt xs:choice} works exactly the same way.
 
-The model using a property-level OR can not use the disjunction in the root of the schema, which is an essential disadvantage as there may be use cases for those schemas. On the other hand, this model is better suited for the Cartesian product of multiple disjunctions in a single class. Suppose a schema for class $C$ having the following attributes: the first attribute is either $A_{11}$ or $A_{12}$, and the second attribute is either $A_{21}$ or $A_{22}$.
+The model using a property-level OR cannot use the disjunction in the root of the schema, which is an essential disadvantage as there may be use cases for those schemas. On the other hand, this model is better suited for the Cartesian product of multiple disjunctions in a single class. Suppose a schema for class $C$ having the following attributes: the first attribute is either $A_{11}$ or $A_{12}$, and the second attribute is either $A_{21}$ or $A_{22}$.
 
 \begin{figure}[h!]\centering
   \begin{subfigure}[b]{.6\textwidth}

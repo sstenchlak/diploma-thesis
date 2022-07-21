@@ -14,16 +14,16 @@
 % \openright makes the following text appear on a right-hand page
 \let\openright=\clearpage
 
-%% Settings for two-sided (duplex) printing
-% \documentclass[12pt,a4paper,twoside,openright]{report}
-% \setlength\textwidth{145mm}
-% \setlength\textheight{247mm}
-% \setlength\oddsidemargin{14.2mm}
-% \setlength\evensidemargin{0mm}
-% \setlength\topmargin{0mm}
-% \setlength\headsep{0mm}
-% \setlength\headheight{0mm}
-% \let\openright=\cleardoublepage
+% Settings for two-sided (duplex) printing
+%\documentclass[12pt,a4paper,twoside,openright,dvipsnames]{report}
+%\setlength\textwidth{145mm}
+%\setlength\textheight{247mm}
+%\setlength\oddsidemargin{14.2mm}
+%\setlength\evensidemargin{0mm}
+%\setlength\topmargin{0mm}
+%\setlength\headsep{0mm}
+%\setlength\headheight{0mm}
+%\let\openright=\cleardoublepage
 
 %% Generate PDF/A-2u
 \usepackage[a-2u]{pdfx}
@@ -362,7 +362,7 @@ The primary use case of the tool is modeling formal open standards for publishin
     \includegraphics[width=\textwidth]{img/or_inheritance.png}
     \caption{Same general schema visualized as one base class with specializations.}
   \end{subfigure}
-  \caption{Screenshots from the tool compare a general schema of a Public place with two specializations according to \autoref{requirement:inheritance}. The variants show the plain view, consisting of OR and include, and a user-friendly view hiding those constructs. The example shows one of the FOSes that we are trying to model. For the purpose of this example, the schema was simplified, some classes were contracted, and labels were translated to English.}
+  \caption{Screenshots from the tool comparing a general schema of a Public place with two specializations according to \autoref{requirement:inheritance}. The variants show the plain view, consisting of OR and include, and a user-friendly view hiding those constructs. The example shows one of the FOSes that we are trying to model. For the purpose of this example, the schema was simplified, some classes were contracted, and labels were translated to English.}
   \label{fig:screenshot-comparison}
 \end{figure}
 \vfill
@@ -370,7 +370,7 @@ The primary use case of the tool is modeling formal open standards for publishin
 \begin{figure}
   \centering
   \includegraphics[width=\textwidth]{img/objekt_nebo_subjekt.png}
-  \caption{A real-life example of a general schema of one of the RPP FOSes, that were described in \autoref{sec:register-of-rights-and-obligations}. You can see, that the schema consists of only few associations and attributes. There are two references to the ohter schema denoted by \textit{[refers to]} text.}
+  \caption{A real-life example of a general schema of one of the RPP FOSes, that were described in \autoref{sec:register-of-rights-and-obligations}. You can see that the schema consists of only a few associations and attributes. There are two references to the other schema denoted by \textit{[refers to]} text.}
   \label{fig:screenshot}
 \end{figure}
 %

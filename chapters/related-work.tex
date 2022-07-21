@@ -19,7 +19,7 @@ OSLO also focuses on the interoperability of services that provide those data so
 
 \medskip
 
-Compared to our approach, OSLO's primary focus is on the interoperability of public services and their data in LOD format. Their goal is to provide a set of tools to create and later validate public services effectively. Our approach is to design a general tool (hence it can be used for any related purpose, such as software development process) for services that use non-RDF formats, such as CSV or XML files, and provide tools to convert them to linked data format.
+Compared to our approach, OSLO's primary focus is on the interoperability of public services and their data in LOD format. Their goal is to provide a set of tools to create and later validate open data effectively. Our approach is to design a general tool (hence it can be used for any related purpose, such as software development process) for services that use non-RDF formats, such as CSV or XML files, and provide tools to convert them to linked data format.
 
 As noted in the introduction chapter, we also focus on the public sector, but only as one of many use cases. Hence, in general, their approach is better suited for the public sector as their tool may better fit the problem.
 
@@ -61,14 +61,14 @@ Based on how the framework is used, we suppose that it targets the former use ca
 \afterpage{\begin{landscape}\thispagestyle{empty}
   \begin{table}\centering
   \begin{tabular}{l|ccccc}\toprule
-    & \textbf{OSLO} & \textbf{LinkML} & \textbf{\begin{tabular}[c]{@{}l@{}}Enterprise\\ Architect\end{tabular}} & \textbf{\begin{tabular}[c]{@{}l@{}}XCase \&\\ eXolutio\end{tabular}} & \textbf{Dataspecer} \\\midrule
-  \textbf{Shared ontology        } & yes   & with toolchain & no                    & no                & yes               \\
-  \textbf{Custom schema structure} & yes   & no             & no                    & yes               & yes               \\
-  \textbf{Schema extension       } & ?     & n/a            & n/a                   & no                & planned           \\
-  \textbf{Evolution              } & ?     & no             & no                    & yes               & planned           \\
-  \textbf{Custom artifacts       } & no     & by plugin      & in their DSL          & no               & by plugin \\
-  \textbf{User interface         } & graph & YAML           & graph                 & graph             & tree              \\\midrule
-  \textbf{Pricing         } & paid due to EA & free           & paid                 & free             & free              \\\bottomrule
+    & \textbf{\begin{tabular}[c]{@{}l@{}}Enterprise\\ Architect\end{tabular}} & \textbf{OSLO} & \textbf{LinkML} & \textbf{\begin{tabular}[c]{@{}l@{}}XCase \&\\ eXolutio\end{tabular}} & \textbf{Dataspecer} \\\midrule
+  \textbf{Shared ontology        } & no                   & yes   & with toolchain  & no                & yes               \\
+  \textbf{Custom schema structure} & no                   & yes   & no              & yes               & yes               \\
+  \textbf{Schema extension       } & n/a                  & ?     & n/a             & no                & planned           \\
+  \textbf{Evolution              } & no                   & ?     & no              & yes               & planned           \\
+  \textbf{Custom artifacts       } & in their DSL        & no     & by plugin        & no               & by plugin \\
+  \textbf{User interface         } & graph                & graph & YAML            & graph             & tree              \\\midrule
+  \textbf{Pricing         } & paid               & paid due to EA & free             & free             & free              \\\bottomrule
   \end{tabular}
   \caption[Comparison table]{Comparison of all the introduced tools with \textit{Dataspecer}. The compared aspects are those that are important for us either by the use case or the requirements from chapters \ref{chapters:analysis} and \ref{chapters:future-requirements}.
 

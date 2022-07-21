@@ -7,11 +7,11 @@
 
 There are already well-known RDF predicates that can cover basic alignment. For semantically identical entities, we may use \verb|owl:equivalentClass| or \verb|skos:exactMatch|. A more useful RDF predicate is \verb|rdfs:subClassOf| to specify that the given class extends others by specializing its type.
 
-The latter is already used in the previous \autoref{requirement:inheritance}. Subclasses (i) reuse attributes and associations from their parent class but also semantically denote that (ii) the subclass can also be treated as "the parent class." The second point is an example of a simple ontology alignment. In the context of data transformations, we can take the ore specific class and convert it to its base type.
+The latter is already used in the previous \autoref{requirement:inheritance}. Subclasses (i) reuse attributes and associations from their parent class but also semantically denote that (ii) the subclass can also be treated as "the parent class." The second point is an example of a simple ontology alignment. In the context of data transformations, we can take the more specific class and convert it to its base type.
 
 \medskip
 
-As an advanced example, suppose again the address property that is used for delivery purposes. The address can be represented as one multi-line string value or as its parts such as street, number, etc. The most straightforward mapping would split the string by commas and new lines and join them back, respectively.
+As an advanced example, suppose again the address property that is used for delivery purposes. The address can be represented as one multi-line string value or as its parts such as \textit{street}, \textit{number}, etc. The most straightforward mapping would split the string by commas and new lines and join them back, respectively.
 
 The user can then decide whether they want to use the first or the second group of entities, and the transformation script would still be able to transform data between those two representations.
 
