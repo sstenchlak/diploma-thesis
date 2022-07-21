@@ -124,7 +124,7 @@ As seen in \autoref{analysis/xml-json}, the XML format is more complex, as it su
 
 JSON Schema is a JSON document that describes the data structure we can expect from other JSON documents. For this part of the thesis, it is sufficient to know that the schema defines which root object we can expect and a set of allowed properties and their types for each object.
 
-Suppose that we have chosen a structure very similar to JSON Schema to be our general structure format. We are interested only in how it describes the document's structure, not its representation. Because JSON is simpler than XML, we can use our model to describe only simple XML documents, as we are missing constructs that would describe advanced XML features.
+Suppose that we have chosen a structure very similar to JSON Schema to be our general structure format. We are interested only in how it describes the document's structure. Because JSON is simpler than XML, we can use our model to describe only some XML documents, as we are missing constructs that would describe advanced XML features.
 
 For example, the object property \textit{x} with primitive value \textit{y} would represent an XML tag {\tt <x>y</x>}; if {\tt y} is an object, we will apply this rule recursively.
 The object property \textit{x} with an array of \textit{y\textsubscript{i}}  would represent multiple XML tags {\tt<x>y\textsubscript{1}</x><x>y\textsubscript{2}</x>...<x>y\textsubscript{n}</x>}.
@@ -169,7 +169,7 @@ Because all tables represent arrays, we cannot formally convert the schema with 
 
 To support CSV documents containing unrelated data (and possibly other unrelated data in the relational model), specifically CSV tables, that do not reference each other, we may need to have a schema with multiple roots. Multiple root schemas may be helpful in some advanced data-modeling problems. We will keep the question behind this open as there are not enough use cases right now.
 
-Although we have not dealt with advanced cases, the model is robust enough for most use cases.
+Although we have not dealt with advanced cases, the model is robust enough for most of them.
 
 \subsection{Designing the model}
 
@@ -185,7 +185,7 @@ Classes then have an ordered list of properties. This is different from JSON, wh
 
 We can use two different approaches to visualize the model's hierarchical structure. The previous tools \textit{XCase} and \textit{eXolutio} used graph visualization, where nodes were used to show classes and edges to show associations. An alternative approach is to use a textual "bullet-list" representation, as the model is \textit{usually} a tree.
 
-The latter approach is easier to understand, as the final product is a schema for documents that has a similar "structure" as the representation. It is easier to implement, more compact in size on the screen, and easier to work with on smaller devices. Also, the order of the properties is more intuitive, and we can use more styling options for advanced constructs.\footnote{So far, we have described only a basic schema structure. See other requirements for advanced constructs.} However, in the general case, users may benefit from the graph view if the schema refers to another schema (see \autoref{analysis/requirement/schema-reference}) multiple times or contains cycles because this can be easily denoted in the graphical interface (see \autoref{analysis/difference-between-graphical-and-hiearchical}).
+The latter approach is easier to understand, as the final product is a schema for documents that has a similar structure as the representation. It is easier to implement, more compact in size on the screen, and easier to work with on smaller devices. Also, the order of the properties is more intuitive, and we can use more styling options for advanced constructs.\footnote{So far, we have described only a basic schema structure. See other requirements for advanced constructs.} However, in the general case, users may benefit from the graph view if the schema refers to another schema (see \autoref{analysis/requirement/schema-reference}) multiple times or contains cycles because this can be easily denoted in the graphical interface (see \autoref{analysis/difference-between-graphical-and-hiearchical}).
 
 \begin{figure}[h!]\centering
   \begin{subfigure}{.5\textwidth}
@@ -242,4 +242,4 @@ As shown in \autoref{analysis/difference-between-graphical-and-hiearchical}, the
   \label{analysis/general-schema-representation}
 \end{figure}
 
-It shall be possible to change the order of the properties by dragging thems, and options for given items shall be available next to them. Attributes and associations shall be distinguished both by color and supporting graphics. More advanced constructs may have unique styling options to provide more information if necessary.
+It shall be possible to change the order of the properties by dragging them. Options for given items shall be available next to them. Attributes and associations shall be distinguished both by color and supporting graphics. More advanced constructs may have unique styling options to provide more information if necessary.

@@ -136,7 +136,7 @@ There are two ways to implement the OR operator in our proposed hierarchical mod
 
 The former model is more common for programmers, as in some languages (such as TypeScript), it is possible to specify a type of property in this particular way as an OR of multiple types. On the other hand, the latter approach is more well known in data modeling, as XSD's {\tt xs:choice} works exactly the same way.
 
-The model using a property-level OR can not use the disjunction in the root of the schema, which is an essential disadvantage as there may be use cases for those schemas. On the other hand, this model is better suited for the Cartesian product of multiple disjunctions in a single class. Suppose a schema for class $C$ having the following attributes: the first attribute is either $A_11$ or $A_12$, and the second attribute is either $A_21$ or $A_22$.
+The model using a property-level OR can not use the disjunction in the root of the schema, which is an essential disadvantage as there may be use cases for those schemas. On the other hand, this model is better suited for the Cartesian product of multiple disjunctions in a single class. Suppose a schema for class $C$ having the following attributes: the first attribute is either $A_{11}$ or $A_{12}$, and the second attribute is either $A_{21}$ or $A_{22}$.
 
 \begin{figure}[h!]\centering
   \begin{subfigure}[b]{.6\textwidth}
@@ -301,7 +301,7 @@ To begin with include, its purpose is to take all properties of a given class an
 
 \bigskip
 
-By doing a similar analysis with OR, as OR is linked to an association, each class inside that OR may have a descendant or self type. Hence, we say that the type of OR is the nearest common ancestor of all classes. This works well with root as well, as it can have an arbitrary type; hence the classes in the OR can also have any type. Nevertheless, for that scenario, we would probably like to restrict the type to a parent class anyways, as this is mostly the desired behavior.
+By doing a similar analysis with OR, as OR is linked to an association, each class inside that \textbf{OR may have a descendant or self type}. Hence, we say that the type of OR is the nearest common ancestor of all classes. This works well with root as well, as it can have an arbitrary type; hence the classes in the OR can also have any type. Nevertheless, for that scenario, we would probably like to restrict the type to a parent class anyways, as this is mostly the desired behavior.
 
 It may seem that things work. Unfortunately, there is an exception when we combine these two constructs together. As we have already shown in \autoref{fig:cartesian-product:include-to-or}, using include-to-or may be beneficial but does not work with the introduced rules as include requires ancestor or self type, but OR provides descendant or self type. However, this is specific only to include construct, which can easily be fixed by having two kinds of ORs, let's say generalization OR and specialization OR. We will keep these problematics for future work as there are not enough use cases to evaluate whether this approach is beneficial or not. So far, we thus only allow specialization OR that can be placed into a root, at the end of the association, or can be referenced from another schema.
 
