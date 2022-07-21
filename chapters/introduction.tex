@@ -48,7 +48,7 @@ Designing the schemas together with supporting documentation by hand is a tediou
 \begin{enumerate}
     \item We need to describe the same thing for every schema that uses it. Hence doing the \textbf{same work multiple times}. \textit{From the example above, the name and weight of the item are used in two different schemas.}
     \item There is a high chance of \textbf{inconsistency}. We may name the semantically identical things differently, which may confuse software engineers who came in touch with multiple system parts. \textit{For example, the "name" of the item sold can be interchanged with "label" or "title" in another schema.}
-    \item It is hard to introduce changes as we need to address all affected areas and modify them. If the change is made incrementally, we may lose the context of what is outdated and what is new.
+    \item It is \textbf{hard to introduce changes} as we need to address all affected areas and modify them. If the change is made incrementally, we may lose the context of what is outdated and what is new.
 \end{enumerate}
 
 In addition to these obstacles, it is hard to provide supporting documentation, diagrams, and examples.
