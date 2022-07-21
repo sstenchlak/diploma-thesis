@@ -219,17 +219,17 @@ So far, we have introduced PIM and CIM layers and only tackled how the framework
 
 Because the CIM is used only for building the PIM, the tool does not need to know that the ontology has changed as it works mostly only with PIM. However, to further expand the schema, the tool must fetch other parts of the ontology, which may collide with the PIM.
 
-Having PIM strictly as a copy of CIM may help in this process as we can compare the two levels and, based on the difference, \textit{somehow} generate a sequence of operations that modifies the PIM. The modifications may be as simple as \textit{changing a class title}, or \textit{changing an association cardinality} to the complex ones such as \textit{join two attributes into one} or \textit{move an attribute to another class}. It is essential to have the changes that complex as they carry the information on how the schemas and their data should be modified, not just the final state. We will describe the operations later.
+Having PIM strictly as a copy of CIM may help in this process as we can compare the two levels and, based on the difference, \textit{somehow} generate a sequence of operations that modifies the PIM. The modifications may be as simple as \textit{changing a class title} or \textit{changing an association cardinality} to the complex ones, such as \textit{joining two attributes into one} or \textit{moving an attribute to another class}. It is essential to have the changes that complex as they carry the information on how the schemas and their data should be modified, not just the final state. We will describe the operations later.
 
 To formally describe the difference, we will introduce the concept of consistency.
 
 \begin{definition}[consistency]
-    We say that the annotation of interpreted PIM entity is consistent with CIM if the corresponding CIM entity exists and the value is equal to the value in CIM or in the context of the annotation is a superset\footnote{Formally, each annotation shall define its own rules whether is consistent or not. Consider, for example, $\textrm{extends}$. As we want PIM to be a subset, we allow $\textrm{extends}$ to be a subset of all classes the given class extends.} of the value in CIM. We say that {interpreted PIM entity is consistent with CIM} if the CIM entity exists and all annotations are consistent with CIM. Finally, {PIM is consistent with CIM} if all interpreted entities are consistent.
+    We say that the annotation of interpreted PIM entity is consistent with CIM if the corresponding CIM entity exists and the value is equal to the value in CIM or, in the context of the annotation, is a superset\footnote{Formally, each annotation shall define its own rules whether is consistent or not. Consider, for example, $\textrm{extends}$. As we want PIM to be a subset, we allow $\textrm{extends}$ to be a subset of all classes the given class extends.} of the value in CIM. We say that {interpreted PIM entity is consistent with CIM} if the CIM entity exists and all annotations are consistent with CIM. Finally, {PIM is consistent with CIM} if all interpreted entities are consistent.
 \end{definition}
 
-Based on the use case, most of the changes in the CIM that are worth propagating are simple and well-isolated. This may ease the process of inferring changes between PIM and CIM by finding those isolated sets of entities and then creating a sequence of changes based on a predefined set of rules.
+Based on the use case, most of the changes in the CIM that are worth propagating are simple and well-isolated. This may ease the process of inferring differences between PIM and CIM by finding those isolated sets of entities and then creating a sequence of changes based on a predefined set of rules.
 
-As mentioned in the analysis, for complex changes, it would be easier to generate a delete-and-create set of operations instead of trying to figure out what has changed. This would remove affected entities entirely from created schemas after propagating, and a user simply adds new entities back to desired places in the schema structure.
+As mentioned in the analysis, for complex changes, it would be easier to generate a delete-and-create set of operations instead of trying to figure out what has changed. This would remove affected entities entirely from created schemas after propagating, and a user would add new entities back to desired places in the schema structure.
 
 \medskip
 
@@ -241,13 +241,13 @@ Direct modification of PIM (see \autoref{requirement:pim-editing}) may break the
 
 To be more specific, we are interested only in those entities that have interpretation - entities that are linked to CIM. All other non-interpreted entities are so far ignored.
 
-Formally, it may seem that changing an interpreted entity (and still keeping it interpreted) should not be allowed as the changed entity itself does not represent the ontology anymore. As this may be true, there are still some cases when the change is necessary, especially when the CIM does not give us all the information we need (such as missing cardinality or missing description), or there is an obvious error that needs to be fixed.
+Formally, it may seem that changing an interpreted entity (and still keeping it interpreted) should not be allowed as the changed entity itself does not represent the ontology anymore. As this may be true, there are still some cases when the change is necessary, especially when the CIM does not give us all the information we need (such as missing cardinality or missing description) or there is an obvious error that needs to be fixed.
 
 \medskip
 
 Nevertheless, we expect only minimal changes to be made by the user because of the abovementioned reasons. Due to the same reasons, those user modifications shall be checked every time the PIM is being made consistent because the change in the ontology may fix the same problem as the user modification, hence making the modification resolved and irelevant.
 
-Because of that, we allow editing of the PIM directly as this is the simplest option that will satisfy the requirements under the expected use case.
+Because of that, we \textbf{allow editing of the PIM directly} as this is the simplest option that will satisfy the requirements under the expected use case.
 
 Create and update operations are simple and are summarized below. To make modifications complete, we also need to delete the entities. As we have defined PIM as a subset of CIM, simply deleting the entity would not be enough, as we would not know whether the entity is deleted or just not discovered. Therefore we introduce a new annotation that marks the entity as deleted. Deletion is a purely cosmetic feature, as, without it, the sufficient approach would be to ignore the entity. It only forbids users to use it in the lower levels.
 
@@ -260,9 +260,11 @@ Create and update operations are simple and are summarized below. To make modifi
 The introduced approach provides us with the following options for modifying the PIM:
 \begin{itemize}
     \item We can \textbf{create} new entities by simply adding them to PIM without interpretation.
-    \item Existing entities can be \textbf{edited} directly and keeping them interpreted. This, however, will collide with the evolution mechanism and must be explicitly excluded from it every time the evolution is performed.
+    \item Existing entities can be \textbf{edited} directly while keeping them interpreted. This, however, will collide with the evolution mechanism and must be explicitly excluded from it every time the evolution is performed.
     \item To \textbf{remove} an interpreted entity, we must mark it as deleted. Non-in\-ter\-pre\-ted entities can be removed directly.
 \end{itemize}
+
+We have already provided reasons why modifying PIM is a relatively good idea, such as when the ontology contains minor errors that need to be fixed immediately. PIM also allows the creation of new entities, which is similar to PSM; hence it may not be clear which level to use. In general, using PIM means that multiple schemas may interpret the created entity, and therefore, it shall be possible to generate data transformations between them. Hence, entities that \textbf{seem to be part of the domain ontology shall be created on PIM}. \textbf{Entities on PSM have more structural meaning.} For example, if the schema requires some entities shall be wrapped in another class. This is a purely structural requirement that should not have a representation in the ontology, hence shall be created only in PSM.
 
 \subsection{Ontology alignments}\label{sec:ontology-alignments}
 
@@ -270,7 +272,7 @@ To complete the walkthrough through requirements, we must analyze how \autoref{r
 
 In general, because the alignments may be arbitrarily complex, we will use a new type of construct to represent those alignments. For example, the alignment from \autoref{figure:address-mapping} that maps addresses between different representations would be a single PIM entity that contains that information.
 
-Some readers may object that the annotation $extends$ used for the inheritance of classes is not consistent with this approach. In the previous chapter, we said that inheritance might be considered as a form of alignment. Nevertheless, unlike the other alignments, inheritance is an important concept that is used in many places in the tool. Therefore we will keep this as an annotation for now and consider reimplementation of this concept in the future when implementing the support for other alignments.
+Some readers may object that the annotation $extends$ used for the inheritance of classes is not consistent with this approach. In the previous chapter, we said that inheritance might be considered a form of alignment. Nevertheless, unlike the other alignments, inheritance is an important concept that is used in many places in the tool. Therefore we will keep this as an annotation for now and consider reimplementation of this concept in the future when implementing the support for other alignments.
 
 \begin{figure}[h]\centering
     \begin{tikzpicture}
@@ -317,7 +319,7 @@ Some readers may object that the annotation $extends$ used for the inheritance o
         \draw [dotted] (0,-0.75-1.5*0) -- (0,-0.75-1.5*2);
         \draw [dotted] (-2,-0.75-1.5*1) -- (-2,-0.75-1.5*2);
     \end{tikzpicture}
-    \caption{Example of three different schemas having entities $e_1$, $e_2$, and $e_3$ respectively. First two schemas use the same PIM, whether the third uses different. Because $E_2$ and $E_3$ interprets the same entity $E$ (hence are semantically identicall), it is possible to map $e_2$ to $e_3$ as those entities interpret former ones. Although $E_1$ does not interpret $E$, there is an alignment $A$ which also allows to map $e_1$ to $e_2$ and hence to $e_3$.}
+    \caption{Example of three different schemas having entities $e_1$, $e_2$, and $e_3$, respectively. The first two schemas use the same PIM, while the third uses another. Because $E_2$ and $E_3$ interpret the same entity $E$ (hence are semantically identical), it is possible to map $e_2$ to $e_3$ as those entities interpret former ones. Although $E_1$ does not interpret $E$, there is an alignment $A$, which also allows to map $e_1$ to $e_2$ and hence to $e_3$.}
 \end{figure}
 
 \subsection{Evolution}
@@ -326,37 +328,38 @@ Some readers may object that the annotation $extends$ used for the inheritance o
 
 To solve this problem, we allow modifying the levels (PIM and PSM) only through \textbf{operations}. Operations are pre-defined functions that modify data on the given level and are simple enough that they can be translated to the operation on the level below.
 
-As an example, suppose that an attribute is removed from an ontology. First, the tool compares the CIM with PIM and generates a delete operation on the corresponding PIM attribute. Depending on the context and user preferences, a user may be notified whether the tool may proceed. Then, the tool executes the operation on PIM (making PIM consistent) and transforms the operation into a set of delete operations on PSM that removes the attributes there. (There might be more than one attribute.)
+As an example, suppose that an attribute is removed from an ontology. First, the tool compares the CIM with PIM and generates a delete operation on the corresponding PIM attribute. Depending on the context and user preferences, a user may be notified whether the tool may proceed. Then, the tool executes the operation on PIM (making PIM consistent) and transforms the operation into a set of delete operations on PSM that removes the attributes there. (There might be more than one attribute, hence multiple operations.)
 
 We will omit a complete list of operations in this thesis as they depend on the requirements that are not fully addressed yet. However, it must be possible to transform the operation into a set of operations on the lower level.
 
-We do not require that the set of operations must be minimal, and no operation can not be composed of others. This will reduce the computational difficulty as some actions from the user may lead to hundreds of operations on the model \cite{nevcasky2012evolution}.
+We do not enforce that the set of operations must be minimal, and no operation can not be composed of others. Nevertheless, each operation must be translatable to the operations below.
 
-For example, \textit{wrap PSM object with OR} may be valid operation used for purposes of inheritance (see \autoref{requirement:inheritance}). An alternative consisting of more atomic operations may be as follows:
+Having more complex operations may be beneficial, as they preserve the original intent rather than the performed steps. More complex operations may reduce the computational difficulty as some actions from the user may lead to hundreds of operations on the model, according to research on previous tools \cite{nevcasky2012evolution}.
+
+For example, \textit{wrap PSM object with OR} may be a valid operation used for purposes of inheritance (see \autoref{requirement:inheritance}). An alternative consisting of more atomic operations may be as follows:
 \begin{enumerate*}[label={(\arabic*)}]
     \item create a standalone OR
     \item connect the target object to OR
     \item set OR as the target object
-\end{enumerate*}. The alternative consists of 3 times more operations and is also harder to evaluate as the \textit{connect} operation needs to check whether the reconnection is possible due to type coherency. On the other hand, wrapping an object with OR has no precondition rules and can always be performed. Some other operations may be even more complex in their base form. In addition, complex operations preserve the context, as it is clear that the intention is to wrap the object, not move it.
+\end{enumerate*}. The alternative consists of 3 times more operations and is also harder to evaluate as the \textit{connect} operation needs to check whether the reconnection is possible due to type coherency. On the other hand, wrapping an object with OR has no precondition rules and can always be performed. Some other operations may be even more complex in their base form. As mentioned, more complex operations preserve the context, as it is clear that the intention is to wrap the object, not move it.
 
 \medskip
 
-In \autoref{requirement:schemas-on-the-web} on schemas on the web, we have considered data specifications as an atomic unit that is always stored at once. This approach solves the problem with the evaluation of evolution, as the layers of the framework depend only on those in the same data specification. Hence, we can directly update them at once.
+In \autoref{requirement:schemas-on-the-web} on schemas on the web, we have considered data specifications as an atomic unit that is always stored at once. This approach solves the problem with the execution of evolution, as the layers of the framework depend only on those in the same data specification. Hence, we can directly update them at once.
 
 Referencing other schemas is also without problem as the only thing that may change is the type of referenced class.
 
 \section{Inheriting schemas}\label{section:inheriting-schemas}
 
-Nevertheless, there might be use cases described in \autoref{requirement:schema-inheritance} where reusing layers from other data specifications would be useful. Consider a data specification that models a general schema for any format. This specification is published on the web. Someone else would like to use that schema to modify it slightly. For example, to add another attribute to the given class. Now, if the author of the original schema modifies anything, we would like to modify the derived schema as well. This, however, is not possible as the tool is not aware of the existence of the derived schema nor may not have write access to it.
+Nevertheless, there might be use cases described in \autoref{requirement:schema-inheritance} where reusing layers from other data specifications would be useful. Consider a data specification that models a general schema for any format. This specification is published on the web. Someone else would like to use that schema to modify it slightly. For example, to add another attribute to the given class. Now, if the author of the original schema modifies anything, we would like to modify the derived schema as well. This, however, is not possible as the tool may not be aware of the existence of the derived schema nor may not have write access to it. (Because the schemas may be stored somewhere else, for example.)
 
-For this particular scenario, we would need to keep a list of executed operations on given schemas. The reused schema would then remember the last executed operation on the parent, which should be sufficient to recreate the steps that were performed on the parent schema in the derived schema. We have already proposed in \autoref{requirement:schema-inheritance} how the evolution could work for some simple tasks.
+For this particular scenario, we would need to keep a list of executed operations on given schemas. The reused schema would then remember the last executed operation of the parent, which should be sufficient to recreate the steps that were performed on the parent schema in the derived schema. We have already proposed in \autoref{requirement:schema-inheritance} how the evolution could work for some simple tasks.
 
 There is one prominent solution that would nicely work with the already introduced concept of annotation.
 
-We can copy the whole PSM, where each entity gets a new IRI, with all the references between them properly updated and with an interpretation annotation set to the original entity (not PIM). This may work, but we also need our own PIM as we cannot update theirs. But having two PIMs may cause problems, as we stated that the interpretation on the PIM level must be unique, hence only one entity can represent a given thing in CIM.
-A possible fix may be to introduce a new annotation \textbf{inheritsFrom} on both PIM and PSM which would point to the original entity. Both PIM and PSM would be copied with new IRIs and the interpretation would work as right now, the copied PSM would interpret the copied PIM. This would preserve backward compatibility (as by ignoring the annotation this is ordinary PIM and PSM) and enables us to perform evolution through the inheritsFrom annotation.
+We can copy the whole PSM, where each entity gets a new IRI, with all the references between them adequately updated and an interpretation annotation set to the original entity (not PIM). This may work, but we also need our own PIM as we cannot update theirs. But having two PIMs may cause problems, as we stated that the interpretation on the PIM level must be unique; hence only one entity can represent a given thing in CIM. A possible fix may be introducing a new annotation \textbf{inheritsFrom} on both PIM and PSM, which would point to the original entity. Both PIM and PSM then would be copied with new IRIs, and the interpretation would work as right now; the copied PSM would interpret the copied PIM. This would preserve backward compatibility (as by ignoring the introduced annotation, this is ordinary PIM and PSM) and enables us to perform evolution through the inheritsFrom annotation.
 
-The key finding here is that supporting this requirement should not require any breaking changes to the framework.
+The key finding here is that supporting this requirement should not require breaking changes to the framework besides storing the list of executed operations, which is useful for other purposes, such as ability to revert changes or analyze them later.
 
 \begin{figure}[h]\centering
     \begin{tikzpicture}
